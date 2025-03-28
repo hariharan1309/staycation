@@ -60,7 +60,7 @@ const property = {
 
 export default function PropertyPage({ params }: { params: { id: string } }) {
   return (
-    <main className="container px-4 py-8 md:px-6 md:py-12">
+    <main className="container px-4 py-8 md:px-6 md:py-12 lg:px-8">
       <div className="mb-6 flex items-center gap-2">
         <Button variant="ghost" size="icon" asChild>
           <Link href="/properties">

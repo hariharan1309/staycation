@@ -33,7 +33,7 @@ export default function AboutPage() {
           </div>
           <div className="relative aspect-video overflow-hidden rounded-lg md:aspect-square">
             <Image
-              src="/placeholder.svg?height=600&width=600"
+              src="/team.png?height=600&width=600"
               alt="Our team"
               fill
               className="object-cover"
@@ -138,7 +138,7 @@ export default function AboutPage() {
         <div className="grid gap-8 md:grid-cols-2">
           <div className="relative aspect-video overflow-hidden rounded-lg md:aspect-square">
             <Image
-              src="/placeholder.svg?height=600&width=600"
+              src="/value.png?height=600&width=600"
               alt="Our values"
               fill
               className="object-cover"
@@ -254,8 +254,18 @@ export default function AboutPage() {
               </Button>
             </div>
           </div>
-          <div className="flex items-center justify-center">
-            <Users className="h-32 w-32 text-primary/20 md:h-48 md:w-48" />
+          <div className="flex items-center justify-center relative">
+            <Image
+              src="/join.png?height=400&width=400"
+              alt="Join Us"
+              fill
+              sizes="200"
+              className="object-cover h-32 w-32 rounded-lg  md:h-48 md:w-48"
+            />
+            {/* <Image
+              src={}
+              className="h-32 w-32 text-primary/20 md:h-48 md:w-48"
+            /> */}
           </div>
         </div>
       </section>
