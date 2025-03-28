@@ -1,20 +1,21 @@
-import { fstore } from "@/lib/firebase";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { auth, fstore } from "@/lib/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { NextResponse } from "next/server";
 
 export const POST = async (req: Request) => {
   try {
     const body = await req.json();
     console.log(body);
-    const { email, userType } = body;
+    const { email, userType, password } = body;
     if (userType === "host") {
       // check if user is already a host
-      const hostRef = collection(fstore, "hosts"); // creating the reference
+      const hostRef = collection(fstore, "owners"); // creating the reference
       const hosts = await getDocs(hostRef); // fetching the data
       hosts.forEach((doc) => {
         if (doc.data().email === email) {
           return new NextResponse(
-            JSON.stringify({ error: "User already exists" })
+            JSON.stringify({ error: "Owner already exists" })
           );
         }
       });
@@ -27,11 +28,61 @@ export const POST = async (req: Request) => {
         agreeTerms: body.agreeTerms,
         receiveUpdates: body.receiveUpdates,
       };
-      // create a new host
-      await addDoc(collection(fstore, "owner"), user);
+      // create authentication for user
+      const userAuth = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      // create a new host with setDoc instead of addDoc
+      // because we want to use the user's uid as the document id
+      await setDoc(doc(fstore, "owner", userAuth.user.uid), user);
+      return new NextResponse(
+        JSON.stringify({
+          message: "Owner created successfully",
+          ID: userAuth.user.uid,
+          status: 201,
+        })
+      );
+    } else {
+      {
+        // check if user is already a host
+        const hostRef = collection(fstore, "guests"); // creating the reference
+        const hosts = await getDocs(hostRef); // fetching the data
+        hosts.forEach((doc) => {
+          if (doc.data().email === email) {
+            return new NextResponse(
+              JSON.stringify({ error: "User already exists" })
+            );
+          }
+        });
+        const user = {
+          firstName: body.firstName,
+          lastName: body.lastName,
+          email: body.email,
+          phoneNumber: body.phoneNumber,
+          password: body.password,
+          agreeTerms: body.agreeTerms,
+          receiveUpdates: body.receiveUpdates,
+        };
+        // create authentication for user
+        const userAuth = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        // create a new host with setDoc instead of addDoc
+        // because we want to use the user's uid as the document id
+        await setDoc(doc(fstore, "guests", userAuth.user.uid), user);
+        return new NextResponse(
+          JSON.stringify({
+            message: "User created successfully",
+            ID: userAuth.user.uid,
+            status: 201,
+          })
+        );
+      }
     }
-
-    return new NextResponse(JSON.stringify({ message: "User created" }));
   } catch (error) {
     return new NextResponse(
       JSON.stringify({ error: "Something went wrong.." })
