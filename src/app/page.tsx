@@ -1,14 +1,14 @@
-import Link from "next/link"
-import Image from "next/image"
-import { CalendarIcon, MapPinIcon, SearchIcon, UserIcon } from "lucide-react"
+import Link from "next/link";
+import Image from "next/image";
+import { CalendarIcon, MapPinIcon, SearchIcon, UserIcon } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { DatePickerWithRange } from "@/components/date-range-picker"
-import { PropertyCard } from "@/components/property-card"
-import { TestimonialCarousel } from "@/components/testimonial-carousel"
-import { FeaturedDestinations } from "@/components/featured-destinations"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { DatePickerWithRange } from "@/components/date-range-picker";
+import { PropertyCard } from "@/components/property-card";
+import { TestimonialCarousel } from "@/components/testimonial-carousel";
+import { FeaturedDestinations } from "@/components/featured-destinations";
 
 export default function Home() {
   return (
@@ -16,7 +16,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative h-[600px] w-full">
         <Image
-          src="/placeholder.svg?height=600&width=1600"
+          src="/hero1.png?height=600&width=1600"
           alt="Beautiful vacation destination"
           fill
           className="object-cover brightness-75"
@@ -55,7 +55,12 @@ export default function Home() {
                   <span>Guests</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Input type="number" defaultValue={2} min={1} className="h-10" />
+                  <Input
+                    type="number"
+                    defaultValue={2}
+                    min={1}
+                    className="h-10"
+                  />
                   <Button size="sm" className="h-10 px-6">
                     <SearchIcon className="mr-2 h-4 w-4" />
                     Search
@@ -72,8 +77,12 @@ export default function Home() {
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div>
-              <h2 className="text-3xl font-bold tracking-tight">Featured Properties</h2>
-              <p className="text-muted-foreground">Explore our handpicked selection of stunning vacation rentals</p>
+              <h2 className="text-3xl font-bold tracking-tight">
+                Featured Properties
+              </h2>
+              <p className="text-muted-foreground">
+                Explore our handpicked selection of stunning vacation rentals
+              </p>
             </div>
             <Button variant="outline" asChild>
               <Link href="/properties">View all properties</Link>
@@ -124,7 +133,9 @@ export default function Home() {
       {/* Featured Destinations */}
       <section className="bg-muted py-12 md:py-16 lg:py-20">
         <div className="container px-4 md:px-6">
-          <h2 className="mb-8 text-center text-3xl font-bold tracking-tight">Popular Destinations</h2>
+          <h2 className="mb-8 text-center text-3xl font-bold tracking-tight">
+            Popular Destinations
+          </h2>
           <FeaturedDestinations />
         </div>
       </section>
@@ -132,7 +143,9 @@ export default function Home() {
       {/* Why Choose Us */}
       <section className="py-12 md:py-16 lg:py-20">
         <div className="container px-4 md:px-6">
-          <h2 className="mb-12 text-center text-3xl font-bold tracking-tight">Why Choose Our Platform</h2>
+          <h2 className="mb-12 text-center text-3xl font-bold tracking-tight">
+            Why Choose Our Platform
+          </h2>
 
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             <Card className="border-none shadow-md">
@@ -155,7 +168,8 @@ export default function Home() {
                 </div>
                 <CardTitle className="mb-2">Easy to Find</CardTitle>
                 <p className="text-muted-foreground">
-                  Our powerful search tools make it simple to find the perfect vacation rental for your needs.
+                  Our powerful search tools make it simple to find the perfect
+                  vacation rental for your needs.
                 </p>
               </CardContent>
             </Card>
@@ -180,7 +194,8 @@ export default function Home() {
                 </div>
                 <CardTitle className="mb-2">Verified Properties</CardTitle>
                 <p className="text-muted-foreground">
-                  All our listings are verified to ensure quality and accuracy, so you can book with confidence.
+                  All our listings are verified to ensure quality and accuracy,
+                  so you can book with confidence.
                 </p>
               </CardContent>
             </Card>
@@ -205,7 +220,8 @@ export default function Home() {
                 </div>
                 <CardTitle className="mb-2">Secure Booking</CardTitle>
                 <p className="text-muted-foreground">
-                  Our secure payment system and customer support ensure a worry-free booking experience.
+                  Our secure payment system and customer support ensure a
+                  worry-free booking experience.
                 </p>
               </CardContent>
             </Card>
@@ -216,7 +232,9 @@ export default function Home() {
       {/* Testimonials */}
       <section className="bg-muted py-12 md:py-16 lg:py-20">
         <div className="container px-4 md:px-6">
-          <h2 className="mb-12 text-center text-3xl font-bold tracking-tight">What Our Guests Say</h2>
+          <h2 className="mb-12 text-center text-3xl font-bold tracking-tight">
+            What Our Guests Say
+          </h2>
           <TestimonialCarousel />
         </div>
       </section>
@@ -227,10 +245,13 @@ export default function Home() {
           <div className="rounded-lg bg-primary/5 p-8 md:p-12">
             <div className="grid gap-6 md:grid-cols-2 md:gap-12">
               <div className="flex flex-col justify-center">
-                <h2 className="mb-4 text-3xl font-bold tracking-tight">List Your Property With Us</h2>
+                <h2 className="mb-4 text-3xl font-bold tracking-tight">
+                  List Your Property With Us
+                </h2>
                 <p className="mb-6 text-muted-foreground">
-                  Join thousands of property owners who trust our platform to showcase their vacation rentals to
-                  millions of travelers worldwide.
+                  Join thousands of property owners who trust our platform to
+                  showcase their vacation rentals to millions of travelers
+                  worldwide.
                 </p>
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <Button asChild>
@@ -255,6 +276,5 @@ export default function Home() {
         </div>
       </section>
     </main>
-  )
+  );
 }
-
