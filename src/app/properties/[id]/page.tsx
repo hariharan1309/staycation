@@ -1,12 +1,21 @@
-import Image from "next/image"
-import Link from "next/link"
-import { ArrowLeft, Check, MapPin, Share, Star } from "lucide-react"
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft, Check, MapPin, Share, Star } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { DatePickerWithRange } from "@/components/date-range-picker"
-import { PropertyGallery } from "@/components/property-gallery"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { DatePickerWithRange } from "@/components/date-range-picker";
+import { PropertyGallery } from "@/components/property-gallery";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // This would typically come from a database
 const property = {
@@ -47,7 +56,7 @@ const property = {
   bedrooms: 3,
   bathrooms: 2,
   maxGuests: 6,
-}
+};
 
 export default function PropertyPage({ params }: { params: { id: string } }) {
   return (
@@ -67,7 +76,9 @@ export default function PropertyPage({ params }: { params: { id: string } }) {
           <div className="flex items-center">
             <Star className="mr-1 h-5 w-5 fill-primary text-primary" />
             <span className="font-medium">{property.rating}</span>
-            <span className="ml-1 text-muted-foreground">({property.reviewCount} reviews)</span>
+            <span className="ml-1 text-muted-foreground">
+              ({property.reviewCount} reviews)
+            </span>
           </div>
           <div className="flex items-center text-muted-foreground">
             <MapPin className="mr-1 h-4 w-4" />
@@ -86,9 +97,12 @@ export default function PropertyPage({ params }: { params: { id: string } }) {
         <div className="lg:col-span-2">
           <div className="flex items-center justify-between border-b pb-6">
             <div>
-              <h2 className="text-xl font-semibold">Hosted by {property.host.name}</h2>
+              <h2 className="text-xl font-semibold">
+                Hosted by {property.host.name}
+              </h2>
               <p className="text-muted-foreground">
-                {property.bedrooms} bedrooms · {property.bathrooms} bathrooms · {property.maxGuests} guests
+                {property.bedrooms} bedrooms · {property.bathrooms} bathrooms ·{" "}
+                {property.maxGuests} guests
               </p>
             </div>
             <Image
@@ -106,7 +120,9 @@ export default function PropertyPage({ params }: { params: { id: string } }) {
           </div>
 
           <div className="border-b py-6">
-            <h3 className="mb-4 text-lg font-semibold">What this place offers</h3>
+            <h3 className="mb-4 text-lg font-semibold">
+              What this place offers
+            </h3>
             <div className="grid grid-cols-2 gap-4">
               {property.amenities.map((amenity) => (
                 <div key={amenity} className="flex items-center gap-2">
@@ -138,19 +154,46 @@ export default function PropertyPage({ params }: { params: { id: string } }) {
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Guests</label>
-                    <select className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                    {/* <select className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                       {Array.from({ length: property.maxGuests }, (_, i) => (
                         <option key={i + 1} value={i + 1}>
                           {i + 1} {i === 0 ? "guest" : "guests"}
                         </option>
                       ))}
-                    </select>
+                    </select> */}
+                    <Select>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Guests Count" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {Array.from(
+                            { length: property.maxGuests },
+                            (_, i) => (
+                              <SelectItem
+                                key={i + 1}
+                                value={(i + 1).toString()}
+                              >
+                                {i + 1} {i === 0 ? "Guest" : "Guests"}
+                              </SelectItem>
+                            )
+                          )}{" "}
+                          {/* <SelectItem value="apple">Apple</SelectItem>
+                          <SelectItem value="banana">Banana</SelectItem>
+                          <SelectItem value="blueberry">Blueberry</SelectItem>
+                          <SelectItem value="grapes">Grapes</SelectItem>
+                          <SelectItem value="pineapple">Pineapple</SelectItem> */}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
                 <Button className="w-full">Reserve</Button>
 
-                <p className="text-center text-sm text-muted-foreground">You won't be charged yet</p>
+                <p className="text-center text-sm text-muted-foreground">
+                  You won't be charged yet
+                </p>
 
                 <div className="space-y-2">
                   <div className="flex justify-between">
@@ -177,6 +220,5 @@ export default function PropertyPage({ params }: { params: { id: string } }) {
         </div>
       </div>
     </main>
-  )
+  );
 }
-
