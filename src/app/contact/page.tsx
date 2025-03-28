@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Mail, MapPin, Phone } from "lucide-react"
+import { useState } from "react";
+import Link from "next/link";
+import { Mail, MapPin, Phone } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Separator } from "@/components/ui/separator"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -19,42 +19,48 @@ export default function ContactPage() {
     email: "",
     subject: "",
     message: "",
-  })
+  });
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value,
-    })
-  }
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
 
     // Simulate API call
     setTimeout(() => {
-      setIsSubmitting(false)
-      setIsSubmitted(true)
+      setIsSubmitting(false);
+      setIsSubmitted(true);
       setFormData({
         name: "",
         email: "",
         subject: "",
         message: "",
-      })
-    }, 1500)
-  }
+      });
+    }, 1500);
+  };
 
   return (
     <main className="container px-4 py-8 md:px-6 md:py-12">
       <div className="mx-auto max-w-5xl">
         <div className="mb-8 text-center">
-          <h1 className="mb-2 text-3xl font-bold tracking-tight md:text-4xl">Contact Us</h1>
-          <p className="text-muted-foreground">Have questions or feedback? We'd love to hear from you.</p>
+          <h1 className="mb-2 text-3xl font-bold tracking-tight md:text-4xl">
+            Contact Us
+          </h1>
+          <p className="text-muted-foreground">
+            Have questions or feedback? We'd love to hear from you.
+          </p>
         </div>
 
         <div className="grid gap-8 md:grid-cols-3">
@@ -80,15 +86,24 @@ export default function ContactPage() {
                   </div>
                   <h2 className="mb-2 text-xl font-semibold">Message Sent!</h2>
                   <p className="mb-6 text-muted-foreground">
-                    Thank you for reaching out. We'll get back to you as soon as possible.
+                    Thank you for reaching out. We'll get back to you as soon as
+                    possible.
                   </p>
-                  <Button onClick={() => setIsSubmitted(false)}>Send Another Message</Button>
+                  <Button onClick={() => setIsSubmitted(false)}>
+                    Send Another Message
+                  </Button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6 md:p-8">
                   <div className="space-y-2">
                     <Label htmlFor="name">Your Name</Label>
-                    <Input id="name" name="name" value={formData.name} onChange={handleInputChange} required />
+                    <Input
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email Address</Label>
@@ -103,7 +118,13 @@ export default function ContactPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="subject">Subject</Label>
-                    <Input id="subject" name="subject" value={formData.subject} onChange={handleInputChange} required />
+                    <Input
+                      id="subject"
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleInputChange}
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="message">Message</Label>
@@ -116,7 +137,11 @@ export default function ContactPage() {
                       required
                     />
                   </div>
-                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isSubmitting}
+                  >
                     {isSubmitting ? "Sending..." : "Send Message"}
                   </Button>
                 </form>
@@ -131,7 +156,7 @@ export default function ContactPage() {
                   <MapPin className="mt-1 h-5 w-5 text-primary" />
                   <div>
                     <h3 className="font-semibold">Our Office</h3>
-                    <address className="not-italic text-muted-foreground">
+                    <address className="not-italic text-muted-foreground text-sm">
                       123 Vacation Street
                       <br />
                       San Francisco, CA 94103
@@ -149,13 +174,19 @@ export default function ContactPage() {
                   <Mail className="mt-1 h-5 w-5 text-primary" />
                   <div>
                     <h3 className="font-semibold">Email Us</h3>
-                    <p className="text-muted-foreground">
-                      <Link href="mailto:support@staycation.com" className="hover:underline">
+                    <p className="text-muted-foreground text-sm">
+                      <Link
+                        href="mailto:support@staycation.com"
+                        className="hover:underline"
+                      >
                         support@staycation.com
                       </Link>
                     </p>
-                    <p className="text-muted-foreground">
-                      <Link href="mailto:info@staycation.com" className="hover:underline">
+                    <p className="text-muted-foreground text-sm">
+                      <Link
+                        href="mailto:info@staycation.com"
+                        className="hover:underline"
+                      >
                         info@staycation.com
                       </Link>
                     </p>
@@ -170,7 +201,7 @@ export default function ContactPage() {
                   <Phone className="mt-1 h-5 w-5 text-primary" />
                   <div>
                     <h3 className="font-semibold">Call Us</h3>
-                    <p className="text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       <Link href="tel:+18001234567" className="hover:underline">
                         +1 (800) 123-4567
                       </Link>
@@ -189,7 +220,11 @@ export default function ContactPage() {
               <CardContent className="p-6">
                 <h3 className="mb-2 font-semibold">Connect With Us</h3>
                 <div className="flex gap-4">
-                  <Link href="https://twitter.com" target="_blank" rel="noreferrer">
+                  <Link
+                    href="https://twitter.com"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="24"
@@ -205,7 +240,11 @@ export default function ContactPage() {
                       <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
                     </svg>
                   </Link>
-                  <Link href="https://facebook.com" target="_blank" rel="noreferrer">
+                  <Link
+                    href="https://facebook.com"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="24"
@@ -221,7 +260,11 @@ export default function ContactPage() {
                       <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
                     </svg>
                   </Link>
-                  <Link href="https://instagram.com" target="_blank" rel="noreferrer">
+                  <Link
+                    href="https://instagram.com"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="24"
@@ -239,7 +282,11 @@ export default function ContactPage() {
                       <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
                     </svg>
                   </Link>
-                  <Link href="https://linkedin.com" target="_blank" rel="noreferrer">
+                  <Link
+                    href="https://linkedin.com"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="24"
@@ -266,10 +313,12 @@ export default function ContactPage() {
         <Separator className="my-12" />
 
         <div className="mb-12 text-center">
-          <h2 className="mb-4 text-2xl font-bold">Frequently Asked Questions</h2>
+          <h2 className="mb-4 text-2xl font-bold">
+            Frequently Asked Questions
+          </h2>
           <p className="mx-auto max-w-2xl text-muted-foreground">
-            Find quick answers to common questions. If you can't find what you're looking for, please don't hesitate to
-            contact us.
+            Find quick answers to common questions. If you can't find what
+            you're looking for, please don't hesitate to contact us.
           </p>
         </div>
 
@@ -278,8 +327,9 @@ export default function ContactPage() {
             <CardContent className="p-6">
               <h3 className="mb-2 font-semibold">How do I cancel a booking?</h3>
               <p className="text-sm text-muted-foreground">
-                You can cancel a booking from your account dashboard. Go to "My Trips," find the booking you want to
-                cancel, and click "Cancel Booking." Refund policies vary by property.
+                You can cancel a booking from your account dashboard. Go to "My
+                Trips," find the booking you want to cancel, and click "Cancel
+                Booking." Refund policies vary by property.
               </p>
             </CardContent>
           </Card>
@@ -287,26 +337,33 @@ export default function ContactPage() {
             <CardContent className="p-6">
               <h3 className="mb-2 font-semibold">How do I become a host?</h3>
               <p className="text-sm text-muted-foreground">
-                To become a host, create an account and click "Become a Host" in your dashboard. You'll need to provide
-                details about your property, set pricing, and upload photos.
+                To become a host, create an account and click "Become a Host" in
+                your dashboard. You'll need to provide details about your
+                property, set pricing, and upload photos.
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-6">
-              <h3 className="mb-2 font-semibold">How are payments processed?</h3>
+              <h3 className="mb-2 font-semibold">
+                How are payments processed?
+              </h3>
               <p className="text-sm text-muted-foreground">
-                We use secure payment processing through Stripe. Guests pay when booking, and hosts receive payment 24
-                hours after check-in, minus our service fee.
+                We use secure payment processing through Stripe. Guests pay when
+                booking, and hosts receive payment 24 hours after check-in,
+                minus our service fee.
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-6">
-              <h3 className="mb-2 font-semibold">What if there's an issue with my stay?</h3>
+              <h3 className="mb-2 font-semibold">
+                What if there's an issue with my stay?
+              </h3>
               <p className="text-sm text-muted-foreground">
-                If you encounter any issues during your stay, please contact the host first. If the issue isn't
-                resolved, our 24/7 customer support team is available to help.
+                If you encounter any issues during your stay, please contact the
+                host first. If the issue isn't resolved, our 24/7 customer
+                support team is available to help.
               </p>
             </CardContent>
           </Card>
@@ -323,6 +380,5 @@ export default function ContactPage() {
         </div>
       </div>
     </main>
-  )
+  );
 }
-
