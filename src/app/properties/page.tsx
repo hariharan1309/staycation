@@ -1,13 +1,21 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Grid, List, MapPin, Search, SlidersHorizontal } from "lucide-react"
+import { useState } from "react";
+import { Grid, List, MapPin, Search, SlidersHorizontal } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { PropertyCard } from "@/components/property-card"
-import { PropertyFilters } from "@/components/property-filters"
-import { PropertySearchBar } from "@/components/property-search-bar"
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { PropertyCard } from "@/components/property-card";
+import { PropertyFilters } from "@/components/property-filters";
+import { PropertySearchBar } from "@/components/property-search-bar";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Mock data for properties
 const properties = [
@@ -117,67 +125,75 @@ const properties = [
     guests: 2,
     amenities: ["WiFi", "Kitchen", "Air conditioning"],
   },
-]
+];
 
 export default function PropertiesPage() {
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [filteredProperties, setFilteredProperties] = useState(properties)
-  const [sortOption, setSortOption] = useState("recommended")
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [filteredProperties, setFilteredProperties] = useState(properties);
+  const [sortOption, setSortOption] = useState("recommended");
 
   const handleSort = (option: string) => {
-    setSortOption(option)
-    let sorted = [...filteredProperties]
+    setSortOption(option);
+    let sorted = [...filteredProperties];
 
     switch (option) {
       case "price-low":
-        sorted.sort((a, b) => a.price - b.price)
-        break
+        sorted.sort((a, b) => a.price - b.price);
+        break;
       case "price-high":
-        sorted.sort((a, b) => b.price - a.price)
-        break
+        sorted.sort((a, b) => b.price - a.price);
+        break;
       case "rating":
-        sorted.sort((a, b) => b.rating - a.rating)
-        break
+        sorted.sort((a, b) => b.rating - a.rating);
+        break;
       default:
         // Default sorting (recommended)
-        sorted = [...properties]
+        sorted = [...properties];
     }
 
-    setFilteredProperties(sorted)
-  }
+    setFilteredProperties(sorted);
+  };
 
   const handleFilter = (filters: any) => {
-    let results = [...properties]
+    let results = [...properties];
 
     // Filter by price range
     if (filters.priceRange) {
       results = results.filter(
-        (property) => property.price >= filters.priceRange[0] && property.price <= filters.priceRange[1],
-      )
+        (property) =>
+          property.price >= filters.priceRange[0] &&
+          property.price <= filters.priceRange[1]
+      );
     }
 
     // Filter by bedrooms
     if (filters.bedrooms) {
-      results = results.filter((property) => property.bedrooms >= filters.bedrooms)
+      results = results.filter(
+        (property) => property.bedrooms >= filters.bedrooms
+      );
     }
 
     // Filter by bathrooms
     if (filters.bathrooms) {
-      results = results.filter((property) => property.bathrooms >= filters.bathrooms)
+      results = results.filter(
+        (property) => property.bathrooms >= filters.bathrooms
+      );
     }
 
     // Filter by amenities
     if (filters.amenities && filters.amenities.length > 0) {
       results = results.filter((property) =>
-        filters.amenities.every((amenity: string) => property.amenities.includes(amenity)),
-      )
+        filters.amenities.every((amenity: string) =>
+          property.amenities.includes(amenity)
+        )
+      );
     }
 
-    setFilteredProperties(results)
-  }
+    setFilteredProperties(results);
+  };
 
   return (
-    <main className="container px-4 py-8 md:px-6 md:py-12">
+    <main className="container px-4 py-8 md:px-6 md:py-12 lg:px-8">
       <h1 className="mb-6 text-3xl font-bold">Find Your Perfect Stay</h1>
 
       {/* Search and Filter Bar */}
@@ -218,7 +234,9 @@ export default function PropertiesPage() {
             <Button
               variant="ghost"
               size="icon"
-              className={`rounded-none ${viewMode === "grid" ? "bg-muted" : ""}`}
+              className={`rounded-none ${
+                viewMode === "grid" ? "bg-muted" : ""
+              }`}
               onClick={() => setViewMode("grid")}
             >
               <Grid className="h-4 w-4" />
@@ -227,7 +245,9 @@ export default function PropertiesPage() {
             <Button
               variant="ghost"
               size="icon"
-              className={`rounded-none ${viewMode === "list" ? "bg-muted" : ""}`}
+              className={`rounded-none ${
+                viewMode === "list" ? "bg-muted" : ""
+              }`}
               onClick={() => setViewMode("list")}
             >
               <List className="h-4 w-4" />
@@ -250,9 +270,11 @@ export default function PropertiesPage() {
         <div className="flex-1">
           {/* Desktop Sort and View Options */}
           <div className="mb-6 hidden items-center justify-between md:flex">
-            <p className="text-muted-foreground">{filteredProperties.length} properties found</p>
+            <p className="text-muted-foreground">
+              {filteredProperties.length} properties found
+            </p>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
+              {/* <div className="flex items-center gap-2">
                 <span className="text-sm font-medium">Sort by:</span>
                 <select
                   className="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -264,13 +286,33 @@ export default function PropertiesPage() {
                   <option value="price-high">Price: High to Low</option>
                   <option value="rating">Top Rated</option>
                 </select>
-              </div>
+              </div> */}
+              <span className="text-sm font-medium">Sort by:</span>
 
+              <Select defaultValue="recommended">
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Sort by:" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="recommended">Recommended</SelectItem>
+                    <SelectItem value="price-low">
+                      Price: Low to High
+                    </SelectItem>
+                    <SelectItem value="price-high">
+                      Price: High to Low
+                    </SelectItem>
+                    <SelectItem value="rating">Top Rated</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
               <div className="flex rounded-md border border-input">
                 <Button
                   variant="ghost"
                   size="icon"
-                  className={`rounded-none ${viewMode === "grid" ? "bg-muted" : ""}`}
+                  className={`rounded-none ${
+                    viewMode === "grid" ? "bg-muted" : ""
+                  }`}
                   onClick={() => setViewMode("grid")}
                 >
                   <Grid className="h-4 w-4" />
@@ -279,7 +321,9 @@ export default function PropertiesPage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className={`rounded-none ${viewMode === "list" ? "bg-muted" : ""}`}
+                  className={`rounded-none ${
+                    viewMode === "list" ? "bg-muted" : ""
+                  }`}
                   onClick={() => setViewMode("list")}
                 >
                   <List className="h-4 w-4" />
@@ -292,9 +336,15 @@ export default function PropertiesPage() {
           {filteredProperties.length === 0 ? (
             <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
               <Search className="mb-4 h-12 w-12 text-muted-foreground" />
-              <h3 className="mb-2 text-xl font-semibold">No properties found</h3>
-              <p className="mb-6 text-muted-foreground">Try adjusting your filters to find more properties.</p>
-              <Button onClick={() => handleFilter({})}>Clear all filters</Button>
+              <h3 className="mb-2 text-xl font-semibold">
+                No properties found
+              </h3>
+              <p className="mb-6 text-muted-foreground">
+                Try adjusting your filters to find more properties.
+              </p>
+              <Button onClick={() => handleFilter({})}>
+                Clear all filters
+              </Button>
             </div>
           ) : viewMode === "grid" ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -315,7 +365,10 @@ export default function PropertiesPage() {
           ) : (
             <div className="space-y-4">
               {filteredProperties.map((property) => (
-                <div key={property.id} className="flex flex-col overflow-hidden rounded-lg border sm:flex-row">
+                <div
+                  key={property.id}
+                  className="flex flex-col overflow-hidden rounded-lg border sm:flex-row"
+                >
                   <div className="relative h-48 w-full sm:h-auto sm:w-1/3">
                     <img
                       src={property.imageUrl || "/placeholder.svg"}
@@ -350,16 +403,22 @@ export default function PropertiesPage() {
                             clipRule="evenodd"
                           />
                         </svg>
-                        <span className="text-sm font-medium">{property.rating}</span>
-                        <span className="ml-1 text-xs text-muted-foreground">({property.reviewCount})</span>
+                        <span className="text-sm font-medium">
+                          {property.rating}
+                        </span>
+                        <span className="ml-1 text-xs text-muted-foreground">
+                          ({property.reviewCount})
+                        </span>
                       </div>
                     </div>
                     <div className="mt-2 flex flex-wrap gap-2">
                       <div className="rounded-md bg-muted px-2 py-1 text-xs">
-                        {property.bedrooms} bedroom{property.bedrooms !== 1 && "s"}
+                        {property.bedrooms} bedroom
+                        {property.bedrooms !== 1 && "s"}
                       </div>
                       <div className="rounded-md bg-muted px-2 py-1 text-xs">
-                        {property.bathrooms} bathroom{property.bathrooms !== 1 && "s"}
+                        {property.bathrooms} bathroom
+                        {property.bathrooms !== 1 && "s"}
                       </div>
                       <div className="rounded-md bg-muted px-2 py-1 text-xs">
                         {property.guests} guest{property.guests !== 1 && "s"}
@@ -367,7 +426,10 @@ export default function PropertiesPage() {
                     </div>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {property.amenities.slice(0, 3).map((amenity) => (
-                        <div key={amenity} className="rounded-md bg-muted px-2 py-1 text-xs">
+                        <div
+                          key={amenity}
+                          className="rounded-md bg-muted px-2 py-1 text-xs"
+                        >
                           {amenity}
                         </div>
                       ))}
@@ -380,7 +442,10 @@ export default function PropertiesPage() {
                     <div className="mt-auto flex items-center justify-between pt-4">
                       <div>
                         <span className="font-semibold">${property.price}</span>
-                        <span className="text-sm text-muted-foreground"> / night</span>
+                        <span className="text-sm text-muted-foreground">
+                          {" "}
+                          / night
+                        </span>
                       </div>
                       <Button asChild>
                         <a href={`/properties/${property.id}`}>View Details</a>
@@ -410,7 +475,11 @@ export default function PropertiesPage() {
                 </svg>
                 <span className="sr-only">Previous page</span>
               </Button>
-              <Button variant="outline" size="sm" className="bg-primary text-primary-foreground">
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-primary text-primary-foreground"
+              >
                 1
               </Button>
               <Button variant="outline" size="sm">
@@ -439,6 +508,5 @@ export default function PropertiesPage() {
         </div>
       </div>
     </main>
-  )
+  );
 }
-

@@ -42,7 +42,7 @@ export default function SignUpPage() {
 
   return (
     <main className="container flex flex-col items-center justify-center px-4 py-12 md:py-24">
-      <Card className="mx-auto w-full max-w-md">
+      <Card className="mx-auto w-full max-w-lg">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
           <CardDescription>Sign up to start booking or listing your property</CardDescription>

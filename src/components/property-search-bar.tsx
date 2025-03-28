@@ -1,27 +1,30 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { CalendarIcon, MapPinIcon, SearchIcon, UserIcon } from "lucide-react"
+import { useState } from "react";
+import { CalendarIcon, MapPinIcon, SearchIcon, UserIcon } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { DatePickerWithRange } from "@/components/date-range-picker"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { DatePickerWithRange } from "@/components/date-range-picker";
 
 export function PropertySearchBar() {
-  const [destination, setDestination] = useState("")
-  const [guests, setGuests] = useState(2)
+  const [destination, setDestination] = useState("");
+  const [guests, setGuests] = useState(2);
 
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // Handle search logic here
-    console.log("Searching for:", { destination, guests })
-  }
+    console.log("Searching for:", { destination, guests });
+  };
 
   return (
-    <div className="rounded-lg border bg-card p-4 shadow-sm">
-      <form onSubmit={handleSearch} className="grid gap-4 md:grid-cols-4">
+    <div className="rounded-lg border bg-card p-4 lg:p-6 shadow-sm">
+      <form
+        onSubmit={handleSearch}
+        className="grid gap-4 md:gap-6 lg:gap-8 md:grid-cols-5"
+      >
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sm font-medium">
             <MapPinIcon className="h-4 w-4" />
@@ -64,6 +67,5 @@ export function PropertySearchBar() {
         </div>
       </form>
     </div>
-  )
+  );
 }
-
