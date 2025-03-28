@@ -19,6 +19,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
 
 export default function SignUpPage() {
   const [userType, setUserType] = useState<"guest" | "host">("guest");
@@ -54,16 +55,37 @@ export default function SignUpPage() {
     if (formData.password !== formData.confirmPassword) {
       setMessage("Error: Passwords do not match");
       console.log("Error: Passwords do not match");
+      toast.error("Passwords do not match", {
+        closeButton: true,
+        duration: 2000,
+        style: {
+          color: "red",
+        },
+      });
       return false;
     }
     if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
       setMessage("Error: Invalid email address");
       console.log("Error: Invalid email address");
+      toast.error("Invalid email address", {
+        closeButton: true,
+        duration: 2000,
+        style: {
+          color: "red",
+        },
+      });
       return false;
     }
     if (formData.phoneNumber && !formData.phoneNumber.match(/^\d{10,15}$/)) {
       setMessage("Error: Invalid phone number");
       console.log("Error: Invalid phone number");
+      toast.error("Invalid phone number", {
+        closeButton: true,
+        duration: 2000,
+        style: {
+          color: "red",
+        },
+      });
       return false;
     }
     return true;

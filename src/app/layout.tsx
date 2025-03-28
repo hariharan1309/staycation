@@ -31,7 +31,7 @@ export default function RootLayout({
         >
           <Header />
           {children}
-          {/* <Toaster /> */}
+          <Toaster />
           <Footer />
         </ThemeProvider>
       </body>
@@ -40,3 +40,4 @@ export default function RootLayout({
 }
 
 import "./globals.css";
+import { Toaster } from "sonner";
