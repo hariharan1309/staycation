@@ -106,7 +106,7 @@ export default function ProfilePage() {
                 <h3 className="mb-4 text-sm font-medium">Quick Actions</h3>
                 <div className="space-y-2">
                   <Button variant="outline" className="w-full justify-start" asChild>
-                    <Link href="/dashboard/properties/new">
+                    <Link href="/properties/new">
                       <Plus className="mr-2 h-4 w-4" />
                       Add New Property
                     </Link>

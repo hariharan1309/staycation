@@ -135,7 +135,7 @@ export function ProfileProperties() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-2xl font-bold">Your Properties</h2>
         <Button asChild>
-          <Link href="/dashboard/properties/new">
+          <Link href="/properties/new">
             <Plus className="mr-2 h-4 w-4" />
             Add New Property
           </Link>
@@ -322,7 +322,7 @@ export function ProfileProperties() {
                 <h3 className="mb-2 text-xl font-semibold">No active properties</h3>
                 <p className="mb-6 text-muted-foreground">You don't have any active properties.</p>
                 <Button asChild>
-                  <Link href="/dashboard/properties/new">
+                  <Link href="/properties/new">
                     <Plus className="mr-2 h-4 w-4" />
                     Add New Property
                   </Link>

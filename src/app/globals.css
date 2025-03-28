@@ -113,10 +113,19 @@
 }
 
 @layer base {
+  .text-balance {
+    text-wrap: balance;
+  }
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/50 text-balance;
   }
   body {
     @apply bg-background text-foreground;
   }
+
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  
+
 }

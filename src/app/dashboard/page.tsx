@@ -105,7 +105,7 @@ export default function DashboardPage() {
           <SidebarFooter>
             <div className="p-4">
               <Button className="w-full" asChild>
-                <Link href="/dashboard/properties/new">
+                <Link href="/properties/new">
                   <Plus className="mr-2 h-4 w-4" />
                   Add Property
                 </Link>
