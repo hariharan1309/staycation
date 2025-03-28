@@ -32,7 +32,7 @@ export default function SignUpPage() {
     agreeTerms: false,
     receiveUpdates: false,
   });
-
+  const [message, setMessage] = useState<string | null>(null);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -41,10 +41,39 @@ export default function SignUpPage() {
     });
   };
 
+  const formValidate = (formData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    phoneNumber: string;
+    agreeTerms: boolean;
+    receiveUpdates: boolean;
+  }) => {
+    if (formData.password !== formData.confirmPassword) {
+      setMessage("Error: Passwords do not match");
+      console.log("Error: Passwords do not match");
+      return false;
+    }
+    if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      setMessage("Error: Invalid email address");
+      console.log("Error: Invalid email address");
+      return false;
+    }
+    if (formData.phoneNumber && !formData.phoneNumber.match(/^\d{10,15}$/)) {
+      setMessage("Error: Invalid phone number");
+      console.log("Error: Invalid phone number");
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
     console.log("Form submitted:", { userType, ...formData });
+    // validation
+    formValidate(formData);
   };
 
   return (
@@ -121,7 +150,7 @@ export default function SignUpPage() {
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="firstName">First Name *</Label>
                 <Input
                   id="firstName"
                   name="firstName"
@@ -137,13 +166,12 @@ export default function SignUpPage() {
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleInputChange}
-                  required
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Email *</Label>
               <Input
                 id="email"
                 name="email"
@@ -153,7 +181,19 @@ export default function SignUpPage() {
                 required
               />
             </div>
-
+            <div className="space-y-2">
+              <Label htmlFor="phoneNumber">
+                Phone Number {userType === "host" && "*"}
+              </Label>
+              <Input
+                id="phoneNumber"
+                name="phoneNumber"
+                type="tel"
+                value={formData.phoneNumber}
+                onChange={handleInputChange}
+                required={userType === "host"}
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
@@ -163,6 +203,7 @@ export default function SignUpPage() {
                 value={formData.password}
                 onChange={handleInputChange}
                 required
+                minLength={8}
               />
             </div>
 
@@ -175,22 +216,9 @@ export default function SignUpPage() {
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 required
+                minLength={8}
               />
             </div>
-
-            {userType === "host" && (
-              <div className="space-y-2">
-                <Label htmlFor="phoneNumber">Phone Number</Label>
-                <Input
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  type="tel"
-                  value={formData.phoneNumber}
-                  onChange={handleInputChange}
-                  required={userType === "host"}
-                />
-              </div>
-            )}
 
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
@@ -201,7 +229,6 @@ export default function SignUpPage() {
                   onCheckedChange={(checked) =>
                     setFormData({ ...formData, agreeTerms: checked === true })
                   }
-                  required
                 />
                 <Label htmlFor="agreeTerms" className="text-sm font-normal">
                   I agree to the{" "}
