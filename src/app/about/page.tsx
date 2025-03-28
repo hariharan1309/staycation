@@ -1,9 +1,9 @@
-import Image from "next/image"
-import Link from "next/link"
-import { ArrowRight, CheckCircle2, Users } from "lucide-react"
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, CheckCircle2, Users } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function AboutPage() {
   return (
@@ -11,10 +11,13 @@ export default function AboutPage() {
       <section className="mb-12 md:mb-20">
         <div className="grid gap-6 md:grid-cols-2 md:gap-12">
           <div className="flex flex-col justify-center">
-            <h1 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">About VacationStay</h1>
+            <h1 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
+              About StayCation
+            </h1>
             <p className="mb-6 text-lg text-muted-foreground">
-              We're on a mission to make travel more accessible, authentic, and memorable for everyone. Founded in 2023,
-              VacationStay connects travelers with unique accommodations around the world.
+              We're on a mission to make travel more accessible, authentic, and
+              memorable for everyone. Founded in 2023, StayCation connects
+              travelers with unique accommodations around the world.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild>
@@ -29,7 +32,12 @@ export default function AboutPage() {
             </div>
           </div>
           <div className="relative aspect-video overflow-hidden rounded-lg md:aspect-square">
-            <Image src="/placeholder.svg?height=600&width=600" alt="Our team" fill className="object-cover" />
+            <Image
+              src="/placeholder.svg?height=600&width=600"
+              alt="Our team"
+              fill
+              className="object-cover"
+            />
           </div>
         </div>
       </section>
@@ -38,7 +46,8 @@ export default function AboutPage() {
         <div className="text-center">
           <h2 className="mb-4 text-3xl font-bold tracking-tight">Our Story</h2>
           <p className="mx-auto mb-8 max-w-3xl text-lg text-muted-foreground">
-            VacationStay was born from a simple idea: travel should be personal, authentic, and accessible to everyone.
+            StayCation was born from a simple idea: travel should be personal,
+            authentic, and accessible to everyone.
           </p>
         </div>
         <div className="grid gap-8 md:grid-cols-3">
@@ -60,10 +69,13 @@ export default function AboutPage() {
                   />
                 </svg>
               </div>
-              <h3 className="mb-2 text-xl font-semibold">2023: The Beginning</h3>
+              <h3 className="mb-2 text-xl font-semibold">
+                2023: The Beginning
+              </h3>
               <p className="text-muted-foreground">
-                Our founders, avid travelers themselves, recognized a gap in the market for a platform that truly
-                connected travelers with unique, local experiences.
+                Our founders, avid travelers themselves, recognized a gap in the
+                market for a platform that truly connected travelers with
+                unique, local experiences.
               </p>
             </CardContent>
           </Card>
@@ -87,8 +99,9 @@ export default function AboutPage() {
               </div>
               <h3 className="mb-2 text-xl font-semibold">2024: Rapid Growth</h3>
               <p className="text-muted-foreground">
-                Within our first year, we expanded to over 50 countries, partnering with thousands of property owners
-                who shared our vision for authentic travel experiences.
+                Within our first year, we expanded to over 50 countries,
+                partnering with thousands of property owners who shared our
+                vision for authentic travel experiences.
               </p>
             </CardContent>
           </Card>
@@ -112,8 +125,9 @@ export default function AboutPage() {
               </div>
               <h3 className="mb-2 text-xl font-semibold">Today: Our Mission</h3>
               <p className="text-muted-foreground">
-                Today, we continue to innovate and expand, always staying true to our core mission: connecting travelers
-                with authentic, memorable experiences around the world.
+                Today, we continue to innovate and expand, always staying true
+                to our core mission: connecting travelers with authentic,
+                memorable experiences around the world.
               </p>
             </CardContent>
           </Card>
@@ -123,18 +137,26 @@ export default function AboutPage() {
       <section className="mb-12 md:mb-20">
         <div className="grid gap-8 md:grid-cols-2">
           <div className="relative aspect-video overflow-hidden rounded-lg md:aspect-square">
-            <Image src="/placeholder.svg?height=600&width=600" alt="Our values" fill className="object-cover" />
+            <Image
+              src="/placeholder.svg?height=600&width=600"
+              alt="Our values"
+              fill
+              className="object-cover"
+            />
           </div>
           <div className="flex flex-col justify-center">
-            <h2 className="mb-6 text-3xl font-bold tracking-tight">Our Values</h2>
+            <h2 className="mb-6 text-3xl font-bold tracking-tight">
+              Our Values
+            </h2>
             <div className="space-y-4">
               <div className="flex items-start gap-4">
                 <CheckCircle2 className="mt-1 h-6 w-6 text-primary" />
                 <div>
                   <h3 className="font-semibold">Authenticity</h3>
                   <p className="text-muted-foreground">
-                    We believe in real experiences and connections. Every property on our platform offers something
-                    unique and authentic.
+                    We believe in real experiences and connections. Every
+                    property on our platform offers something unique and
+                    authentic.
                   </p>
                 </div>
               </div>
@@ -143,8 +165,8 @@ export default function AboutPage() {
                 <div>
                   <h3 className="font-semibold">Accessibility</h3>
                   <p className="text-muted-foreground">
-                    Travel should be for everyone. We work to make unique accommodations available at a range of price
-                    points.
+                    Travel should be for everyone. We work to make unique
+                    accommodations available at a range of price points.
                   </p>
                 </div>
               </div>
@@ -153,8 +175,8 @@ export default function AboutPage() {
                 <div>
                   <h3 className="font-semibold">Community</h3>
                   <p className="text-muted-foreground">
-                    We foster a global community of travelers and hosts who share experiences, stories, and a passion
-                    for exploration.
+                    We foster a global community of travelers and hosts who
+                    share experiences, stories, and a passion for exploration.
                   </p>
                 </div>
               </div>
@@ -163,8 +185,8 @@ export default function AboutPage() {
                 <div>
                   <h3 className="font-semibold">Sustainability</h3>
                   <p className="text-muted-foreground">
-                    We're committed to promoting sustainable travel practices that respect local communities and the
-                    environment.
+                    We're committed to promoting sustainable travel practices
+                    that respect local communities and the environment.
                   </p>
                 </div>
               </div>
@@ -177,7 +199,8 @@ export default function AboutPage() {
         <div className="text-center">
           <h2 className="mb-4 text-3xl font-bold tracking-tight">Our Team</h2>
           <p className="mx-auto mb-8 max-w-3xl text-lg text-muted-foreground">
-            Meet the passionate individuals behind VacationStay who are dedicated to transforming the way people travel.
+            Meet the passionate individuals behind StayCation who are dedicated
+            to transforming the way people travel.
           </p>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -211,10 +234,13 @@ export default function AboutPage() {
       <section className="rounded-lg bg-muted p-8 md:p-12">
         <div className="grid gap-6 md:grid-cols-2 md:gap-12">
           <div className="flex flex-col justify-center">
-            <h2 className="mb-4 text-3xl font-bold tracking-tight">Join Our Community</h2>
+            <h2 className="mb-4 text-3xl font-bold tracking-tight">
+              Join Our Community
+            </h2>
             <p className="mb-6 text-muted-foreground">
-              Whether you're looking to book your next adventure or share your property with travelers from around the
-              world, we invite you to join our growing community.
+              Whether you're looking to book your next adventure or share your
+              property with travelers from around the world, we invite you to
+              join our growing community.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild>
@@ -234,6 +260,5 @@ export default function AboutPage() {
         </div>
       </section>
     </main>
-  )
+  );
 }
-

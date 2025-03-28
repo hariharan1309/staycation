@@ -85,7 +85,7 @@ export default function ContactPage() {
                   <Button onClick={() => setIsSubmitted(false)}>Send Another Message</Button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6 md:p-8">
                   <div className="space-y-2">
                     <Label htmlFor="name">Your Name</Label>
                     <Input id="name" name="name" value={formData.name} onChange={handleInputChange} required />
@@ -150,13 +150,13 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold">Email Us</h3>
                     <p className="text-muted-foreground">
-                      <Link href="mailto:support@vacationstay.com" className="hover:underline">
-                        support@vacationstay.com
+                      <Link href="mailto:support@staycation.com" className="hover:underline">
+                        support@staycation.com
                       </Link>
                     </p>
                     <p className="text-muted-foreground">
-                      <Link href="mailto:info@vacationstay.com" className="hover:underline">
-                        info@vacationstay.com
+                      <Link href="mailto:info@staycation.com" className="hover:underline">
+                        info@staycation.com
                       </Link>
                     </p>
                   </div>

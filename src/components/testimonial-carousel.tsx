@@ -28,7 +28,7 @@ const testimonials = [
     id: "3",
     name: "Emma Rodriguez",
     location: "Sydney, Australia",
-    text: "This was our third time using VacationStay, and it never disappoints. The apartment in Paris was in the perfect location, and the amenities were top-notch.",
+    text: "This was our third time using StayCation, and it never disappoints. The apartment in Paris was in the perfect location, and the amenities were top-notch.",
     rating: 4,
     avatar: "/placeholder.svg?height=80&width=80",
   },

@@ -12,7 +12,7 @@ export function Footer() {
         <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <Link href="/" className="inline-block">
-              <span className="text-xl font-bold">VacationStay</span>
+              <span className="text-xl font-bold">StayCation</span>
             </Link>
             <p className="mt-4 max-w-xs text-sm text-muted-foreground">
               Discover and book unique accommodations around the world.
@@ -107,7 +107,7 @@ export function Footer() {
 
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} VacationStay. All rights reserved.
+            © {new Date().getFullYear()} StayCation. All rights reserved.
           </p>
           <div className="flex gap-4 text-xs">
             <Link href="/terms" className="text-muted-foreground hover:text-foreground">

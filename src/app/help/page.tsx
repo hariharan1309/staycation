@@ -26,7 +26,7 @@ export default function HelpPage() {
       <div className="mx-auto max-w-4xl">
         <div className="mb-8 text-center">
           <h1 className="mb-2 text-3xl font-bold tracking-tight md:text-4xl">Help Center</h1>
-          <p className="text-muted-foreground">Find answers to common questions and learn how to use VacationStay.</p>
+          <p className="text-muted-foreground">Find answers to common questions and learn how to use StayCation.</p>
         </div>
 
         <div className="mb-8">
@@ -264,7 +264,7 @@ export default function HelpPage() {
                   You can contact our customer support team through several channels:
                 </p>
                 <ul className="ml-6 mt-2 list-disc text-muted-foreground">
-                  <li>Email: support@vacationstay.com</li>
+                  <li>Email: support@staycation.com</li>
                   <li>Phone: +1 (800) 123-4567 (available 24/7)</li>
                   <li>Live Chat: Available on our website and mobile app</li>
                   <li>Help Center: Submit a request through our online form</li>
@@ -287,7 +287,7 @@ export default function HelpPage() {
               <Link href="/contact">Contact Support</Link>
             </Button>
             <Button variant="outline" asChild>
-              <a href="mailto:support@vacationstay.com">Email Us</a>
+              <a href="mailto:support@staycation.com">Email Us</a>
             </Button>
           </div>
         </div>
