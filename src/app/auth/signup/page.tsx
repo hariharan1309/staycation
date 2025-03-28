@@ -91,11 +91,26 @@ export default function SignUpPage() {
     return true;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Form submitted:", { userType, ...formData });
     // validation
     formValidate(formData);
+    try {
+      const user = await fetch("/api/auth/register", {
+        method: "POST",
+        body: JSON.stringify({ userType, ...formData }),
+      });
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong", {
+        closeButton: true,
+        duration: 2000,
+        style: {
+          color: "red",
+        },
+      });
+    }
   };
 
   return (
