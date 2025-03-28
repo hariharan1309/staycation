@@ -1,20 +1,27 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import Link from "next/link"
+import { useState } from "react";
+import Link from "next/link";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function SignUpPage() {
-  const [userType, setUserType] = useState<"guest" | "host">("guest")
+  const [userType, setUserType] = useState<"guest" | "host">("guest");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -24,48 +31,55 @@ export default function SignUpPage() {
     phoneNumber: "",
     agreeTerms: false,
     receiveUpdates: false,
-  })
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
       [name]: type === "checkbox" ? checked : value,
-    })
-  }
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // Handle form submission
-    console.log("Form submitted:", { userType, ...formData })
-  }
+    console.log("Form submitted:", { userType, ...formData });
+  };
 
   return (
-    <main className="container flex flex-col items-center justify-center px-4 py-12 md:py-24">
+    <main className="container flex flex-col items-center justify-center px-4 py-6 md:py-10 lg:py-16">
       <Card className="mx-auto w-full max-w-lg">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
-          <CardDescription>Sign up to start booking or listing your property</CardDescription>
+          <CardTitle className="text-2xl font-bold">
+            Create an account
+          </CardTitle>
+          <CardDescription>
+            Sign up to start booking or listing your property
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="guest" onValueChange={(value) => setUserType(value as "guest" | "host")}>
+          <Tabs
+            defaultValue="guest"
+            onValueChange={(value) => setUserType(value as "guest" | "host")}
+          >
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="guest">I'm a Guest</TabsTrigger>
               <TabsTrigger value="host">I'm a Host</TabsTrigger>
             </TabsList>
             <TabsContent value="guest">
-              <div className="mt-4 text-sm text-muted-foreground">
-                Create an account to book properties, save favorites, and manage your trips.
-              </div>
+              <p className="my-4 text-sm text-muted-foreground col-span-full">
+                Create an account to book properties and manage your trips.
+              </p>
             </TabsContent>
             <TabsContent value="host">
-              <div className="mt-4 text-sm text-muted-foreground">
-                Create an account to list your property, manage bookings, and receive payments.
-              </div>
+              <p className="my-4 text-sm text-muted-foreground min-w-[90%]">
+                Create an account to list your property and manage bookings.
+              </p>
             </TabsContent>
           </Tabs>
 
-          <div className="mt-6 space-y-2">
+          {/* <div className="mt-6 space-y-2">
             <Button variant="outline" className="w-full">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 h-4 w-4">
                 <path
@@ -93,16 +107,16 @@ export default function SignUpPage() {
               </svg>
               Continue with Facebook
             </Button>
-          </div>
+          </div> */}
 
-          <div className="relative my-6">
+          {/* <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <Separator className="w-full" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
             </div>
-          </div>
+          </div> */}
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="grid grid-cols-2 gap-4">
@@ -118,7 +132,13 @@ export default function SignUpPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lastName">Last Name</Label>
-                <Input id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} required />
+                <Input
+                  id="lastName"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  required
+                />
               </div>
             </div>
 
@@ -178,7 +198,9 @@ export default function SignUpPage() {
                   id="agreeTerms"
                   name="agreeTerms"
                   checked={formData.agreeTerms}
-                  onCheckedChange={(checked) => setFormData({ ...formData, agreeTerms: checked === true })}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, agreeTerms: checked === true })
+                  }
                   required
                 />
                 <Label htmlFor="agreeTerms" className="text-sm font-normal">
@@ -187,7 +209,10 @@ export default function SignUpPage() {
                     Terms of Service
                   </Link>{" "}
                   and{" "}
-                  <Link href="/privacy" className="text-primary hover:underline">
+                  <Link
+                    href="/privacy"
+                    className="text-primary hover:underline"
+                  >
                     Privacy Policy
                   </Link>
                 </Label>
@@ -200,7 +225,12 @@ export default function SignUpPage() {
                   id="receiveUpdates"
                   name="receiveUpdates"
                   checked={formData.receiveUpdates}
-                  onCheckedChange={(checked) => setFormData({ ...formData, receiveUpdates: checked === true })}
+                  onCheckedChange={(checked) =>
+                    setFormData({
+                      ...formData,
+                      receiveUpdates: checked === true,
+                    })
+                  }
                 />
                 <Label htmlFor="receiveUpdates" className="text-sm font-normal">
                   I want to receive updates about promotions and new features
@@ -223,6 +253,5 @@ export default function SignUpPage() {
         </CardFooter>
       </Card>
     </main>
-  )
+  );
 }
-

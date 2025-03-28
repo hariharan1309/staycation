@@ -1,9 +1,16 @@
-import Link from "next/link"
+import Link from "next/link";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function LoginPage() {
   return (
@@ -11,10 +18,12 @@ export default function LoginPage() {
       <Card className="mx-auto w-full max-w-lg">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
-          <CardDescription>Enter your email and password to login to your account</CardDescription>
+          <CardDescription>
+            Enter your email and password to login to your account
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <Button variant="outline" className="w-full">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 h-4 w-4">
                 <path
@@ -42,30 +51,38 @@ export default function LoginPage() {
               </svg>
               Continue with Facebook
             </Button>
-          </div>
+          </div> */}
 
-          <div className="relative">
+          {/* <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <Separator className="w-full" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
             </div>
-          </div>
+          </div> */}
 
-          <form className="space-y-4">
+          <form className="space-y-4 p-2 md:p-3 lg:p-4">
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
                 Email
               </label>
-              <Input id="email" type="email" placeholder="m@example.com" required />
+              <Input
+                id="email"
+                type="email"
+                placeholder="m@example.com"
+                required
+              />
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label htmlFor="password" className="text-sm font-medium">
                   Password
                 </label>
-                <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline">
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-xs text-primary hover:underline"
+                >
                   Forgot password?
                 </Link>
               </div>
@@ -86,6 +103,5 @@ export default function LoginPage() {
         </CardFooter>
       </Card>
     </main>
-  )
+  );
 }
-
