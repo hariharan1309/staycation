@@ -33,7 +33,7 @@ export function Header() {
       <div className="container flex h-16 items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold">VacationStay</span>
+            <span className="text-2xl font-bold">VacationStay</span>
           </Link>
         </div>
 
@@ -43,7 +43,7 @@ export function Header() {
             <Link
               key={route.href}
               href={route.href}
-              className={`text-sm font-medium transition-colors hover:text-primary ${
+              className={`text-base font-medium transition-colors hover:text-primary ${
                 pathname === route.href
                   ? "text-primary"
                   : "text-muted-foreground"
@@ -110,7 +110,7 @@ export function Header() {
                 {route.label}
               </Link>
             ))}
-            <div className="flex items-center gap-2 pt-4">
+            <div className="flex items-center gap-4 pt-4">
               <Button variant="outline" asChild className="w-full">
                 <Link href="/auth/login">Log in</Link>
               </Button>

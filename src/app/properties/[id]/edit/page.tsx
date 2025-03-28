@@ -79,7 +79,7 @@ export default function EditPropertyPage() {
     <main className="container px-4 py-8 md:px-6 md:py-12">
       <div className="mb-6 flex items-center gap-2">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/dashboard/properties">
+          <Link href="/properties">
             <ArrowLeft className="h-5 w-5" />
             <span className="sr-only">Back to properties</span>
           </Link>
@@ -98,7 +98,7 @@ export default function EditPropertyPage() {
           <Tabs
             value={activeTab}
             onValueChange={setActiveTab}
-            className="w-full px-10"
+            className="w-full px-2 md:p-5 lg:px-10"
           >
             <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="basic">Basic Info</TabsTrigger>

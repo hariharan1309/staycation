@@ -235,10 +235,10 @@ export function ProfileProperties() {
                           <Link href={`/properties/${property.id}`}>View Listing</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                          <Link href={`/dashboard/properties/${property.id}/edit`}>Edit Property</Link>
+                          <Link href={`/properties/${property.id}/edit`}>Edit Property</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                          <Link href={`/dashboard/properties/${property.id}/calendar`}>Manage Calendar</Link>
+                          <Link href={`/properties/${property.id}/calendar`}>Manage Calendar</Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
@@ -286,7 +286,7 @@ export function ProfileProperties() {
                   </CardContent>
                   <CardFooter className="flex justify-between border-t p-4">
                     <Button variant="outline" size="sm" asChild>
-                      <Link href={`/dashboard/properties/${property.id}/edit`}>
+                      <Link href={`/properties/${property.id}/edit`}>
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
                       </Link>
@@ -357,10 +357,10 @@ export function ProfileProperties() {
                             <Link href={`/properties/${property.id}`}>View Listing</Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
-                            <Link href={`/dashboard/properties/${property.id}/edit`}>Edit Property</Link>
+                            <Link href={`/properties/${property.id}/edit`}>Edit Property</Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
-                            <Link href={`/dashboard/properties/${property.id}/calendar`}>Manage Calendar</Link>
+                            <Link href={`/properties/${property.id}/calendar`}>Manage Calendar</Link>
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
@@ -408,7 +408,7 @@ export function ProfileProperties() {
                     </CardContent>
                     <CardFooter className="flex justify-between border-t p-4">
                       <Button variant="outline" size="sm" asChild>
-                        <Link href={`/dashboard/properties/${property.id}/edit`}>
+                        <Link href={`/properties/${property.id}/edit`}>
                           <Edit className="mr-2 h-4 w-4" />
                           Edit
                         </Link>
@@ -475,10 +475,10 @@ export function ProfileProperties() {
                             <Link href={`/properties/${property.id}`}>View Listing</Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
-                            <Link href={`/dashboard/properties/${property.id}/edit`}>Edit Property</Link>
+                            <Link href={`/properties/${property.id}/edit`}>Edit Property</Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
-                            <Link href={`/dashboard/properties/${property.id}/calendar`}>Manage Calendar</Link>
+                            <Link href={`/properties/${property.id}/calendar`}>Manage Calendar</Link>
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
@@ -526,7 +526,7 @@ export function ProfileProperties() {
                     </CardContent>
                     <CardFooter className="flex justify-between border-t p-4">
                       <Button variant="outline" size="sm" asChild>
-                        <Link href={`/dashboard/properties/${property.id}/edit`}>
+                        <Link href={`/properties/${property.id}/edit`}>
                           <Edit className="mr-2 h-4 w-4" />
                           Edit
                         </Link>

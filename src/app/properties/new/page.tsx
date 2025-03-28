@@ -79,7 +79,7 @@ export default function AddPropertyPage() {
     <main className="container px-4 py-8 md:px-6 md:py-12">
       <div className="mb-6 flex items-center gap-2">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/dashboard/properties">
+          <Link href="/properties">
             <ArrowLeft className="h-5 w-5" />
             <span className="sr-only">Back to properties</span>
           </Link>
