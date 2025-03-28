@@ -32,9 +32,9 @@ export default function Home() {
 
           {/* Search Bar */}
           <div className="w-full max-w-4xl rounded-lg bg-white p-4 shadow-lg">
-            <div className="grid gap-4 md:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-4 ">
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium">
+                <div className="flex items-center gap-2 text-sm lg:text-[15px] font-medium">
                   <MapPinIcon className="h-4 w-4" />
                   <span>Where</span>
                 </div>
@@ -42,7 +42,7 @@ export default function Home() {
               </div>
 
               <div className="space-y-2 md:col-span-2">
-                <div className="flex items-center gap-2 text-sm font-medium">
+                <div className="flex items-center gap-2 text-sm lg:text-[15px] font-medium">
                   <CalendarIcon className="h-4 w-4" />
                   <span>When</span>
                 </div>
@@ -50,7 +50,7 @@ export default function Home() {
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium">
+                <div className="flex items-center gap-2 text-sm lg:text-[15px] font-medium">
                   <UserIcon className="h-4 w-4" />
                   <span>Guests</span>
                 </div>
@@ -264,7 +264,7 @@ export default function Home() {
               </div>
               <div className="flex items-center justify-center">
                 <Image
-                  src="/placeholder.svg?height=300&width=400"
+                  src="/rent2.png?height=300&width=400"
                   alt="Property owner"
                   width={400}
                   height={300}

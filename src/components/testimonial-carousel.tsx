@@ -1,11 +1,12 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import { ChevronLeft, ChevronRight, Star } from "lucide-react"
+import { useState } from "react";
+import Image from "next/image";
+import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel";
 
 const testimonials = [
   {
@@ -40,29 +41,12 @@ const testimonials = [
     rating: 5,
     avatar: "/placeholder.svg?height=80&width=80",
   },
-]
+];
 
 export function TestimonialCarousel() {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const itemsPerPage = 3
-  const totalPages = Math.ceil(testimonials.length / itemsPerPage)
-
-  const handlePrevious = () => {
-    setCurrentIndex((prev) => (prev === 0 ? totalPages - 1 : prev - 1))
-  }
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev === totalPages - 1 ? 0 : prev + 1))
-  }
-
-  const visibleTestimonials = () => {
-    const start = currentIndex * itemsPerPage
-    return testimonials.slice(start, start + itemsPerPage)
-  }
-
   return (
     <div className="relative">
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {/* <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {visibleTestimonials().map((testimonial) => (
           <Card key={testimonial.id} className="border-none shadow-sm">
             <CardContent className="p-6">
@@ -116,8 +100,56 @@ export function TestimonialCarousel() {
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
-      )}
+      )} */}
+      <Carousel
+        opts={{
+          loop: true,
+          duration: 300,
+          
+        }}
+      >
+        <CarouselContent>
+          {testimonials.map((testimonial) => (
+            <CarouselItem
+              key={testimonial.id}
+              className="md:basis-1/2 lg:basis-1/3"
+            >
+              <Card className="border-none shadow-sm">
+                <CardContent className="p-6 h-[240px]">
+                  <div className="flex items-center gap-4">
+                    <Image
+                      src={testimonial.avatar || "/placeholder.svg"}
+                      alt={testimonial.name}
+                      width={50}
+                      height={50}
+                      className="rounded-full"
+                    />
+                    <div>
+                      <h4 className="font-semibold">{testimonial.name}</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {testimonial.location}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-4 flex">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-4 w-4 ${
+                          i < testimonial.rating
+                            ? "fill-primary text-primary"
+                            : "fill-muted text-muted"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <p className="mt-4 text-sm">{testimonial.text}</p>
+                </CardContent>
+              </Card>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
     </div>
-  )
+  );
 }
-
