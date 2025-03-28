@@ -1,24 +1,32 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Menu, X } from "lucide-react"
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  BuildingIcon,
+  HelpCircleIcon,
+  HomeIcon,
+  InfoIcon,
+  Menu,
+  MessageCircleIcon,
+  X,
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { ModeToggle } from "@/components/mode-toggle"
+import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const pathname = usePathname()
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   const routes = [
-    { href: "/", label: "Home" },
-    { href: "/properties", label: "Properties" },
-    { href: "/about", label: "About" },
-    { href: "/contact", label: "Contact" },
-    { href: "/help", label: "Help" },
-  ]
+    { href: "/", label: "Home", icon: <HomeIcon /> },
+    { href: "/properties", label: "Properties", icon: <BuildingIcon /> },
+    { href: "/about", label: "About", icon: <InfoIcon /> },
+    { href: "/contact", label: "Contact", icon: <MessageCircleIcon /> },
+    { href: "/help", label: "Help", icon:<HelpCircleIcon /> },
+  ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -36,7 +44,9 @@ export function Header() {
               key={route.href}
               href={route.href}
               className={`text-sm font-medium transition-colors hover:text-primary ${
-                pathname === route.href ? "text-primary" : "text-muted-foreground"
+                pathname === route.href
+                  ? "text-primary"
+                  : "text-muted-foreground"
               }`}
             >
               {route.label}
@@ -57,7 +67,12 @@ export function Header() {
           <ModeToggle />
 
           {/* Mobile Menu Button */}
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
             <Menu className="h-5 w-5" />
             <span className="sr-only">Toggle menu</span>
           </Button>
@@ -71,23 +86,31 @@ export function Header() {
             <Link href="/" className="flex items-center gap-2">
               <span className="text-xl font-bold">VacationStay</span>
             </Link>
-            <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(false)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsMenuOpen(false)}
+            >
               <X className="h-5 w-5" />
               <span className="sr-only">Close menu</span>
             </Button>
           </div>
-          <nav className="container grid gap-6 px-4 pb-8 pt-6">
+          <nav className="container bg-background grid gap-2 p-4">
             {routes.map((route) => (
               <Link
                 key={route.href}
                 href={route.href}
-                className={`text-lg font-medium ${pathname === route.href ? "text-primary" : "text-muted-foreground"}`}
+                className={`text-base font-medium ${
+                  pathname === route.href
+                    ? "text-primary"
+                    : "text-muted-foreground"
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {route.label}
               </Link>
             ))}
-            <div className="flex flex-col gap-2 pt-4">
+            <div className="flex items-center gap-2 pt-4">
               <Button variant="outline" asChild className="w-full">
                 <Link href="/auth/login">Log in</Link>
               </Button>
@@ -99,6 +122,5 @@ export function Header() {
         </div>
       )}
     </header>
-  )
+  );
 }
-

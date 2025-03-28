@@ -1,28 +1,43 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import Image from "next/image"
-import { CreditCard, Upload, Plus } from "lucide-react"
+import { useState } from "react";
+import Image from "next/image";
+import { CreditCard, Upload, Plus } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { Switch } from "@/components/ui/switch"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 interface ProfileSettingsProps {
-  userRole: "guest" | "owner"
+  userRole: "guest" | "owner";
 }
 
 export function ProfileSettings({ userRole }: ProfileSettingsProps) {
-  const [profileImage, setProfileImage] = useState("/placeholder.svg?height=120&width=120")
+  const [profileImage, setProfileImage] = useState(
+    "/placeholder.svg?height=120&width=120"
+  );
 
   const [personalInfo, setPersonalInfo] = useState({
     firstName: "John",
@@ -33,7 +48,7 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
     address: "123 Main St, San Francisco, CA 94103",
     country: "United States",
     language: "English",
-  })
+  });
 
   const [notificationSettings, setNotificationSettings] = useState({
     emailBookings: true,
@@ -42,48 +57,50 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
     pushBookings: true,
     pushPromotions: false,
     pushAccount: false,
-  })
+  });
 
   const [paymentMethod, setPaymentMethod] = useState({
     cardNumber: "**** **** **** 4242",
     cardName: "John Doe",
     expiryDate: "12/25",
     defaultMethod: true,
-  })
+  });
 
   const handlePersonalInfoChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setPersonalInfo({
       ...personalInfo,
       [name]: value,
-    })
-  }
+    });
+  };
 
   const handleNotificationChange = (setting: string, checked: boolean) => {
     setNotificationSettings({
       ...notificationSettings,
       [setting]: checked,
-    })
-  }
+    });
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = (event) => {
         if (event.target?.result) {
-          setProfileImage(event.target.result as string)
+          setProfileImage(event.target.result as string);
         }
-      }
-      reader.readAsDataURL(e.target.files[0])
+      };
+      reader.readAsDataURL(e.target.files[0]);
     }
-  }
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-2 md:p-5 lg:px-10">
       <Tabs defaultValue="account">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-5">
           <TabsTrigger value="account">Account</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="payment">Payment</TabsTrigger>
@@ -91,11 +108,17 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
         </TabsList>
 
         {/* Account Tab */}
-        <TabsContent value="account" className="space-y-6">
+        <TabsContent
+          value="account"
+          className="space-y-6 md:max-w-3/4  p-4 md:p-6 lg:p-8"
+        >
           <Card>
             <CardHeader>
               <CardTitle>Profile Information</CardTitle>
-              <CardDescription>Update your profile information and how it's displayed to others.</CardDescription>
+              <CardDescription>
+                Update your profile information and how it's displayed to
+                others.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex flex-col items-center space-y-4 sm:flex-row sm:items-start sm:space-x-4 sm:space-y-0">
@@ -123,7 +146,9 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
                 </div>
                 <div className="space-y-1 text-center sm:text-left">
                   <h3 className="font-medium">Profile Photo</h3>
-                  <p className="text-sm text-muted-foreground">Upload a photo to personalize your profile.</p>
+                  <p className="text-sm text-muted-foreground">
+                    Upload a photo to personalize your profile.
+                  </p>
                   <div className="flex flex-wrap justify-center gap-2 sm:justify-start">
                     <label
                       htmlFor="profile-image"
@@ -171,7 +196,12 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" name="phone" value={personalInfo.phone} onChange={handlePersonalInfoChange} />
+                  <Input
+                    id="phone"
+                    name="phone"
+                    value={personalInfo.phone}
+                    onChange={handlePersonalInfoChange}
+                  />
                 </div>
                 <div className="space-y-2 sm:col-span-2">
                   <Label htmlFor="bio">Bio</Label>
@@ -191,21 +221,32 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="address">Address</Label>
-                  <Input id="address" name="address" value={personalInfo.address} onChange={handlePersonalInfoChange} />
+                  <Input
+                    id="address"
+                    name="address"
+                    value={personalInfo.address}
+                    onChange={handlePersonalInfoChange}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="country">Country</Label>
                   <Select
                     value={personalInfo.country}
-                    onValueChange={(value) => setPersonalInfo({ ...personalInfo, country: value })}
+                    onValueChange={(value) =>
+                      setPersonalInfo({ ...personalInfo, country: value })
+                    }
                   >
                     <SelectTrigger id="country">
                       <SelectValue placeholder="Select country" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="United States">United States</SelectItem>
+                      <SelectItem value="United States">
+                        United States
+                      </SelectItem>
                       <SelectItem value="Canada">Canada</SelectItem>
-                      <SelectItem value="United Kingdom">United Kingdom</SelectItem>
+                      <SelectItem value="United Kingdom">
+                        United Kingdom
+                      </SelectItem>
                       <SelectItem value="Australia">Australia</SelectItem>
                       <SelectItem value="Germany">Germany</SelectItem>
                       <SelectItem value="France">France</SelectItem>
@@ -217,7 +258,9 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
                   <Label htmlFor="language">Preferred Language</Label>
                   <Select
                     value={personalInfo.language}
-                    onValueChange={(value) => setPersonalInfo({ ...personalInfo, language: value })}
+                    onValueChange={(value) =>
+                      setPersonalInfo({ ...personalInfo, language: value })
+                    }
                   >
                     <SelectTrigger id="language">
                       <SelectValue placeholder="Select language" />
@@ -243,13 +286,17 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
             <Card>
               <CardHeader>
                 <CardTitle>Host Settings</CardTitle>
-                <CardDescription>Configure your host profile and preferences.</CardDescription>
+                <CardDescription>
+                  Configure your host profile and preferences.
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label htmlFor="superhost">Superhost Status</Label>
-                    <p className="text-sm text-muted-foreground">You're a Superhost! Keep up the great work.</p>
+                    <p className="text-sm text-muted-foreground">
+                      You're a Superhost! Keep up the great work.
+                    </p>
                   </div>
                   <Badge>Superhost</Badge>
                 </div>
@@ -258,7 +305,8 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
                   <div className="space-y-0.5">
                     <Label htmlFor="instant-book">Instant Book</Label>
                     <p className="text-sm text-muted-foreground">
-                      Allow guests to book without sending a reservation request.
+                      Allow guests to book without sending a reservation
+                      request.
                     </p>
                   </div>
                   <Switch id="instant-book" defaultChecked />
@@ -266,7 +314,9 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
                 <Separator />
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label htmlFor="guest-requirements">Guest Requirements</Label>
+                    <Label htmlFor="guest-requirements">
+                      Guest Requirements
+                    </Label>
                     <p className="text-sm text-muted-foreground">
                       Set requirements for guests who can book your properties.
                     </p>
@@ -281,36 +331,50 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
         </TabsContent>
 
         {/* Notifications Tab */}
-        <TabsContent value="notifications" className="space-y-6">
+        <TabsContent
+          value="notifications"
+          className="space-y-6 md:max-w-3/4  p-4 md:p-6 lg:p-8"
+        >
           <Card>
             <CardHeader>
               <CardTitle>Email Notifications</CardTitle>
-              <CardDescription>Manage the emails you receive from us.</CardDescription>
+              <CardDescription>
+                Manage the emails you receive from us.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label htmlFor="email-bookings">Booking Updates</Label>
-                  <p className="text-sm text-muted-foreground">Receive emails about your bookings and trips.</p>
+                  <p className="text-sm text-muted-foreground">
+                    Receive emails about your bookings and trips.
+                  </p>
                 </div>
                 <Switch
                   id="email-bookings"
                   checked={notificationSettings.emailBookings}
-                  onCheckedChange={(checked) => handleNotificationChange("emailBookings", checked)}
+                  onCheckedChange={(checked) =>
+                    handleNotificationChange("emailBookings", checked)
+                  }
                 />
               </div>
               <Separator />
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="email-promotions">Promotions and Offers</Label>
+                  <Label htmlFor="email-promotions">
+                    Promotions and Offers
+                  </Label>
                   <p className="text-sm text-muted-foreground">
-                    Receive emails about promotions, discounts, and special offers.
+                    Receive emails about promotions, discounts, and special
+                    offers.
                   </p>
                 </div>
                 <Switch
                   id="email-promotions"
                   checked={notificationSettings.emailPromotions}
-                  onCheckedChange={(checked) => handleNotificationChange("emailPromotions", checked)}
+                  onCheckedChange={(checked) =>
+                    handleNotificationChange("emailPromotions", checked)
+                  }
                 />
               </div>
               <Separator />
@@ -324,7 +388,9 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
                 <Switch
                   id="email-account"
                   checked={notificationSettings.emailAccount}
-                  onCheckedChange={(checked) => handleNotificationChange("emailAccount", checked)}
+                  onCheckedChange={(checked) =>
+                    handleNotificationChange("emailAccount", checked)
+                  }
                 />
               </div>
             </CardContent>
@@ -333,7 +399,9 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
           <Card>
             <CardHeader>
               <CardTitle>Push Notifications</CardTitle>
-              <CardDescription>Manage the push notifications you receive on your devices.</CardDescription>
+              <CardDescription>
+                Manage the push notifications you receive on your devices.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
@@ -346,7 +414,9 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
                 <Switch
                   id="push-bookings"
                   checked={notificationSettings.pushBookings}
-                  onCheckedChange={(checked) => handleNotificationChange("pushBookings", checked)}
+                  onCheckedChange={(checked) =>
+                    handleNotificationChange("pushBookings", checked)
+                  }
                 />
               </div>
               <Separator />
@@ -360,7 +430,9 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
                 <Switch
                   id="push-promotions"
                   checked={notificationSettings.pushPromotions}
-                  onCheckedChange={(checked) => handleNotificationChange("pushPromotions", checked)}
+                  onCheckedChange={(checked) =>
+                    handleNotificationChange("pushPromotions", checked)
+                  }
                 />
               </div>
               <Separator />
@@ -374,7 +446,9 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
                 <Switch
                   id="push-account"
                   checked={notificationSettings.pushAccount}
-                  onCheckedChange={(checked) => handleNotificationChange("pushAccount", checked)}
+                  onCheckedChange={(checked) =>
+                    handleNotificationChange("pushAccount", checked)
+                  }
                 />
               </div>
             </CardContent>
@@ -385,11 +459,16 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
         </TabsContent>
 
         {/* Payment Tab */}
-        <TabsContent value="payment" className="space-y-6">
+        <TabsContent
+          value="payment"
+          className="space-y-6 md:max-w-3/4  p-4 md:p-6 lg:p-8"
+        >
           <Card>
             <CardHeader>
               <CardTitle>Payment Methods</CardTitle>
-              <CardDescription>Manage your payment methods and preferences.</CardDescription>
+              <CardDescription>
+                Manage your payment methods and preferences.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="rounded-lg border p-4">
@@ -400,7 +479,9 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
                     </div>
                     <div>
                       <p className="font-medium">Visa ending in 4242</p>
-                      <p className="text-sm text-muted-foreground">Expires {paymentMethod.expiryDate}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Expires {paymentMethod.expiryDate}
+                      </p>
                     </div>
                   </div>
                   <Badge>Default</Badge>
@@ -426,7 +507,9 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
             <Card>
               <CardHeader>
                 <CardTitle>Payout Methods</CardTitle>
-                <CardDescription>Manage how you receive payments from bookings.</CardDescription>
+                <CardDescription>
+                  Manage how you receive payments from bookings.
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="rounded-lg border p-4">
@@ -450,7 +533,9 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
                       </div>
                       <div>
                         <p className="font-medium">Bank Account</p>
-                        <p className="text-sm text-muted-foreground">Ending in 5678</p>
+                        <p className="text-sm text-muted-foreground">
+                          Ending in 5678
+                        </p>
                       </div>
                     </div>
                     <Badge>Default</Badge>
@@ -476,7 +561,9 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
           <Card>
             <CardHeader>
               <CardTitle>Billing History</CardTitle>
-              <CardDescription>View your past transactions and receipts.</CardDescription>
+              <CardDescription>
+                View your past transactions and receipts.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -500,10 +587,15 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
                     status: "Paid",
                   },
                 ].map((invoice) => (
-                  <div key={invoice.id} className="flex items-center justify-between rounded-lg border p-4">
+                  <div
+                    key={invoice.id}
+                    className="flex items-center justify-between rounded-lg border p-4"
+                  >
                     <div>
                       <p className="font-medium">Invoice #{invoice.id}</p>
-                      <p className="text-sm text-muted-foreground">{invoice.date}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {invoice.date}
+                      </p>
                     </div>
                     <div className="text-right">
                       <p className="font-medium">{invoice.amount}</p>
@@ -520,11 +612,16 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
         </TabsContent>
 
         {/* Security Tab */}
-        <TabsContent value="security" className="space-y-6">
+        <TabsContent
+          value="security"
+          className="space-y-6 md:max-w-3/4  p-4 md:p-6 lg:p-8"
+        >
           <Card>
             <CardHeader>
               <CardTitle>Password</CardTitle>
-              <CardDescription>Change your password to keep your account secure.</CardDescription>
+              <CardDescription>
+                Change your password to keep your account secure.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -548,7 +645,9 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
           <Card>
             <CardHeader>
               <CardTitle>Two-Factor Authentication</CardTitle>
-              <CardDescription>Add an extra layer of security to your account.</CardDescription>
+              <CardDescription>
+                Add an extra layer of security to your account.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
@@ -566,7 +665,9 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
           <Card>
             <CardHeader>
               <CardTitle>Sessions</CardTitle>
-              <CardDescription>Manage your active sessions and devices.</CardDescription>
+              <CardDescription>
+                Manage your active sessions and devices.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {[
@@ -589,10 +690,14 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
                   current: false,
                 },
               ].map((session, i) => (
-                <div key={i} className="flex items-center justify-between rounded-lg border p-4">
+                <div
+                  key={i}
+                  className="flex items-center justify-between rounded-lg border p-4"
+                >
                   <div className="flex items-center gap-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                      {session.device.includes("Mac") || session.device.includes("iPhone") ? (
+                      {session.device.includes("Mac") ||
+                      session.device.includes("iPhone") ? (
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -627,7 +732,11 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
                     <div>
                       <p className="font-medium">
                         {session.device}
-                        {session.current && <span className="ml-2 text-xs text-muted-foreground">(Current)</span>}
+                        {session.current && (
+                          <span className="ml-2 text-xs text-muted-foreground">
+                            (Current)
+                          </span>
+                        )}
                       </p>
                       <p className="text-sm text-muted-foreground">
                         {session.location} • {session.lastActive}
@@ -650,11 +759,14 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
           <Card>
             <CardHeader>
               <CardTitle>Account Deletion</CardTitle>
-              <CardDescription>Permanently delete your account and all associated data.</CardDescription>
+              <CardDescription>
+                Permanently delete your account and all associated data.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Once you delete your account, there is no going back. All your data will be permanently removed.
+                Once you delete your account, there is no going back. All your
+                data will be permanently removed.
               </p>
               <Button variant="destructive" className="mt-4">
                 Delete Account
@@ -664,6 +776,5 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
-

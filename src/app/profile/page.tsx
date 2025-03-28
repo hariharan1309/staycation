@@ -26,11 +26,12 @@ import { ProfileProperties } from "@/components/profile-properties";
 import { ProfileReviews } from "@/components/profile-reviews";
 import { ProfileSettings } from "@/components/profile-settings";
 import { ProfileCustomers } from "@/components/profile-customers";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   // In a real app, this would come from authentication
   const [userRole, setUserRole] = useState<"guest" | "owner">("owner");
-
+  const router = useRouter();
   // Toggle role for demo purposes
   const toggleRole = () => {
     setUserRole(userRole === "guest" ? "owner" : "guest");
@@ -62,15 +63,22 @@ export default function ProfilePage() {
                 <p className="text-sm text-muted-foreground">
                   john.doe@example.com
                 </p>
-                <Badge className="mt-2" variant="outline">
+                {/* <Badge className="mt-2" variant="outline">
                   {userRole === "owner" ? "Property Owner" : "Guest"}
                 </Badge>
                 {userRole === "owner" && (
                   <Badge className="mt-1" variant="secondary">
                     Superhost
                   </Badge>
-                )}
-                <Button variant="outline" size="sm" className="mt-4 w-full">
+                )} */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-4 w-full"
+                  onClick={() => {
+                    router.push("/profile/settings");
+                  }}
+                >
                   <Edit className="mr-2 h-4 w-4" />
                   Edit Profile
                 </Button>

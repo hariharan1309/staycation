@@ -98,7 +98,7 @@ export default function AddPropertyPage() {
           <Tabs
             value={activeTab}
             onValueChange={setActiveTab}
-            className="w-full px-10"
+            className="w-full px-2 md:p-5 lg:px-10"
           >
             <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="basic">Basic Info</TabsTrigger>
