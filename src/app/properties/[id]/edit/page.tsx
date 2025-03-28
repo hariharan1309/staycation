@@ -24,7 +24,7 @@ import { PropertyPricingForm } from "@/components/property-pricing-form";
 import { PropertyLocationForm } from "@/components/property-location-form";
 import { PropertyImagesForm } from "@/components/property-images-form";
 
-export default function AddPropertyPage() {
+export default function EditPropertyPage() {
   const [activeTab, setActiveTab] = useState("basic");
   const [formData, setFormData] = useState({
     title: "",
@@ -84,14 +84,14 @@ export default function AddPropertyPage() {
             <span className="sr-only">Back to properties</span>
           </Link>
         </Button>
-        <h1 className="text-2xl font-bold md:text-[28px]">Add New Property</h1>
+        <h1 className="text-2xl font-bold md:text-[28px]">Update Property</h1>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>Property Details</CardTitle>
           <CardDescription>
-            Fill in the details about your property to create a new listing.
+            Update the details about your listed property.
           </CardDescription>
         </CardHeader>
         <CardContent>

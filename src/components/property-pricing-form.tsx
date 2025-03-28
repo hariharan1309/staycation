@@ -39,7 +39,7 @@ export function PropertyPricingForm() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 md:max-w-2/3">
       <div className="rounded-lg border p-4">
         <p className="text-sm text-muted-foreground">
           Set your property's pricing and availability. You can always change these settings later.

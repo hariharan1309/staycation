@@ -50,7 +50,7 @@ export function PropertyAmenitiesForm() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 md:max-w-2/3">
       <div className="rounded-lg border p-4">
         <p className="text-sm text-muted-foreground">
           Select all the amenities that your property offers. Accurate amenities help set guest expectations.

@@ -69,7 +69,7 @@ export function PropertyImagesForm() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 md:max-w-2/3">
       <div className="rounded-lg border p-4">
         <p className="text-sm text-muted-foreground">
           Upload high-quality images of your property. The first image will be the main image shown in search results.

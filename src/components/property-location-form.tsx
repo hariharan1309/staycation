@@ -27,7 +27,7 @@ export function PropertyLocationForm() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 md:max-w-2/3">
       <div className="rounded-lg border border-dashed p-6">
         <div className="flex flex-col items-center justify-center text-center">
           <MapPin className="mb-4 h-12 w-12 text-muted-foreground" />
