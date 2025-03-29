@@ -15,12 +15,14 @@ import {
 import { useState } from "react";
 import LoginFunction from "@/utils/LoginFunction";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [cred, setCred] = useState({
     email: "",
     password: "",
   });
+  const router = useRouter();
   const [userType, setUserType] = useState<"guest" | "host">("guest");
 
   const onSubmit = async (e: any) => {
@@ -37,8 +39,34 @@ export default function LoginPage() {
     }
     try {
       const user = await LoginFunction({ ...cred, userType });
+      console.log(user);
+      if (user.success) {
+        toast.success(user.message, {
+          closeButton: true,
+          duration: 2000,
+          style: {
+            color: "green",
+          },
+        });
+        router.push("/");
+      } else {
+        toast.error(user.message, {
+          closeButton: true,
+          duration: 2000,
+          style: {
+            color: "red",
+          },
+        });
+      }
     } catch (error) {
       console.error(error);
+      toast.error("Something went wrong", {
+        closeButton: true,
+        duration: 2000,
+        style: {
+          color: "red",
+        },
+      });
     }
   };
   return (
