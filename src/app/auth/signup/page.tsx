@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { registerUser } from "@/utils/RegisterFunction";
 
 export default function SignUpPage() {
   const [userType, setUserType] = useState<"guest" | "host">("guest");
@@ -98,10 +99,26 @@ export default function SignUpPage() {
     formValidate(formData);
     console.log(formData);
     try {
-      const user = await fetch("/api/auth/register", {
-        method: "POST",
-        body: JSON.stringify({ userType, ...formData }),
-      });
+      const resp = await registerUser(formData, userType);
+      if (resp.success) {
+        console.log("User created successfully", resp);
+        toast.success(resp.message, {
+          closeButton: true,
+          duration: 2000,
+          style: {
+            color: "green",
+          },
+        });
+      } else {
+        console.log("Error creating user", resp);
+        toast.error(resp.message, {
+          closeButton: true,
+          duration: 2000,
+          style: {
+            color: "red",
+          },
+        });
+      }
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong", {

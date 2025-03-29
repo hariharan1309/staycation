@@ -5,24 +5,36 @@
 // admin.initializeApp({
 //   credential: admin.credential.cert(serviceAccount),
 // });
-import { initializeApp, getApps, cert } from "firebase-admin/app";
+import { initializeApp, getApps, cert, getApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 
 // Check if Firebase Admin is already initialized
 const apps = getApps();
 
-if (!apps.length) {
-  initializeApp({
-    credential: cert({
-      projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-    }),
-  });
-}
+// if (!apps.length) {
+//   initializeApp({
+//     credential: cert({
+//       projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
+//       clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
+//       privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+//     }),
+//   });
+// }
+const appAdmin = !getApps.length
+  ? initializeApp({
+      credential: cert({
+        projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
+        privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(
+          /\\n/g,
+          "\n"
+        ),
+      }),
+    })
+  : getApp();
 
-const auth = getAuth();
-const firestore = getFirestore();
+const authAdmin = getAuth();
+const firestoreAdmin = getFirestore();
 
-export { auth, firestore };
+export { appAdmin, authAdmin, firestoreAdmin };
