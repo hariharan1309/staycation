@@ -1,8 +1,9 @@
+"use client";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
+// import { Separator } from "@/components/ui/separator";
 import {
   Card,
   CardContent,
@@ -11,8 +12,34 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useState } from "react";
+import LoginFunction from "@/utils/LoginFunction";
+import { toast } from "sonner";
 
 export default function LoginPage() {
+  const [cred, setCred] = useState({
+    email: "",
+    password: "",
+  });
+  const onSubmit = async (e: any) => {
+    e.preventDefault();
+    console.log(cred);
+    if (!cred.email || !cred.password) {
+      toast.error("Please fill all the fields", {
+        closeButton: true,
+        duration: 2000,
+        style: {
+          color: "red",
+        },
+      });
+      return;
+    }
+    try {
+      const user = await LoginFunction(cred);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <main className="container flex flex-col items-center justify-center px-4 py-12 md:py-24">
       <Card className="mx-auto w-full max-w-lg">
@@ -62,7 +89,7 @@ export default function LoginPage() {
             </div>
           </div> */}
 
-          <form className="space-y-4 p-2 md:p-3 lg:p-4">
+          <form className="space-y-4 p-2 md:p-3 lg:p-4" onSubmit={onSubmit}>
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
                 Email
@@ -71,6 +98,7 @@ export default function LoginPage() {
                 id="email"
                 type="email"
                 placeholder="m@example.com"
+                onChange={(e) => setCred({ ...cred, email: e.target.value })}
                 required
               />
             </div>
@@ -86,7 +114,12 @@ export default function LoginPage() {
                   Forgot password?
                 </Link>
               </div>
-              <Input id="password" type="password" required />
+              <Input
+                id="password"
+                type="password"
+                required
+                onChange={(e) => setCred({ ...cred, password: e.target.value })}
+              />
             </div>
             <Button type="submit" className="w-full">
               Login
