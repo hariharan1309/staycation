@@ -21,9 +21,10 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
+  const [userType, setUserType] = useState<"guest" | "host">("guest");
+
   const onSubmit = async (e: any) => {
     e.preventDefault();
-    console.log(cred);
     if (!cred.email || !cred.password) {
       toast.error("Please fill all the fields", {
         closeButton: true,
@@ -35,7 +36,7 @@ export default function LoginPage() {
       return;
     }
     try {
-      const user = await LoginFunction(cred);
+      const user = await LoginFunction({ ...cred, userType });
     } catch (error) {
       console.error(error);
     }
@@ -121,9 +122,24 @@ export default function LoginPage() {
                 onChange={(e) => setCred({ ...cred, password: e.target.value })}
               />
             </div>
-            <Button type="submit" className="w-full">
-              Login
-            </Button>
+            <div className="grid grid-cols-2 gap-4 lg:gap-6">
+              <Button
+                type="submit"
+                className="w-full"
+                variant={userType === "guest" ? "default" : "outline"}
+                onClick={() => setUserType("guest")}
+              >
+                Login as Guest
+              </Button>
+              <Button
+                type="submit"
+                className="w-full"
+                variant={userType === "host" ? "default" : "outline"}
+                onClick={() => setUserType("host")}
+              >
+                Login as Owner
+              </Button>
+            </div>
           </form>
         </CardContent>
         <CardFooter className="flex flex-col">
