@@ -96,6 +96,7 @@ export default function SignUpPage() {
     console.log("Form submitted:", { userType, ...formData });
     // validation
     formValidate(formData);
+    console.log(formData);
     try {
       const user = await fetch("/api/auth/register", {
         method: "POST",

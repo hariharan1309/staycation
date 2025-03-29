@@ -1,6 +1,6 @@
 import { auth, fstore } from "@/lib/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { NextResponse } from "next/server";
 
 export const POST = async (req: Request) => {
@@ -10,7 +10,7 @@ export const POST = async (req: Request) => {
     const { email, userType, password } = body;
     if (userType === "host") {
       // check if user is already a host
-      const hostRef = collection(fstore, "owners"); // creating the reference
+      const hostRef = collection(fstore, "owner"); // creating the reference
       const hosts = await getDocs(hostRef); // fetching the data
       hosts.forEach((doc) => {
         if (doc.data().email === email) {
@@ -47,7 +47,7 @@ export const POST = async (req: Request) => {
     } else {
       {
         // check if user is already a host
-        const hostRef = collection(fstore, "guests"); // creating the reference
+        const hostRef = collection(fstore, "user"); // creating the reference
         const hosts = await getDocs(hostRef); // fetching the data
         hosts.forEach((doc) => {
           if (doc.data().email === email) {
@@ -73,7 +73,7 @@ export const POST = async (req: Request) => {
         );
         // create a new host with setDoc instead of addDoc
         // because we want to use the user's uid as the document id
-        await setDoc(doc(fstore, "guests", userAuth.user.uid), user);
+        await setDoc(doc(fstore, "user", userAuth.user.uid), user);
         return new NextResponse(
           JSON.stringify({
             message: "User created successfully",
@@ -84,6 +84,7 @@ export const POST = async (req: Request) => {
       }
     }
   } catch (error) {
+    console.log(error);
     return new NextResponse(
       JSON.stringify({ error: "Something went wrong.." })
     );
