@@ -2,11 +2,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MapPin } from "lucide-react";
+import { MapPin, MapPinHouse } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { PropertyLocation } from "@/app/properties/new/page";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface PropertyLocationFormProps {
   location: PropertyLocation;
@@ -42,11 +51,18 @@ export function PropertyLocationForm({
     });
   };
 
+  const handleSelectChange = (value: string) => {
+    setLocalLocation({
+      ...localLocation,
+      country: value,
+    });
+  };
+
   return (
     <div className="space-y-6 md:max-w-2/3">
       <div className="rounded-lg border border-dashed p-6">
         <div className="flex flex-col items-center justify-center text-center">
-          <MapPin className="mb-4 h-12 w-12 text-muted-foreground" />
+          <MapPinHouse className="mb-4 h-12 w-12 text-muted-foreground" />
           <h3 className="mb-2 text-lg font-semibold">Property Location</h3>
           <p className="mb-4 text-sm text-muted-foreground">
             Enter the exact address of your property. This information will be
@@ -107,31 +123,34 @@ export function PropertyLocationForm({
           </div>
           <div className="space-y-2">
             <Label htmlFor="country">Country</Label>
-            <select
-              id="country"
-              name="country"
+            <Select
               value={localLocation.country}
-              onChange={handleChange}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              required
+              onValueChange={handleSelectChange}
             >
-              <option value="United States">United States</option>
-              <option value="Canada">Canada</option>
-              <option value="Mexico">Mexico</option>
-              <option value="United Kingdom">United Kingdom</option>
-              <option value="France">France</option>
-              <option value="Germany">Germany</option>
-              <option value="Italy">Italy</option>
-              <option value="Spain">Spain</option>
-              <option value="Australia">Australia</option>
-              <option value="Japan">Japan</option>
-              <option value="Other">Other</option>
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select the Country" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="United States">United States</SelectItem>
+                  <SelectItem value="Canada">Canada</SelectItem>
+                  <SelectItem value="Mexico">Mexico</SelectItem>
+                  <SelectItem value="United Kingdom">United Kingdom</SelectItem>
+                  <SelectItem value="France">France</SelectItem>
+                  <SelectItem value="Germany">Germany</SelectItem>
+                  <SelectItem value="Italy">Italy</SelectItem>
+                  <SelectItem value="Spain">Spain</SelectItem>
+                  <SelectItem value="Australia">Australia</SelectItem>
+                  <SelectItem value="Japan">Japan</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="directions">Directions (Optional)</Label>
+          <Label htmlFor="directions">Directions (SelectItemal)</Label>
           <Textarea
             id="directions"
             name="directions"
