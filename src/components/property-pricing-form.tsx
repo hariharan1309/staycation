@@ -25,7 +25,7 @@ export function PropertyPricingForm({
     securityDeposit: pricing.securityDeposit || 200,
     weeklyDiscount: pricing.weeklyDiscount || 10,
     monthlyDiscount: pricing.monthlyDiscount || 20,
-    instantBook: pricing.instantBook ?? true,
+    // instantBook: pricing.instantBook ?? true,
     minNights: pricing.minNights || 2,
     maxNights: pricing.maxNights || 30,
     taxes: pricing.taxes ?? true,
@@ -154,7 +154,8 @@ export function PropertyPricingForm({
       <div className="space-y-4">
         <h3 className="font-medium">Booking Options</h3>
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          {/*
+            <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="instantBook">Instant Book</Label>
               <p className="text-xs text-muted-foreground">
@@ -169,6 +170,7 @@ export function PropertyPricingForm({
               }
             />
           </div>
+  */}
 
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">

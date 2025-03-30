@@ -20,15 +20,14 @@ import { PropertyAmenitiesForm } from "@/components/property-amenities-form";
 import { PropertyImagesForm } from "@/components/property-images-form";
 import { PropertyPricingForm } from "@/components/property-pricing-form";
 import { toast } from "sonner";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
+
 // import { useToast } from "@/components/ui/use-toast";
 
 // Define types for the property data
 export interface PropertyImage {
   id: number;
   url: string;
-  file: any;
   main: boolean;
 }
 
@@ -62,7 +61,7 @@ export interface PropertyPricing {
   securityDeposit: number;
   weeklyDiscount: number;
   monthlyDiscount: number;
-  instantBook: boolean;
+  // instantBook: boolean;
   minNights: number;
   maxNights: number;
   taxes: boolean;
@@ -83,7 +82,7 @@ export interface PropertyFormData {
 
 export default function AddPropertyPage() {
   const [activeTab, setActiveTab] = useState<string>("basic");
-
+  const router = useRouter();
   const [formData, setFormData] = useState<PropertyFormData>({
     // Basic Info
     title: "",
@@ -128,7 +127,7 @@ export default function AddPropertyPage() {
       securityDeposit: 200,
       weeklyDiscount: 10,
       monthlyDiscount: 20,
-      instantBook: true,
+      // F: true,
       minNights: 2,
       maxNights: 30,
       taxes: true,
@@ -160,30 +159,14 @@ export default function AddPropertyPage() {
 
   const handleSubmit = async () => {
     try {
-      toast.loading("Uploading images...");
-
-      // Step 1: Upload images to Firebase and get URLs
-      const uploadedImages = await Promise.all(
-        formData.images.map(async (image) => {
-          if (image.url.startsWith("blob")) {
-            // Only upload new images (ignore existing ones with URLs)
-            return {
-              id: image.id,
-              url: await uploadImageToFirebase(image.file), // Upload file, get URL
-              main: image.main,
-            };
-          }
-          return image; // Keep existing images as they are
-        })
-      );
-
-      // Step 2: Prepare final data with uploaded image URLs
       const finalData = {
         ...formData,
-        images: uploadedImages,
+        images: [],
       };
 
-      toast.loading("Submitting property...");
+      toast.loading("Submitting property...", {
+        duration: 1000,
+      });
 
       // Step 3: Send data to API
       const response = await fetch("/api/properties/new", {
@@ -195,22 +178,23 @@ export default function AddPropertyPage() {
       });
 
       if (!response.ok) throw new Error("Failed to create property");
-
+      const resp = await response.json();
       toast.success("Property created successfully!");
-    } catch (error) {
+      router.push(`/properties/${resp.propertyId}`);
+    } catch (error: any) {
       console.error("Error:", error);
       toast.error("Error submitting property", { description: error.message });
     }
   };
 
-  const uploadImageToFirebase = async (file: File): Promise<string> => {
-    return new Promise(async (resolve, reject) => {
-      const storageRef = ref(storage, `properties/${Date.now()}-${file.name}`);
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-      resolve(url);
-    });
-  };
+  // const uploadImageToFirebase = async (file: File): Promise<string> => {
+  //   return new Promise(async (resolve, reject) => {
+  //     const storageRef = ref(storage, `properties/${Date.now()}-${file.name}`);
+  //     await uploadBytes(storageRef, file);
+  //     const url = await getDownloadURL(storageRef);
+  //     resolve(url);
+  //   });
+  // };
 
   return (
     <main className="container px-4 py-8 md:px-6 md:py-12">
