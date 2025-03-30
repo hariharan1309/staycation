@@ -2,6 +2,7 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage"; // Add this import
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FB_APIKEY,
@@ -12,10 +13,12 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FB_APPID,
   measurementId: process.env.NEXT_PUBLIC_FB_MEASUREMENT_ID,
 };
+
 // Initialize Firebase
 const app = !getApps.length ? initializeApp(firebaseConfig) : getApp();
 // const analytics = getAnalytics(app);
 const auth = getAuth(app);
 const fstore = getFirestore(app);
+const storage = getStorage(app); // Initialize storage
 
-export { app, auth, fstore };
+export { app, auth, fstore, storage }; // Export storage

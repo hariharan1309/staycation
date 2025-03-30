@@ -168,13 +168,13 @@ export default function AddPropertyPage() {
       // Here you would typically send the data to your API
       console.log("Submitting property:", formData);
 
-      // Show success message
+      const resp = await fetch("/api/properties/new", {
+        method: "POST",
+        body: JSON.stringify(formData),
+      });
       toast.success("Property Created", {
         description: "Your property has been successfully created",
       });
-
-      // Redirect to the properties page or the new property page
-      // router.push("/properties");
     } catch (error) {
       toast.error("Error", {
         description: "Failed to create property. Please try again.",
