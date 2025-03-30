@@ -40,6 +40,7 @@ export default function LoginPage() {
     try {
       const user = await LoginFunction({ ...cred, userType });
       console.log(user);
+
       if (user.success) {
         toast.success(user.message, {
           closeButton: true,
@@ -48,6 +49,7 @@ export default function LoginPage() {
             color: "green",
           },
         });
+        localStorage.setItem("userType", JSON.stringify(user.user.userType));
         router.push("/");
       } else {
         toast.error(user.message, {

@@ -1,22 +1,63 @@
-import { createContext, useEffect, useState } from "react";
+"use client";
 
-const AuthContext = createContext<any>(null);
+import { createContext, useEffect, useState, useCallback } from "react";
+import { cookies } from "next/headers";
 
-export const AuthProvider = ({ children }: { children: any }) => {
-  const [user, setUser] = useState<any>(null);
-  const [userType, setUserType] = useState("guest");
+interface AuthContextType {
+  user: string | null;
+  setUser: (user: string | null) => void;
+  userType: string;
+  setUserType: (type: string) => void;
+}
+
+export const AuthContext = createContext<AuthContextType | null>(null);
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<string | null>(null);
+  const [userType, setUserType] = useState<string>("guest");
+
   useEffect(() => {
-    const user = localStorage.getItem("userID");
-    if (user) {
-      const userType = localStorage.getItem("userType");
-      if (userType) {
-        setUserType(JSON.parse(userType));
+    const fetchUser = async () => {
+      try {
+        // Fetch user ID from cookies
+        const cookieStore = await cookies();
+        const userIDCookie = cookieStore.get("userID");
+        const userID = userIDCookie ? userIDCookie.value : null;
+
+        if (userID) {
+          setUser(userID);
+          // Fetch user type from local storage
+          const storedUserType = localStorage.getItem("userType");
+          if (storedUserType) {
+            setUserType(JSON.parse(storedUserType));
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
       }
-      setUser(JSON.parse(user));
-    }
+    };
+
+    fetchUser();
   }, []);
+
+  const updateUser = useCallback((newUser: string | null) => {
+    setUser(newUser);
+  }, []);
+
+  const updateUserType = useCallback((newType: string) => {
+    setUserType(newType);
+    localStorage.setItem("userType", JSON.stringify(newType));
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, setUser, userType, setUserType }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        setUser: updateUser,
+        userType,
+        setUserType: updateUserType,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
