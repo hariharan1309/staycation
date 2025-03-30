@@ -1,9 +1,8 @@
 "use client";
 
 import { createContext, useEffect, useState, useCallback } from "react";
-import { cookies } from "next/headers";
 
-interface AuthContextType {
+export interface AuthContextType {
   user: string | null;
   setUser: (user: string | null) => void;
   userType: string;
@@ -12,33 +11,24 @@ interface AuthContextType {
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<string | null>(null);
+export const AuthProvider = ({
+  children,
+  initialUser,
+}: {
+  children: React.ReactNode;
+  initialUser: string | null;
+}) => {
+  const [user, setUser] = useState<string | null>(initialUser);
   const [userType, setUserType] = useState<string>("guest");
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        // Fetch user ID from cookies
-        const cookieStore = await cookies();
-        const userIDCookie = cookieStore.get("userID");
-        const userID = userIDCookie ? userIDCookie.value : null;
-
-        if (userID) {
-          setUser(userID);
-          // Fetch user type from local storage
-          const storedUserType = localStorage.getItem("userType");
-          if (storedUserType) {
-            setUserType(JSON.parse(storedUserType));
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
+    if (initialUser) {
+      const storedUserType = localStorage.getItem("userType");
+      if (storedUserType) {
+        setUserType(JSON.parse(storedUserType));
       }
-    };
-
-    fetchUser();
-  }, []);
+    }
+  }, [initialUser]);
 
   const updateUser = useCallback((newUser: string | null) => {
     setUser(newUser);

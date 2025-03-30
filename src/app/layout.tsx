@@ -12,14 +12,15 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Vacation Rentals | Find Your Perfect Getaway",
   description: "Discover and book unique accommodations around the world.",
-  generator: "v0.dev",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const userID = cookieStore.get("userID")?.value || null;
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} min-h-screen flex flex-col`}>
@@ -29,10 +30,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
-          {children}
-          <Toaster />
-          <Footer />
+          <AuthProvider initialUser={userID}>
+            <Header />
+            {children}
+            <Toaster />
+            <Footer />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
@@ -41,3 +44,5 @@ export default function RootLayout({
 
 import "./globals.css";
 import { Toaster } from "sonner";
+import { AuthProvider } from "@/components/authProvider/AuthProvider";
+import { cookies } from "next/headers";
