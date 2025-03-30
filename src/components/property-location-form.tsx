@@ -1,30 +1,46 @@
-"use client"
+// components/property-location-form.tsx
+"use client";
 
-import type React from "react"
+import { useEffect, useState } from "react";
+import { MapPin } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { PropertyLocation } from "@/app/properties/new/page";
 
-import { useState } from "react"
-import { MapPin } from "lucide-react"
+interface PropertyLocationFormProps {
+  location: PropertyLocation;
+  updateLocation: (location: PropertyLocation) => void;
+}
 
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+export function PropertyLocationForm({
+  location,
+  updateLocation,
+}: PropertyLocationFormProps) {
+  const [localLocation, setLocalLocation] = useState<PropertyLocation>({
+    address: location.address || "",
+    city: location.city || "",
+    state: location.state || "",
+    zipCode: location.zipCode || "",
+    country: location.country || "United States",
+    directions: location.directions || "",
+  });
 
-export function PropertyLocationForm() {
-  const [location, setLocation] = useState({
-    address: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    country: "United States",
-  })
+  useEffect(() => {
+    updateLocation(localLocation);
+  }, [localLocation]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setLocation({
-      ...location,
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setLocalLocation({
+      ...localLocation,
       [name]: value,
-    })
-  }
+    });
+  };
 
   return (
     <div className="space-y-6 md:max-w-2/3">
@@ -33,7 +49,8 @@ export function PropertyLocationForm() {
           <MapPin className="mb-4 h-12 w-12 text-muted-foreground" />
           <h3 className="mb-2 text-lg font-semibold">Property Location</h3>
           <p className="mb-4 text-sm text-muted-foreground">
-            Enter the exact address of your property. This information will be used for map display and directions.
+            Enter the exact address of your property. This information will be
+            used for map display and directions.
           </p>
         </div>
       </div>
@@ -44,7 +61,7 @@ export function PropertyLocationForm() {
           <Input
             id="address"
             name="address"
-            value={location.address}
+            value={localLocation.address}
             onChange={handleChange}
             placeholder="123 Main St"
             required
@@ -57,7 +74,7 @@ export function PropertyLocationForm() {
             <Input
               id="city"
               name="city"
-              value={location.city}
+              value={localLocation.city}
               onChange={handleChange}
               placeholder="New York"
               required
@@ -65,7 +82,14 @@ export function PropertyLocationForm() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="state">State/Province</Label>
-            <Input id="state" name="state" value={location.state} onChange={handleChange} placeholder="NY" required />
+            <Input
+              id="state"
+              name="state"
+              value={localLocation.state}
+              onChange={handleChange}
+              placeholder="NY"
+              required
+            />
           </div>
         </div>
 
@@ -75,7 +99,7 @@ export function PropertyLocationForm() {
             <Input
               id="zipCode"
               name="zipCode"
-              value={location.zipCode}
+              value={localLocation.zipCode}
               onChange={handleChange}
               placeholder="10001"
               required
@@ -86,7 +110,7 @@ export function PropertyLocationForm() {
             <select
               id="country"
               name="country"
-              value={location.country}
+              value={localLocation.country}
               onChange={handleChange}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               required
@@ -111,12 +135,13 @@ export function PropertyLocationForm() {
           <Textarea
             id="directions"
             name="directions"
+            value={localLocation.directions}
+            onChange={handleChange}
             placeholder="Provide additional directions to help guests find your property..."
             rows={3}
           />
         </div>
       </div>
     </div>
-  )
+  );
 }
-

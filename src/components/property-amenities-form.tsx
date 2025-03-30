@@ -1,119 +1,110 @@
-"use client"
+// components/property-amenities-form.tsx
+"use client";
 
-import { useState } from "react"
-import { Plus } from "lucide-react"
+import { useEffect, useState } from "react";
+import { Check } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { PropertyAmenities } from "@/app/properties/new/page";
 
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
+interface PropertyAmenitiesFormProps {
+  amenities: PropertyAmenities;
+  updateAmenities: (amenities: PropertyAmenities) => void;
+}
 
-export function PropertyAmenitiesForm() {
-  const [customAmenity, setCustomAmenity] = useState("")
-  const [customAmenities, setCustomAmenities] = useState<string[]>([])
-  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([])
+interface AmenityOption {
+  id: string;
+  label: string;
+}
 
-  const commonAmenities = [
-    {
-      category: "Essentials",
-      items: ["WiFi", "Kitchen", "Washer", "Dryer", "Air conditioning", "Heating", "TV", "Iron"],
-    },
-    {
-      category: "Features",
-      items: ["Pool", "Hot tub", "Free parking", "EV charger", "Gym", "BBQ grill", "Fire pit", "Indoor fireplace"],
-    },
-    {
-      category: "Location",
-      items: ["Beachfront", "Waterfront", "Ski-in/ski-out", "Ocean view", "Lake view", "Mountain view"],
-    },
-    {
-      category: "Safety",
-      items: ["Smoke alarm", "Carbon monoxide alarm", "Fire extinguisher", "First aid kit", "Security cameras"],
-    },
-  ]
-
-  const handleAmenityChange = (amenity: string, checked: boolean) => {
-    if (checked) {
-      setSelectedAmenities([...selectedAmenities, amenity])
-    } else {
-      setSelectedAmenities(selectedAmenities.filter((a) => a !== amenity))
+export function PropertyAmenitiesForm({
+  amenities,
+  updateAmenities,
+}: PropertyAmenitiesFormProps) {
+  const [localAmenities, setLocalAmenities] = useState<PropertyAmenities>(
+    amenities || {
+      wifi: false,
+      kitchen: false,
+      ac: false,
+      heating: false,
+      tv: false,
+      parking: false,
+      pool: false,
+      beachfront: false,
+      washer: false,
+      workspace: false,
+      outdoorDining: false,
     }
-  }
+  );
 
-  const handleAddCustomAmenity = () => {
-    if (customAmenity.trim() !== "" && !customAmenities.includes(customAmenity)) {
-      setCustomAmenities([...customAmenities, customAmenity])
-      setSelectedAmenities([...selectedAmenities, customAmenity])
-      setCustomAmenity("")
-    }
-  }
+  useEffect(() => {
+    updateAmenities(localAmenities);
+  }, [localAmenities]);
+
+  const handleChange = (name: string, checked: boolean) => {
+    setLocalAmenities({
+      ...localAmenities,
+      [name]: checked,
+    });
+  };
+
+  // List of amenities to match your property view page
+  const amenityOptions: AmenityOption[] = [
+    { id: "wifi", label: "Free WiFi" },
+    { id: "kitchen", label: "Kitchen" },
+    { id: "ac", label: "Air Conditioning" },
+    { id: "heating", label: "Heating" },
+    { id: "tv", label: "TV" },
+    { id: "parking", label: "Free Parking" },
+    { id: "pool", label: "Private Pool" },
+    { id: "beachfront", label: "Beachfront" },
+    { id: "washer", label: "Washing Machine" },
+    { id: "workspace", label: "Workspace" },
+    { id: "outdoorDining", label: "Outdoor Dining Area" },
+  ];
 
   return (
     <div className="space-y-6 md:max-w-2/3">
       <div className="rounded-lg border p-4">
         <p className="text-sm text-muted-foreground">
-          Select all the amenities that your property offers. Accurate amenities help set guest expectations.
+          Select all the amenities that your property offers. These will be
+          displayed to potential guests.
         </p>
       </div>
 
-      {commonAmenities.map((category) => (
-        <div key={category.category} className="space-y-4">
-          <h3 className="font-medium">{category.category}</h3>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-            {category.items.map((amenity) => (
-              <div key={amenity} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`amenity-${amenity}`}
-                  checked={selectedAmenities.includes(amenity)}
-                  onCheckedChange={(checked) => handleAmenityChange(amenity, checked === true)}
-                />
-                <Label htmlFor={`amenity-${amenity}`} className="text-sm font-normal">
-                  {amenity}
-                </Label>
-              </div>
-            ))}
-          </div>
-          <Separator className="my-4" />
-        </div>
-      ))}
-
-      <div className="space-y-4">
-        <h3 className="font-medium">Custom Amenities</h3>
-        <div className="flex items-end gap-2">
-          <div className="flex-1 space-y-2">
-            <Label htmlFor="custom-amenity">Add Custom Amenity</Label>
-            <Input
-              id="custom-amenity"
-              value={customAmenity}
-              onChange={(e) => setCustomAmenity(e.target.value)}
-              placeholder="e.g. Outdoor shower"
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+        {amenityOptions.map((amenity) => (
+          <div key={amenity.id} className="flex items-center space-x-2">
+            <Checkbox
+              id={amenity.id}
+              checked={localAmenities[amenity.id] || false}
+              onCheckedChange={(checked) =>
+                handleChange(amenity.id, checked as boolean)
+              }
             />
+            <Label htmlFor={amenity.id} className="font-normal">
+              {amenity.label}
+            </Label>
           </div>
-          <Button type="button" onClick={handleAddCustomAmenity}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add
-          </Button>
-        </div>
+        ))}
+      </div>
 
-        {customAmenities.length > 0 && (
-          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-            {customAmenities.map((amenity) => (
-              <div key={amenity} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`custom-amenity-${amenity}`}
-                  checked={selectedAmenities.includes(amenity)}
-                  onCheckedChange={(checked) => handleAmenityChange(amenity, checked === true)}
-                />
-                <Label htmlFor={`custom-amenity-${amenity}`} className="text-sm font-normal">
-                  {amenity}
-                </Label>
-              </div>
-            ))}
-          </div>
-        )}
+      <div className="mt-8">
+        <h3 className="mb-4 text-lg font-semibold">Selected Amenities</h3>
+        <div className="grid grid-cols-2 gap-4">
+          {Object.entries(localAmenities)
+            .filter(([_, value]) => value)
+            .map(([key]) => {
+              const amenity = amenityOptions.find((a) => a.id === key);
+              return (
+                <div key={key} className="flex items-center gap-2">
+                  <Check className="h-5 w-5 text-primary" />
+                  <span>{amenity?.label || key}</span>
+                </div>
+              );
+            })}
+        </div>
       </div>
     </div>
-  )
+  );
 }
-
