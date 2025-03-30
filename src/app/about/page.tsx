@@ -250,7 +250,7 @@ export default function AboutPage() {
                 </Link>
               </Button>
               <Button variant="outline" asChild>
-                <Link href="/host/signup">Become a Host</Link>
+                <Link href="/auth/signup/?type=host">Become a Host</Link>
               </Button>
             </div>
           </div>

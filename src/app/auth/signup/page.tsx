@@ -21,10 +21,13 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { registerUser } from "@/utils/RegisterFunction";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function SignUpPage() {
-  const [userType, setUserType] = useState<"guest" | "host">("guest");
+  const params = useSearchParams();
+  const [userType, setUserType] = useState<"guest" | "host">(
+    params.get("type") === "host" ? "host" : "guest"
+  );
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -142,7 +145,7 @@ export default function SignUpPage() {
         </CardHeader>
         <CardContent>
           <Tabs
-            defaultValue="guest"
+            defaultValue={userType}
             onValueChange={(value) => setUserType(value as "guest" | "host")}
           >
             <TabsList className="grid w-full grid-cols-2">
