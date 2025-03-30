@@ -18,11 +18,12 @@ export const AuthProvider = ({
   children: React.ReactNode;
   initialUser: string | null;
 }) => {
-  const [user, setUser] = useState<string | null>(initialUser);
+  const [user, setUser] = useState<string | null>(null);
   const [userType, setUserType] = useState<string>("guest");
 
   useEffect(() => {
     if (initialUser) {
+      setUser(initialUser);
       const storedUserType = localStorage.getItem("userType");
       if (storedUserType) {
         setUserType(JSON.parse(storedUserType));

@@ -103,7 +103,7 @@ export function NavUser({
           <Button
             className="flex flex-row gap-4 items-center w-full cursor-pointer"
             size="sm"
-            onClick={() => {}}
+            onClick={handleLogout}
           >
             <LogOutIcon />
             Log out
