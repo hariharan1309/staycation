@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Star } from "lucide-react";
+import { Star } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel";
+import Review1 from "../../public/review/review1.png";
+import Review2 from "../../public/review/review2.png";
+import Review3 from "../../public/review/review3.png";
+import Review4 from "../../public/review/review4.png";
 
 const testimonials = [
   {
@@ -15,7 +17,7 @@ const testimonials = [
     location: "New York, USA",
     text: "We had an amazing stay at the beachfront villa. The property was exactly as described, and the host was incredibly helpful. Will definitely book again!",
     rating: 5,
-    avatar: "/placeholder.svg?height=80&width=80",
+    avatar: Review4,
   },
   {
     id: "2",
@@ -23,7 +25,7 @@ const testimonials = [
     location: "London, UK",
     text: "The mountain cabin exceeded our expectations. It was clean, cozy, and had breathtaking views. The booking process was smooth, and customer service was excellent.",
     rating: 5,
-    avatar: "/placeholder.svg?height=80&width=80",
+    avatar: Review2,
   },
   {
     id: "3",
@@ -31,15 +33,15 @@ const testimonials = [
     location: "Sydney, Australia",
     text: "This was our third time using StayCation, and it never disappoints. The apartment in Paris was in the perfect location, and the amenities were top-notch.",
     rating: 4,
-    avatar: "/placeholder.svg?height=80&width=80",
+    avatar: Review3,
   },
   {
     id: "4",
     name: "David Kim",
     location: "Toronto, Canada",
-    text: "The booking process was seamless, and the property was exactly as pictured. The host was responsive and provided great local recommendations.",
+    text: "The booking process was reviewless, and the property was exactly as pictured. The host was responsive and provided great local recommendations.",
     rating: 5,
-    avatar: "/placeholder.svg?height=80&width=80",
+    avatar: Review1,
   },
 ];
 
@@ -105,7 +107,6 @@ export function TestimonialCarousel() {
         opts={{
           loop: true,
           duration: 300,
-          
         }}
       >
         <CarouselContent>
