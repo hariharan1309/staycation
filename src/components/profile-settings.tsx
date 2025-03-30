@@ -31,7 +31,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 interface ProfileSettingsProps {
-  userRole: "guest" | "owner";
+  userRole: "guest" | "host";
 }
 
 export function ProfileSettings({ userRole }: ProfileSettingsProps) {
@@ -103,7 +103,7 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
         <TabsList className="grid w-full grid-cols-4 lg:grid-cols-5">
           <TabsTrigger value="account">Account</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="payment">Payment</TabsTrigger>
+          {/* <TabsTrigger value="payment">Payment</TabsTrigger> */}
           <TabsTrigger value="security">Security</TabsTrigger>
         </TabsList>
 
@@ -282,7 +282,7 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
             </CardFooter>
           </Card>
 
-          {userRole === "owner" && (
+          {userRole === "host" && (
             <Card>
               <CardHeader>
                 <CardTitle>Host Settings</CardTitle>
@@ -459,7 +459,7 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
         </TabsContent>
 
         {/* Payment Tab */}
-        <TabsContent
+        {/* <TabsContent
           value="payment"
           className="space-y-6 md:max-w-3/4  p-4 md:p-6 lg:p-8"
         >
@@ -503,7 +503,7 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
             </CardContent>
           </Card>
 
-          {userRole === "owner" && (
+          {userRole === "host" && (
             <Card>
               <CardHeader>
                 <CardTitle>Payout Methods</CardTitle>
@@ -609,7 +609,7 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+        </TabsContent> */}
 
         {/* Security Tab */}
         <TabsContent
@@ -642,7 +642,7 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
             </CardFooter>
           </Card>
 
-          <Card>
+          {/* <Card>
             <CardHeader>
               <CardTitle>Two-Factor Authentication</CardTitle>
               <CardDescription>
@@ -754,7 +754,7 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
                 Log Out of All Devices
               </Button>
             </CardContent>
-          </Card>
+          </Card> */}
 
           <Card>
             <CardHeader>

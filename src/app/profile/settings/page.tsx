@@ -1,24 +1,24 @@
 "use client";
 import { ProfileSettings } from "@/components/profile-settings";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 interface ProfileSettingsProps {
-  userRole: "guest" | "owner";
+  userRole: "guest" | "host";
 }
 const ProfileSettingsPage = () => {
-  const [userRole, setUserRole] = useState<"guest" | "owner">("owner");
-  // Toggle role for demo purposes
+  const [userRole, setUserRole] = useState<"guest" | "host">("host");
+  useEffect(() => {
+    const role = localStorage.getItem("userType");
+    if (role) {
+      setUserRole(role as "guest" | "host");
+    }
+  }, []);
   const toggleRole = () => {
-    setUserRole(userRole === "guest" ? "owner" : "guest");
+    setUserRole(userRole === "guest" ? "host" : "guest");
   };
   return (
-    <main className="container px-4 py-8 md:px-6 md:py-12">
-      {/* Role toggle for demo purposes */}
-      <div className="mb-6 flex justify-end">
-        <Button variant="outline" onClick={toggleRole}>
-          Switch to {userRole === "guest" ? "Owner" : "Guest"} View
-        </Button>
-      </div>
+    <main className="container px-4 py-6 md:py-8 md:px-6 lg:py-10">
       <ProfileSettings userRole={userRole} />
     </main>
   );
