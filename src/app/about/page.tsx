@@ -2,6 +2,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Users } from "lucide-react";
 
+import Team1 from "../../../public/team/team1.png";
+import Team2 from "../../../public/team/team2.png";
+import Team3 from "../../../public/team/team3.png";
+import Team4 from "../../../public/team/team4.png";
+import Team5 from "../../../public/team/team5.png";
+import Team6 from "../../../public/team/team6.png";
+import Team7 from "../../../public/team/team7.png";
+import Team8 from "../../../public/team/team8.png";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -205,19 +214,27 @@ export default function AboutPage() {
         </div>
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {[
-            { name: "Sarah Johnson", role: "CEO & Co-Founder" },
-            { name: "Michael Chen", role: "CTO & Co-Founder" },
-            { name: "Emma Rodriguez", role: "Head of Operations" },
-            { name: "David Kim", role: "Head of Marketing" },
-            { name: "Olivia Smith", role: "Head of Customer Experience" },
-            { name: "James Wilson", role: "Lead Developer" },
-            { name: "Sophia Garcia", role: "Finance Director" },
-            { name: "Robert Taylor", role: "Community Manager" },
+            { name: "Sarah Johnson", role: "CEO & Co-Founder", image: Team1 },
+            { name: "Michael Chen", role: "CTO & Co-Founder", image: Team2 },
+            {
+              name: "Emma Rodriguez",
+              role: "Head of Operations",
+              image: Team3,
+            },
+            { name: "David Kim", role: "Head of Marketing", image: Team4 },
+            {
+              name: "Olivia Smith",
+              role: "Head of Customer Experience",
+              image: Team5,
+            },
+            { name: "James Wilson", role: "Lead Developer", image: Team6 },
+            { name: "Sophia Garcia", role: "Finance Director", image: Team7 },
+            { name: "Robert Taylor", role: "Community Manager", image: Team8 },
           ].map((member, index) => (
             <div key={index} className="flex flex-col items-center text-center">
               <div className="mb-4 aspect-square w-40 overflow-hidden rounded-full">
                 <Image
-                  src="/placeholder.svg?height=160&width=160"
+                  src={member.image}
                   alt={member.name}
                   width={160}
                   height={160}
