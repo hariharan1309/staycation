@@ -1,48 +1,61 @@
-"use client"
+// components/property-pricing-form.tsx
+"use client";
 
-import type React from "react"
+import { useEffect, useState } from "react";
+import { DollarSign } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
+import { PropertyPricing } from "@/app/properties/new/page";
 
-import { useState } from "react"
-import { DollarSign } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { Separator } from "@/components/ui/separator"
-import { Checkbox } from "@/components/ui/checkbox"
+interface PropertyPricingFormProps {
+  pricing: PropertyPricing;
+  updatePricing: (pricing: PropertyPricing) => void;
+}
 
-export function PropertyPricingForm() {
-  const [pricing, setPricing] = useState({
-    basePrice: 100,
-    cleaningFee: 50,
-    securityDeposit: 200,
-    weeklyDiscount: 10,
-    monthlyDiscount: 20,
-    instantBook: true,
-    minNights: 2,
-    maxNights: 30,
-    taxes: true,
-  })
+export function PropertyPricingForm({
+  pricing,
+  updatePricing,
+}: PropertyPricingFormProps) {
+  const [localPricing, setLocalPricing] = useState<PropertyPricing>({
+    basePrice: pricing.basePrice || 100,
+    cleaningFee: pricing.cleaningFee || 50,
+    securityDeposit: pricing.securityDeposit || 200,
+    weeklyDiscount: pricing.weeklyDiscount || 10,
+    monthlyDiscount: pricing.monthlyDiscount || 20,
+    instantBook: pricing.instantBook ?? true,
+    minNights: pricing.minNights || 2,
+    maxNights: pricing.maxNights || 30,
+    taxes: pricing.taxes ?? true,
+  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type } = e.target
-    setPricing({
-      ...pricing,
-      [name]: type === "number" ? Number.parseFloat(value) : value,
-    })
-  }
+  useEffect(() => {
+    updatePricing(localPricing);
+  }, [localPricing]);
 
-  const handleSwitchChange = (name: string, checked: boolean) => {
-    setPricing({
-      ...pricing,
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const { name, value, type } = e.target;
+    setLocalPricing({
+      ...localPricing,
+      [name]: type === "number" ? Number(value) : value,
+    });
+  };
+
+  const handleSwitchChange = (name: string, checked: boolean): void => {
+    setLocalPricing({
+      ...localPricing,
       [name]: checked,
-    })
-  }
+    });
+  };
 
   return (
     <div className="space-y-6 md:max-w-2/3">
       <div className="rounded-lg border p-4">
         <p className="text-sm text-muted-foreground">
-          Set your property's pricing and availability. You can always change these settings later.
+          Set your property's pricing and availability. You can always change
+          these settings later.
         </p>
       </div>
 
@@ -114,7 +127,9 @@ export function PropertyPricingForm() {
               value={pricing.weeklyDiscount}
               onChange={handleChange}
             />
-            <p className="text-xs text-muted-foreground">Discount for stays of 7 nights or more</p>
+            <p className="text-xs text-muted-foreground">
+              Discount for stays of 7 nights or more
+            </p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="monthlyDiscount">Monthly Discount (%)</Label>
@@ -127,7 +142,9 @@ export function PropertyPricingForm() {
               value={pricing.monthlyDiscount}
               onChange={handleChange}
             />
-            <p className="text-xs text-muted-foreground">Discount for stays of 28 nights or more</p>
+            <p className="text-xs text-muted-foreground">
+              Discount for stays of 28 nights or more
+            </p>
           </div>
         </div>
       </div>
@@ -147,7 +164,9 @@ export function PropertyPricingForm() {
             <Switch
               id="instantBook"
               checked={pricing.instantBook}
-              onCheckedChange={(checked) => handleSwitchChange("instantBook", checked)}
+              onCheckedChange={(checked) =>
+                handleSwitchChange("instantBook", checked)
+              }
             />
           </div>
 
@@ -186,14 +205,16 @@ export function PropertyPricingForm() {
           <Checkbox
             id="taxes"
             checked={pricing.taxes}
-            onCheckedChange={(checked) => handleSwitchChange("taxes", checked === true)}
+            onCheckedChange={(checked) =>
+              handleSwitchChange("taxes", checked === true)
+            }
           />
           <Label htmlFor="taxes" className="font-normal">
-            I understand that I'm responsible for collecting and remitting all applicable taxes
+            I understand that I'm responsible for collecting and remitting all
+            applicable taxes
           </Label>
         </div>
       </div>
     </div>
-  )
+  );
 }
-

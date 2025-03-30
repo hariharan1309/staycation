@@ -1,78 +1,93 @@
-"use client"
+// components/property-images-form.tsx
+"use client";
 
-import type React from "react"
+import { useEffect, useState } from "react";
+import { ImageIcon, Upload, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { PropertyImage } from "@/app/properties/new/page";
 
-import { useState } from "react"
-import { ImageIcon, Upload, X } from "lucide-react"
+interface PropertyImagesFormProps {
+  images: PropertyImage[];
+  updateImages: (images: PropertyImage[]) => void;
+}
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+export function PropertyImagesForm({
+  images,
+  updateImages,
+}: PropertyImagesFormProps) {
+  const [localImages, setLocalImages] = useState<PropertyImage[]>(images || []);
+  const [dragActive, setDragActive] = useState<boolean>(false);
 
-export function PropertyImagesForm() {
-  const [images, setImages] = useState<{ id: number; url: string; main: boolean }[]>([])
-  const [dragActive, setDragActive] = useState(false)
+  useEffect(() => {
+    updateImages(localImages);
+  }, [localImages]);
 
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+  const handleDrag = (e: React.DragEvent): void => {
+    e.preventDefault();
+    e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true)
+      setDragActive(true);
     } else if (e.type === "dragleave") {
-      setDragActive(false)
+      setDragActive(false);
     }
-  }
+  };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setDragActive(false)
+  const handleDrop = (e: React.DragEvent): void => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFiles(e.dataTransfer.files)
+      handleFiles(e.dataTransfer.files);
     }
-  }
+  };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files && e.target.files.length > 0) {
-      handleFiles(e.target.files)
+      handleFiles(e.target.files);
     }
-  }
+  };
 
-  const handleFiles = (files: FileList) => {
+  const handleFiles = (files: FileList): void => {
     const newImages = Array.from(files).map((file, index) => ({
       id: Date.now() + index,
       url: URL.createObjectURL(file),
-      main: images.length === 0 && index === 0, // First image is main by default
-    }))
+      main: localImages.length === 0 && index === 0, // First image is main by default
+    }));
 
-    setImages([...images, ...newImages])
-  }
+    setLocalImages([...localImages, ...newImages]);
+  };
 
-  const removeImage = (id: number) => {
-    const updatedImages = images.filter((image) => image.id !== id)
+  const removeImage = (id: number): void => {
+    const updatedImages = localImages.filter((image) => image.id !== id);
 
     // If we removed the main image, set the first remaining image as main
-    if (images.find((image) => image.id === id)?.main && updatedImages.length > 0) {
-      updatedImages[0].main = true
+    if (
+      localImages.find((image) => image.id === id)?.main &&
+      updatedImages.length > 0
+    ) {
+      updatedImages[0].main = true;
     }
 
-    setImages(updatedImages)
-  }
+    setLocalImages(updatedImages);
+  };
 
-  const setMainImage = (id: number) => {
-    setImages(
-      images.map((image) => ({
+  const setMainImage = (id: number): void => {
+    setLocalImages(
+      localImages.map((image) => ({
         ...image,
         main: image.id === id,
-      })),
-    )
-  }
+      }))
+    );
+  };
 
   return (
     <div className="space-y-6 md:max-w-2/3">
       <div className="rounded-lg border p-4">
         <p className="text-sm text-muted-foreground">
-          Upload high-quality images of your property. The first image will be the main image shown in search results.
+          Upload high-quality images of your property. The first image will be
+          the main image shown in search results.
         </p>
       </div>
 
@@ -87,8 +102,17 @@ export function PropertyImagesForm() {
       >
         <ImageIcon className="mb-4 h-12 w-12 text-muted-foreground" />
         <h3 className="mb-2 text-lg font-semibold">Upload Images</h3>
-        <p className="mb-6 text-sm text-muted-foreground">Drag and drop your images here, or click to browse</p>
-        <input id="image-upload" type="file" multiple accept="image/*" className="hidden" onChange={handleFileChange} />
+        <p className="mb-6 text-sm text-muted-foreground">
+          Drag and drop your images here, or click to browse
+        </p>
+        <input
+          id="image-upload"
+          type="file"
+          multiple
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileChange}
+        />
         <Button asChild>
           <label htmlFor="image-upload" className="cursor-pointer">
             <Upload className="mr-2 h-4 w-4" />
@@ -97,14 +121,18 @@ export function PropertyImagesForm() {
         </Button>
       </div>
 
-      {images.length > 0 && (
+      {localImages.length > 0 && (
         <div className="space-y-4">
           <h3 className="font-medium">Uploaded Images</h3>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-            {images.map((image) => (
+            {localImages.map((image) => (
               <Card key={image.id} className="overflow-hidden">
                 <div className="relative aspect-square">
-                  <img src={image.url || "/placeholder.svg"} alt="Property" className="h-full w-full object-cover" />
+                  <img
+                    src={image.url || "/placeholder.svg"}
+                    alt="Property"
+                    className="h-full w-full object-cover"
+                  />
                   {image.main && (
                     <div className="absolute left-2 top-2 rounded-md bg-primary px-2 py-1 text-xs font-medium text-primary-foreground">
                       Main Image
@@ -121,7 +149,12 @@ export function PropertyImagesForm() {
                 </div>
                 <CardContent className="p-2">
                   {!image.main && (
-                    <Button variant="outline" size="sm" className="w-full" onClick={() => setMainImage(image.id)}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => setMainImage(image.id)}
+                    >
                       Set as Main
                     </Button>
                   )}
@@ -132,6 +165,5 @@ export function PropertyImagesForm() {
         </div>
       )}
     </div>
-  )
+  );
 }
-
