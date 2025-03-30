@@ -1,7 +1,5 @@
 "use client";
 
-import type React from "react";
-
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
@@ -15,64 +13,173 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PropertyAmenitiesForm } from "@/components/property-amenities-form";
-import { PropertyPricingForm } from "@/components/property-pricing-form";
+import { PropertyBasicInfoForm } from "@/components/property-basic-form";
 import { PropertyLocationForm } from "@/components/property-location-form";
+import { PropertyAmenitiesForm } from "@/components/property-amenities-form";
 import { PropertyImagesForm } from "@/components/property-images-form";
+import { PropertyPricingForm } from "@/components/property-pricing-form";
+import { toast } from "sonner";
+// import { useToast } from "@/components/ui/use-toast";
+
+// Define types for the property data
+export interface PropertyImage {
+  id: number;
+  url: string;
+  main: boolean;
+}
+
+export interface PropertyLocation {
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  directions?: string;
+}
+
+export interface PropertyAmenities {
+  wifi: boolean;
+  kitchen: boolean;
+  ac: boolean;
+  heating: boolean;
+  tv: boolean;
+  parking: boolean;
+  pool: boolean;
+  beachfront: boolean;
+  washer: boolean;
+  workspace: boolean;
+  outdoorDining: boolean;
+  [key: string]: boolean;
+}
+
+export interface PropertyPricing {
+  basePrice: number;
+  cleaningFee: number;
+  securityDeposit: number;
+  weeklyDiscount: number;
+  monthlyDiscount: number;
+  instantBook: boolean;
+  minNights: number;
+  maxNights: number;
+  taxes: boolean;
+}
+
+export interface PropertyFormData {
+  title: string;
+  description: string;
+  type: string;
+  bedrooms: number;
+  bathrooms: number;
+  maxGuests: number;
+  location: PropertyLocation;
+  amenities: PropertyAmenities;
+  images: PropertyImage[];
+  pricing: PropertyPricing;
+}
 
 export default function EditPropertyPage() {
-  const [activeTab, setActiveTab] = useState("basic");
-  const [formData, setFormData] = useState({
+  const [activeTab, setActiveTab] = useState<string>("basic");
+
+  const [formData, setFormData] = useState<PropertyFormData>({
+    // Basic Info
     title: "",
     description: "",
     type: "apartment",
     bedrooms: 1,
     bathrooms: 1,
     maxGuests: 2,
+
+    // Location
+    location: {
+      address: "",
+      city: "",
+      state: "",
+      zipCode: "",
+      country: "United States",
+      directions: "",
+    },
+
+    // Amenities
+    amenities: {
+      wifi: false,
+      kitchen: false,
+      ac: false,
+      heating: false,
+      tv: false,
+      parking: false,
+      pool: false,
+      beachfront: false,
+      washer: false,
+      workspace: false,
+      outdoorDining: false,
+    },
+
+    // Images
+    images: [],
+
+    // Pricing
+    pricing: {
+      basePrice: 100,
+      cleaningFee: 50,
+      securityDeposit: 200,
+      weeklyDiscount: 10,
+      monthlyDiscount: 20,
+      instantBook: true,
+      minNights: 2,
+      maxNights: 30,
+      taxes: true,
+    },
   });
 
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  const updateFormData = (section: string, data: any): void => {
+    setFormData((prev) => ({
+      ...prev,
+      [section]: data,
+    }));
   };
 
-  const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: Number.parseInt(value) || 0,
-    });
+  const handleNextTab = (): void => {
+    const tabOrder = ["basic", "location", "amenities", "photos", "pricing"];
+    const currentIndex = tabOrder.indexOf(activeTab);
+    if (currentIndex < tabOrder.length - 1) {
+      setActiveTab(tabOrder[currentIndex + 1]);
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission
-    console.log("Form submitted:", formData);
+  const handlePrevTab = (): void => {
+    const tabOrder = ["basic", "location", "amenities", "photos", "pricing"];
+    const currentIndex = tabOrder.indexOf(activeTab);
+    if (currentIndex > 0) {
+      setActiveTab(tabOrder[currentIndex - 1]);
+    }
   };
 
-  const handleNextTab = () => {
-    if (activeTab === "basic") setActiveTab("location");
-    else if (activeTab === "location") setActiveTab("amenities");
-    else if (activeTab === "amenities") setActiveTab("photos");
-    else if (activeTab === "photos") setActiveTab("pricing");
-  };
+  const handleSubmit = async (): Promise<void> => {
+    try {
+      // Validate form data before submission
+      if (!formData.title || !formData.description) {
+        toast.warning("Missing Information", {
+          description: "Please fill in all required fields",
+        });
+        return;
+      }
 
-  const handlePrevTab = () => {
-    if (activeTab === "pricing") setActiveTab("photos");
-    else if (activeTab === "photos") setActiveTab("amenities");
-    else if (activeTab === "amenities") setActiveTab("location");
-    else if (activeTab === "location") setActiveTab("basic");
+      // Here you would typically send the data to your API
+      console.log("Submitting property:", formData);
+
+      // Show success message
+      toast.success("Property Created", {
+        description: "Your property has been successfully created",
+      });
+
+      // Redirect to the properties page or the new property page
+      // router.push("/properties");
+    } catch (error) {
+      toast.error("Error", {
+        description: "Failed to create property. Please try again.",
+      });
+    }
   };
 
   return (
@@ -91,7 +198,7 @@ export default function EditPropertyPage() {
         <CardHeader>
           <CardTitle>Property Details</CardTitle>
           <CardDescription>
-            Update the details about your listed property.
+            Update the details about your property.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -109,110 +216,48 @@ export default function EditPropertyPage() {
             </TabsList>
 
             <TabsContent value="basic" className="mt-6 p-4 md:p-6 lg:p-8">
-              <div className="space-y-6 md:max-w-2/3">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Property Title</Label>
-                  <Input
-                    id="title"
-                    name="title"
-                    placeholder="e.g. Cozy Beachfront Villa"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    name="description"
-                    placeholder="Describe your property..."
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    rows={5}
-                    required
-                  />
-                </div>
-
-                <div className="grid gap-6 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="type">Property Type</Label>
-                    <select
-                      id="type"
-                      name="type"
-                      value={formData.type}
-                      onChange={handleInputChange}
-                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    >
-                      <option value="apartment">Apartment</option>
-                      <option value="house">House</option>
-                      <option value="villa">Villa</option>
-                      <option value="cabin">Cabin</option>
-                      <option value="cottage">Cottage</option>
-                      <option value="bungalow">Bungalow</option>
-                      <option value="studio">Studio</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid gap-6 md:grid-cols-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="bedrooms">Bedrooms</Label>
-                    <Input
-                      id="bedrooms"
-                      name="bedrooms"
-                      type="number"
-                      min={0}
-                      value={formData.bedrooms}
-                      onChange={handleNumberChange}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="bathrooms">Bathrooms</Label>
-                    <Input
-                      id="bathrooms"
-                      name="bathrooms"
-                      type="number"
-                      min={0}
-                      step={0.5}
-                      value={formData.bathrooms}
-                      onChange={handleNumberChange}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="maxGuests">Max Guests</Label>
-                    <Input
-                      id="maxGuests"
-                      name="maxGuests"
-                      type="number"
-                      min={1}
-                      value={formData.maxGuests}
-                      onChange={handleNumberChange}
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
+              <PropertyBasicInfoForm
+                formData={formData}
+                updateFormData={(data: Partial<PropertyFormData>) => {
+                  setFormData((prev) => ({ ...prev, ...data }));
+                }}
+              />
             </TabsContent>
 
             <TabsContent value="location" className="mt-6 p-4 md:p-6 lg:p-8">
-              <PropertyLocationForm />
+              <PropertyLocationForm
+                location={formData.location}
+                updateLocation={(data: PropertyLocation) =>
+                  updateFormData("location", data)
+                }
+              />
             </TabsContent>
 
             <TabsContent value="amenities" className="mt-6 p-4 md:p-6 lg:p-8">
-              <PropertyAmenitiesForm />
+              <PropertyAmenitiesForm
+                amenities={formData.amenities}
+                updateAmenities={(data: PropertyAmenities) =>
+                  updateFormData("amenities", data)
+                }
+              />
             </TabsContent>
 
             <TabsContent value="photos" className="mt-6 p-4 md:p-6 lg:p-8">
-              <PropertyImagesForm />
+              <PropertyImagesForm
+                images={formData.images}
+                updateImages={(data: PropertyImage[]) =>
+                  updateFormData("images", data)
+                }
+              />
             </TabsContent>
 
             <TabsContent value="pricing" className="mt-6 p-4 md:p-6 lg:p-8">
-              <PropertyPricingForm />
+              <PropertyPricingForm
+                pricing={formData.pricing}
+                updatePricing={(data: PropertyPricing) =>
+                  updateFormData("pricing", data)
+                }
+              />
             </TabsContent>
           </Tabs>
         </CardContent>
