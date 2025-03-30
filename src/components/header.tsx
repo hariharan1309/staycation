@@ -25,6 +25,8 @@ export function Header() {
   const authContext = useContext(AuthContext);
   const user = authContext?.user ?? null;
   const userType = authContext?.userType ?? "guest";
+  const setUser = authContext?.setUser ?? null;
+  const setUserType = authContext?.setUserType ?? null;
 
   const routes = [
     { href: "/", label: "Home", icon: <HomeIcon /> },
@@ -71,7 +73,11 @@ export function Header() {
         {/* Auth & Theme Toggle */}
         <div className="flex items-center gap-2">
           {user ? (
-            <NavUser user={sampleUser} />
+            <NavUser
+              user={sampleUser}
+              setUser={setUser}
+              setUserType={setUserType}
+            />
           ) : (
             <div className="hidden md:flex md:gap-2">
               <Button variant="outline" asChild>

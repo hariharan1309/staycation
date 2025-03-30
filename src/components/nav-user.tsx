@@ -19,22 +19,40 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useSidebar } from "./ui/sidebar";
 import { Button } from "./ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Card } from "./ui/card";
 import Link from "next/link";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { clearAuthCookie } from "@/lib/auth";
+import { useRouter } from "next/navigation";
 
 export function NavUser({
   user,
+  setUser,
+  setUserType,
 }: {
   user: {
     name: string;
     email: string;
     avatar: string;
   };
+  setUser: ((user: string | null) => void) | null;
+  setUserType: ((type: string) => void) | null;
 }) {
-  const isMobile = useIsMobile();
+  const router = useRouter();
+  const handleLogout = async () => {
+    try {
+      await signOut(auth); // Sign out from Firebase
+      clearAuthCookie(); // Clear the auth cookie
+      if (setUser) setUser(null);
+      if (setUserType) setUserType("guest");
+      router.push("/auth/login"); // Redirect to the home page
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -82,9 +100,11 @@ export function NavUser({
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Button className="flex flex-row gap-2 items-center" onClick={()=>{
-            
-          }}>
+          <Button
+            className="flex flex-row gap-4 items-center w-full cursor-pointer"
+            size="sm"
+            onClick={() => {}}
+          >
             <LogOutIcon />
             Log out
           </Button>
