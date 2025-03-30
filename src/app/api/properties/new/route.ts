@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { app, fstore, storage } from "@/lib/firebase"; // Adjust import path as needed
+import { app, fstore, storage } from "@/lib/firebase";
 import { doc, setDoc, collection } from "firebase/firestore";
 import { ref, uploadString, getDownloadURL } from "firebase/storage";
 
@@ -17,29 +17,18 @@ export const POST = async (req: Request) => {
     const data = await req.json();
     console.log(data);
 
-    // Process images - convert blob URLs to proper images for Firestore
+    // Process images - upload base64 images to Firebase Storage
     const processedImages = [];
     if (data.images && data.images.length > 0) {
       for (const image of data.images) {
-        // For blob URLs, you need to fetch them first
         try {
           // Create a reference in storage with unique name
           const imageName = `properties/${userID}/${Date.now()}-${image.id}`;
           const storageRef = ref(storage, imageName);
 
-          // Fetch the blob data
-          const response = await fetch(image.url);
-          const blob = await response.blob();
-
-          // Convert blob to base64 string
-          const reader = new FileReader();
-          const base64String = await new Promise((resolve) => {
-            reader.onload = () => resolve(reader.result);
-            reader.readAsDataURL(blob);
-          });
-
-          // Upload to Firebase Storage
-          await uploadString(storageRef, base64String as string, "data_url");
+          // Upload the base64 string directly to Firebase Storage
+          // The URL from the frontend is already a base64 string
+          await uploadString(storageRef, image.url, "data_url");
 
           // Get the download URL
           const downloadURL = await getDownloadURL(storageRef);

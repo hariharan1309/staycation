@@ -165,23 +165,73 @@ export default function AddPropertyPage() {
         return;
       }
 
-      // Here you would typically send the data to your API
-      console.log("Submitting property:", formData);
+      // Process images first to convert blob URLs to Base64
+      const processedImages = [];
+
+      if (formData.images && formData.images.length > 0) {
+        for (const image of formData.images) {
+          try {
+            // Convert blob URL to Base64
+            const response = await fetch(image.url);
+            const blob = await response.blob();
+
+            const reader = new FileReader();
+            const base64 = await new Promise<string>((resolve) => {
+              reader.onloadend = () => resolve(reader.result as string);
+              reader.readAsDataURL(blob);
+            });
+
+            // Add to processed images with Base64 data
+            processedImages.push({
+              id: image.id,
+              url: base64, // Send the base64 string instead of blob URL
+              main: image.main,
+            });
+          } catch (error) {
+            console.error("Error converting image:", error);
+            toast.error("Image Error", {
+              description: "Failed to process one or more images",
+            });
+          }
+        }
+      }
+
+      // Create a copy of formData with processed images
+      const processedFormData = {
+        ...formData,
+        images: processedImages,
+      };
+
+      console.log("Submitting property:", processedFormData);
 
       const resp = await fetch("/api/properties/new", {
         method: "POST",
-        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(processedFormData),
       });
+
+      if (!resp.ok) {
+        const errorData = await resp.json();
+        throw new Error(errorData.error || "Failed to create property");
+      }
+
       toast.success("Property Created", {
         description: "Your property has been successfully created",
       });
+
+      // Optional: redirect or reset form after successful submission
     } catch (error) {
+      console.error("Submission error:", error);
       toast.error("Error", {
-        description: "Failed to create property. Please try again.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to create property. Please try again.",
       });
     }
   };
-
   return (
     <main className="container px-4 py-8 md:px-6 md:py-12">
       <div className="mb-6 flex items-center gap-2">
