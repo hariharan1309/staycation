@@ -55,7 +55,13 @@ export default async function LoginFunction({
         return {
           success: true,
           message: `Welcome ${userValue.firstName}...`,
-          user: JSON.parse(JSON.stringify(userValue)),
+          user: JSON.parse(
+            JSON.stringify({
+              ...userValue,
+              userType,
+              userID: userCredential.user.uid,
+            })
+          ),
         };
       } else {
         return {
