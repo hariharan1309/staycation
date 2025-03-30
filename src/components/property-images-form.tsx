@@ -52,11 +52,11 @@ export function PropertyImagesForm({
   const handleFiles = (files: FileList): void => {
     const newImages = Array.from(files).map((file, index) => ({
       id: Date.now() + index,
-      url: URL.createObjectURL(file),
+      url: URL.createObjectURL(file), // Show preview
       main: localImages.length === 0 && index === 0, // First image is main by default
     }));
 
-    setLocalImages([...localImages, ...newImages]);
+    setLocalImages((prevImages) => [...prevImages, ...newImages]);
   };
 
   const removeImage = (id: number): void => {

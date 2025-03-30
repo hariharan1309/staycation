@@ -20,12 +20,15 @@ import { PropertyAmenitiesForm } from "@/components/property-amenities-form";
 import { PropertyImagesForm } from "@/components/property-images-form";
 import { PropertyPricingForm } from "@/components/property-pricing-form";
 import { toast } from "sonner";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "@/lib/firebase";
 // import { useToast } from "@/components/ui/use-toast";
 
 // Define types for the property data
 export interface PropertyImage {
   id: number;
   url: string;
+  file: any;
   main: boolean;
 }
 
@@ -155,83 +158,60 @@ export default function AddPropertyPage() {
     }
   };
 
-  const handleSubmit = async (): Promise<void> => {
+  const handleSubmit = async () => {
     try {
-      // Validate form data before submission
-      if (!formData.title || !formData.description) {
-        toast.warning("Missing Information", {
-          description: "Please fill in all required fields",
-        });
-        return;
-      }
+      toast.loading("Uploading images...");
 
-      // Process images first to convert blob URLs to Base64
-      const processedImages = [];
-
-      if (formData.images && formData.images.length > 0) {
-        for (const image of formData.images) {
-          try {
-            // Convert blob URL to Base64
-            const response = await fetch(image.url);
-            const blob = await response.blob();
-
-            const reader = new FileReader();
-            const base64 = await new Promise<string>((resolve) => {
-              reader.onloadend = () => resolve(reader.result as string);
-              reader.readAsDataURL(blob);
-            });
-
-            // Add to processed images with Base64 data
-            processedImages.push({
+      // Step 1: Upload images to Firebase and get URLs
+      const uploadedImages = await Promise.all(
+        formData.images.map(async (image) => {
+          if (image.url.startsWith("blob")) {
+            // Only upload new images (ignore existing ones with URLs)
+            return {
               id: image.id,
-              url: base64, // Send the base64 string instead of blob URL
+              url: await uploadImageToFirebase(image.file), // Upload file, get URL
               main: image.main,
-            });
-          } catch (error) {
-            console.error("Error converting image:", error);
-            toast.error("Image Error", {
-              description: "Failed to process one or more images",
-            });
+            };
           }
-        }
-      }
+          return image; // Keep existing images as they are
+        })
+      );
 
-      // Create a copy of formData with processed images
-      const processedFormData = {
+      // Step 2: Prepare final data with uploaded image URLs
+      const finalData = {
         ...formData,
-        images: processedImages,
+        images: uploadedImages,
       };
 
-      console.log("Submitting property:", processedFormData);
+      toast.loading("Submitting property...");
 
-      const resp = await fetch("/api/properties/new", {
+      // Step 3: Send data to API
+      const response = await fetch("/api/properties/new", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(processedFormData),
+        body: JSON.stringify(finalData),
       });
 
-      if (!resp.ok) {
-        const errorData = await resp.json();
-        throw new Error(errorData.error || "Failed to create property");
-      }
+      if (!response.ok) throw new Error("Failed to create property");
 
-      toast.success("Property Created", {
-        description: "Your property has been successfully created",
-      });
-
-      // Optional: redirect or reset form after successful submission
+      toast.success("Property created successfully!");
     } catch (error) {
-      console.error("Submission error:", error);
-      toast.error("Error", {
-        description:
-          error instanceof Error
-            ? error.message
-            : "Failed to create property. Please try again.",
-      });
+      console.error("Error:", error);
+      toast.error("Error submitting property", { description: error.message });
     }
   };
+
+  const uploadImageToFirebase = async (file: File): Promise<string> => {
+    return new Promise(async (resolve, reject) => {
+      const storageRef = ref(storage, `properties/${Date.now()}-${file.name}`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      resolve(url);
+    });
+  };
+
   return (
     <main className="container px-4 py-8 md:px-6 md:py-12">
       <div className="mb-6 flex items-center gap-2">
