@@ -194,7 +194,7 @@ export default function PropertyPage() {
         toast.warning("Can't Book Own Property");
         return;
       }
-      const response = await fetch("/api/create-checkout-session", {
+      const response = await fetch("/api/checkout_session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
