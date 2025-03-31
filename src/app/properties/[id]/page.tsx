@@ -10,7 +10,7 @@ import {
   Star,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,7 +26,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getCookieVal } from "@/lib/cookie";
+import { toast } from "sonner";
 
+// import { loadStripe } from "@stripe/stripe-js";
 // Define property type for type safety
 type PropertyType = {
   id: string;
@@ -80,9 +83,11 @@ export default function PropertyPage() {
   const [booking, setBooking] = useState({
     nights: 1,
     guests: 1,
+    checkIn: new Date(),
+    checkOut: new Date(new Date().setDate(new Date().getDate() + 1)),
   });
   const params = useParams();
-
+  const router = useRouter();
   useEffect(() => {
     const getProperty = async () => {
       try {
@@ -148,6 +153,70 @@ export default function PropertyPage() {
 
     return baseTotal + cleaningFee + serviceFee;
   };
+  async function handleReserveWithoutPayment() {
+    try {
+      const userID = await getCookieVal();
+      if (userID?.value === property?.owner) {
+        toast.warning("Can't Book Own Property");
+        return;
+      }
+      const response = await fetch("/api/booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          propertyId: property?.id,
+          guestId: userID?.value || "guest",
+          ownerId: property?.owner,
+          checkIn: booking.checkIn,
+          checkOut: booking.checkOut,
+          guests: booking.guests,
+          nights: booking.nights,
+          totalAmount: calculateTotal(),
+          paymentStatus: "pending",
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to create booking");
+
+      const data = await response.json();
+      // Redirect to confirmation page
+      router.push(`/booking-confirmation?id=${data.bookingId}`);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to create booking. Please try again.");
+    }
+  }
+
+  async function handleBookWithPayment() {
+    try {
+      const userID = await getCookieVal();
+      if (userID?.value === property?.owner) {
+        toast.warning("Can't Book Own Property");
+        return;
+      }
+      const response = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          propertyId: property?.id,
+          propertyTitle: property?.title,
+          nights: booking.nights,
+          guests: booking.guests,
+          userID: userID?.value,
+          totalAmount: calculateTotal(),
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to create checkout session");
+
+      const data = await response.json();
+      // Redirect to Stripe checkout
+      window.location.href = data.url;
+    } catch (error) {
+      console.error(error);
+      alert("Failed to process payment. Please try again.");
+    }
+  }
 
   // Format location string
   const getLocationString = () => {
@@ -407,10 +476,24 @@ export default function PropertyPage() {
                   </div>
                 </div>
 
-                <Button className="w-full">Reserve</Button>
+                <div className="flex gap-2 w-full">
+                  <Button
+                    className="w-1/2"
+                    onClick={handleReserveWithoutPayment}
+                  >
+                    Reserve
+                  </Button>
+                  <Button
+                    className="w-1/2"
+                    variant="default"
+                    onClick={handleBookWithPayment}
+                  >
+                    Book Now
+                  </Button>
+                </div>
 
                 <p className="text-center text-sm text-muted-foreground">
-                  You won't be charged yet
+                  "Book Now" requires payment to confirm
                 </p>
 
                 <div className="space-y-2">
