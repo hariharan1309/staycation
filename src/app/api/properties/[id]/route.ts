@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export const GET = async (req: Request, context: { params: any }) => {
   try {
-    const id = context.params.id;
+    const {id} = await context.params;
     const data = await getDoc(doc(fstore, "property", id));
     if (!data.exists()) {
       return new NextResponse(

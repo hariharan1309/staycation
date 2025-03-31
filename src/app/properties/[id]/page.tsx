@@ -77,8 +77,10 @@ export default function PropertyPage() {
   const [property, setProperty] = useState<PropertyType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [nights, setNights] = useState(7);
-  const [guests, setGuests] = useState(1);
+  const [booking, setBooking] = useState({
+    nights: 1,
+    guests: 1,
+  });
   const params = useParams();
 
   useEffect(() => {
@@ -140,7 +142,7 @@ export default function PropertyPage() {
   const calculateTotal = () => {
     if (!property) return 0;
 
-    const baseTotal = property.pricing.basePrice * nights;
+    const baseTotal = property.pricing.basePrice * booking.nights;
     const cleaningFee = property.pricing.cleaningFee;
     const serviceFee = Math.round(baseTotal * 0.1); // 10% service fee
 
@@ -193,7 +195,7 @@ export default function PropertyPage() {
   // Render error state
   if (error) {
     return (
-      <main className="container px-4 py-8 md:px-6 md:py-12 lg:px-8">
+      <main className="container px-4 py-8 md:px-6 md:py-12 lg:px-16">
         <div className="mb-6 flex items-center gap-2">
           <Button variant="ghost" size="icon" asChild>
             <Link href="/properties">
@@ -219,7 +221,7 @@ export default function PropertyPage() {
   // If property data is not available after loading is complete
   if (!property) {
     return (
-      <main className="container px-4 py-8 md:px-6 md:py-12 lg:px-8">
+      <main className="container px-4 py-8 md:px-6 md:py-12 lg:px-16">
         <div className="mb-6 flex items-center gap-2">
           <Button variant="ghost" size="icon" asChild>
             <Link href="/properties">
@@ -245,8 +247,8 @@ export default function PropertyPage() {
   }
 
   return (
-    <main className="container px-4 py-8 md:px-6 md:py-12 lg:px-8">
-      <div className="mb-6 flex items-center gap-2">
+    <main className="container px-4 py-8 md:px-6 md:py-12 lg:px-12">
+      <div className="mb-4 flex items-center gap-2">
         <Button variant="ghost" size="icon" asChild>
           <Link href="/properties">
             <ArrowLeft className="h-5 w-5" />
@@ -274,7 +276,9 @@ export default function PropertyPage() {
       ) : (
         <div className="mt-4 flex h-80 gap-4 w-full items-center justify-center bg-muted rounded-lg px-10">
           <ImageMinus />
-          <p className="text-muted-foreground text-xl font-bold">No images available</p>
+          <p className="text-muted-foreground text-xl font-bold">
+            No images available
+          </p>
         </div>
       )}
 
@@ -349,25 +353,37 @@ export default function PropertyPage() {
               <div className="space-y-4">
                 <DatePickerWithRange
                   className="w-full"
-                  // onChange={(range) => {
-                  //   if (range?.from && range?.to) {
-                  //     const diffTime = Math.abs(
-                  //       range.to.getTime() - range.from.getTime()
-                  //     );
-                  //     const diffDays = Math.ceil(
-                  //       diffTime / (1000 * 60 * 60 * 24)
-                  //     );
-                  //     setNights(diffDays || 1);
-                  //   }
-                  // }}
+                  initialDateRange={{
+                    from: new Date(),
+                    to: new Date(
+                      new Date().setDate(new Date().getDate() + booking.nights)
+                    ),
+                  }}
+                  onChange={(range) => {
+                    if (range) {
+                      setBooking((prev) => ({
+                        ...prev,
+                        nights: Math.ceil(
+                          //@ts-ignore
+                          (range?.to?.getTime() - range.from.getTime()) /
+                            (1000 * 60 * 60 * 24)
+                        ),
+                      }));
+                    }
+                  }}
                 />
 
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Guests</label>
                     <Select
-                      value={guests.toString()}
-                      onValueChange={(value) => setGuests(parseInt(value))}
+                      value={booking.guests.toString()}
+                      onValueChange={(value) =>
+                        setBooking((prev) => ({
+                          ...prev,
+                          guests: parseInt(value),
+                        }))
+                      }
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Guests Count" />
@@ -400,9 +416,9 @@ export default function PropertyPage() {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span>
-                      ${property.pricing.basePrice} x {nights} nights
+                      ${property.pricing.basePrice} x {booking.nights} nights
                     </span>
-                    <span>${property.pricing.basePrice * nights}</span>
+                    <span>${property.pricing.basePrice * booking.nights}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Cleaning fee</span>
@@ -411,7 +427,10 @@ export default function PropertyPage() {
                   <div className="flex justify-between">
                     <span>Service fee</span>
                     <span>
-                      ${Math.round(property.pricing.basePrice * nights * 0.1)}
+                      $
+                      {Math.round(
+                        property.pricing.basePrice * booking.nights * 0.1
+                      )}
                     </span>
                   </div>
                   <Separator className="my-2" />
