@@ -1,7 +1,16 @@
 // app/api/bookings/route.ts
 import { NextResponse } from "next/server";
-import { fstore } from "@/lib/firebase"; // Adjust import based on your Firebase setup
+import { fstore } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import nodemailer from "nodemailer";
+// Configure Gmail transporter
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_USER, // your Gmail address
+    pass: process.env.GMAIL_APP_PASSWORD, // app password, not your regular Gmail password
+  },
+});
 
 export async function POST(req: Request) {
   try {
@@ -11,10 +20,26 @@ export async function POST(req: Request) {
     const bookingRef = await addDoc(collection(fstore, "bookings"), {
       ...body,
       createdAt: serverTimestamp(),
-      // Convert JS dates to strings for Firestore
       checkIn: body.checkIn.toString(),
       checkOut: body.checkOut.toString(),
     });
+
+    // Send confirmation email
+    if (body.email) {
+      await transporter.sendMail({
+        from: process.env.GMAIL_USER,
+        to: body.email,
+        subject: "Booking Confirmation",
+        html: `
+          <h1>Booking Confirmation</h1>
+          <p>Thank you for your booking!</p>
+          <p><strong>Booking ID:</strong> ${bookingRef.id}</p>
+          <p><strong>Check-in Date:</strong> ${body.checkIn}</p>
+          <p><strong>Check-out Date:</strong> ${body.checkOut}</p>
+          <p>We look forward to welcoming you soon!</p>
+        `,
+      });
+    }
 
     return NextResponse.json({
       success: true,
