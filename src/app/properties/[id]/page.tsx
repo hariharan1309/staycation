@@ -204,6 +204,10 @@ export default function PropertyPage() {
           guests: booking.guests,
           userID: userID?.value,
           totalAmount: calculateTotal(),
+          guestId: userID?.value || "guest",
+          ownerId: property?.owner,
+          checkIn: booking.checkIn,
+          checkOut: booking.checkOut,
         }),
       });
 

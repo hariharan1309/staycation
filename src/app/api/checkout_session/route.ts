@@ -9,9 +9,19 @@ export async function POST(req: Request) {
     const origin = headersList.get("origin") || "http://localhost:3000";
 
     const body = await req.json();
-    const { propertyId, propertyTitle, nights, guests, totalAmount } = body;
+    const {
+      propertyId,
+      propertyTitle,
+      nights,
+      guests,
+      totalAmount,
+      guestId,
+      checkIn,
+      checkOut,
+      ownerId,
+    } = body;
 
-    // Create Stripe checkout session
+    console.log(`${origin}/success?session_id={CHECKOUT_SESSION_ID}`);
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
@@ -35,6 +45,10 @@ export async function POST(req: Request) {
         nights,
         guests,
         totalAmount: totalAmount.toString(),
+        guestId,
+        ownerId,
+        checkIn: checkIn.toString(),
+        checkOut: checkOut.toString(),
       },
     });
 
