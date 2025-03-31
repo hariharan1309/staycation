@@ -1,6 +1,16 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Check, MapPin, Share, Star } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  ImageMinus,
+  MapPin,
+  Share,
+  Star,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,53 +22,228 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 
-// This would typically come from a database
-const property = {
-  id: "1",
-  title: "Beachfront Villa with Stunning Ocean Views",
-  description:
-    "Experience luxury living in this beautiful beachfront villa with direct access to the pristine white sand beach. The villa features 3 bedrooms, a private pool, and panoramic ocean views from every room.",
-  location: "Bali, Indonesia",
-  price: 120,
-  rating: 4.9,
-  reviewCount: 128,
-  host: {
-    name: "John Smith",
-    avatar: "/placeholder.svg?height=80&width=80",
-    isSuperhost: true,
-    responseRate: 99,
-    responseTime: "within an hour",
-  },
-  amenities: [
-    "Private Pool",
-    "Beachfront",
-    "Air Conditioning",
-    "Free WiFi",
-    "Kitchen",
-    "Washing Machine",
-    "Free Parking",
-    "TV",
-    "Workspace",
-    "Outdoor Dining Area",
-  ],
-  images: [
-    "/placeholder.svg?height=600&width=800",
-    "/placeholder.svg?height=600&width=800",
-    "/placeholder.svg?height=600&width=800",
-    "/placeholder.svg?height=600&width=800",
-    "/placeholder.svg?height=600&width=800",
-  ],
-  bedrooms: 3,
-  bathrooms: 2,
-  maxGuests: 6,
+// Define property type for type safety
+type PropertyType = {
+  id: string;
+  title: string;
+  description: string;
+  location: {
+    address: string;
+    city: string;
+    state: string;
+    country: string;
+    zipCode: string;
+    directions?: string;
+  };
+  pricing: {
+    basePrice: number;
+    cleaningFee: number;
+    securityDeposit: number;
+    minNights: number;
+    maxNights: number;
+    weeklyDiscount: number;
+    monthlyDiscount: number;
+    taxes: boolean;
+    instantBook: boolean;
+  };
+  amenities: {
+    pool: boolean;
+    beachfront: boolean;
+    parking: boolean;
+    tv: boolean;
+    workspace: boolean;
+    wifi: boolean;
+    ac: boolean;
+    heating: boolean;
+    washer: boolean;
+    kitchen: boolean;
+    outdoorDining: boolean;
+  };
+  images: string[];
+  bedrooms: number;
+  bathrooms: number;
+  maxGuests: number;
+  type: string;
+  owner: string;
+  createdAt: string;
 };
 
-export default function PropertyPage({ params }: { params: { id: string } }) {
+export default function PropertyPage() {
+  const [property, setProperty] = useState<PropertyType | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [nights, setNights] = useState(7);
+  const [guests, setGuests] = useState(1);
+  const params = useParams();
+
+  useEffect(() => {
+    const getProperty = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/properties/${params.id}/`);
+
+        if (!res.ok) {
+          throw new Error(`Failed to fetch property: ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        if (data.status === 200 && data.property) {
+          setProperty(data.property);
+        } else {
+          throw new Error(data.message || "Failed to fetch property data");
+        }
+      } catch (err) {
+        console.error("Error fetching property:", err);
+        setError(
+          err instanceof Error ? err.message : "An unknown error occurred"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (params.id) {
+      getProperty();
+    }
+  }, [params.id]);
+
+  // Get amenities as array for rendering
+  const getAmenities = () => {
+    if (!property?.amenities) return [];
+
+    const amenitiesMap = {
+      pool: "Private Pool",
+      beachfront: "Beachfront",
+      ac: "Air Conditioning",
+      wifi: "Free WiFi",
+      kitchen: "Kitchen",
+      washer: "Washing Machine",
+      parking: "Free Parking",
+      tv: "TV",
+      workspace: "Workspace",
+      outdoorDining: "Outdoor Dining Area",
+      heating: "Heating",
+    };
+
+    return Object.entries(property.amenities)
+      .filter(([_, value]) => value === true)
+      .map(([key]) => amenitiesMap[key as keyof typeof amenitiesMap]);
+  };
+
+  // Calculate total price
+  const calculateTotal = () => {
+    if (!property) return 0;
+
+    const baseTotal = property.pricing.basePrice * nights;
+    const cleaningFee = property.pricing.cleaningFee;
+    const serviceFee = Math.round(baseTotal * 0.1); // 10% service fee
+
+    return baseTotal + cleaningFee + serviceFee;
+  };
+
+  // Format location string
+  const getLocationString = () => {
+    if (!property?.location) return "";
+    const { city, state, country } = property.location;
+    return `${city}, ${state}, ${country}`;
+  };
+
+  // Render loading state
+  if (loading) {
+    return (
+      <main className="container px-4 py-8 md:px-6 md:py-12 lg:px-8">
+        <div className="mb-6 flex items-center gap-2">
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="/properties">
+              <ArrowLeft className="h-5 w-5" />
+              <span className="sr-only">Back to properties</span>
+            </Link>
+          </Button>
+          <Skeleton className="h-10 w-3/4" />
+        </div>
+
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-6 w-1/3" />
+          <Skeleton className="h-8 w-24" />
+        </div>
+
+        <div className="mt-4 h-80 w-full">
+          <Skeleton className="h-full w-full" />
+        </div>
+
+        <div className="mt-8 grid gap-8 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <Skeleton className="h-40 w-full" />
+            <Skeleton className="mt-6 h-60 w-full" />
+          </div>
+          <div>
+            <Skeleton className="h-96 w-full" />
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // Render error state
+  if (error) {
+    return (
+      <main className="container px-4 py-8 md:px-6 md:py-12 lg:px-8">
+        <div className="mb-6 flex items-center gap-2">
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="/properties">
+              <ArrowLeft className="h-5 w-5" />
+              <span className="sr-only">Back to properties</span>
+            </Link>
+          </Button>
+          <h1 className="text-2xl font-bold md:text-3xl">Property Not Found</h1>
+        </div>
+        <div className="rounded-md bg-red-50 p-6 text-center">
+          <h2 className="text-lg font-medium text-red-800">
+            Error Loading Property
+          </h2>
+          <p className="mt-2 text-red-700">{error}</p>
+          <Button className="mt-4" asChild>
+            <Link href="/properties">Back to Properties</Link>
+          </Button>
+        </div>
+      </main>
+    );
+  }
+
+  // If property data is not available after loading is complete
+  if (!property) {
+    return (
+      <main className="container px-4 py-8 md:px-6 md:py-12 lg:px-8">
+        <div className="mb-6 flex items-center gap-2">
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="/properties">
+              <ArrowLeft className="h-5 w-5" />
+              <span className="sr-only">Back to properties</span>
+            </Link>
+          </Button>
+          <h1 className="text-2xl font-bold md:text-3xl">Property Not Found</h1>
+        </div>
+        <div className="rounded-md bg-yellow-50 p-6 text-center">
+          <h2 className="text-lg font-medium text-yellow-800">
+            No Property Data Available
+          </h2>
+          <p className="mt-2 text-yellow-700">
+            The property information could not be loaded.
+          </p>
+          <Button className="mt-4" asChild>
+            <Link href="/properties">Browse Other Properties</Link>
+          </Button>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="container px-4 py-8 md:px-6 md:py-12 lg:px-8">
       <div className="mb-6 flex items-center gap-2">
@@ -73,16 +258,9 @@ export default function PropertyPage({ params }: { params: { id: string } }) {
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="flex items-center">
-            <Star className="mr-1 h-5 w-5 fill-primary text-primary" />
-            <span className="font-medium">{property.rating}</span>
-            <span className="ml-1 text-muted-foreground">
-              ({property.reviewCount} reviews)
-            </span>
-          </div>
           <div className="flex items-center text-muted-foreground">
             <MapPin className="mr-1 h-4 w-4" />
-            {property.location}
+            {getLocationString()}
           </div>
         </div>
         <Button variant="ghost" size="sm">
@@ -91,23 +269,33 @@ export default function PropertyPage({ params }: { params: { id: string } }) {
         </Button>
       </div>
 
-      <PropertyGallery images={property.images} />
+      {property.images && property.images.length > 0 ? (
+        <PropertyGallery images={property.images} />
+      ) : (
+        <div className="mt-4 flex h-80 gap-4 w-full items-center justify-center bg-muted rounded-lg px-10">
+          <ImageMinus />
+          <p className="text-muted-foreground text-xl font-bold">No images available</p>
+        </div>
+      )}
 
       <div className="mt-8 grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <div className="flex items-center justify-between border-b pb-6">
             <div>
               <h2 className="text-xl font-semibold">
-                Hosted by {property.host.name}
+                {property.type.charAt(0).toUpperCase() + property.type.slice(1)}{" "}
+                hosted by Owner
               </h2>
               <p className="text-muted-foreground">
-                {property.bedrooms} bedrooms · {property.bathrooms} bathrooms ·{" "}
-                {property.maxGuests} guests
+                {property.bedrooms} bedroom{property.bedrooms !== 1 ? "s" : ""}{" "}
+                · {property.bathrooms} bathroom
+                {property.bathrooms !== 1 ? "s" : ""} · {property.maxGuests}{" "}
+                guest{property.maxGuests !== 1 ? "s" : ""}
               </p>
             </div>
             <Image
-              src={property.host.avatar || "/placeholder.svg"}
-              alt={property.host.name}
+              src={"/placeholder.svg"}
+              alt={"Host"}
               width={56}
               height={56}
               className="rounded-full"
@@ -116,7 +304,9 @@ export default function PropertyPage({ params }: { params: { id: string } }) {
 
           <div className="border-b py-6">
             <h3 className="mb-4 text-lg font-semibold">About this place</h3>
-            <p className="text-muted-foreground">{property.description}</p>
+            <p className="text-muted-foreground">
+              {property.description || "No description provided."}
+            </p>
           </div>
 
           <div className="border-b py-6">
@@ -124,12 +314,18 @@ export default function PropertyPage({ params }: { params: { id: string } }) {
               What this place offers
             </h3>
             <div className="grid grid-cols-2 gap-4">
-              {property.amenities.map((amenity) => (
-                <div key={amenity} className="flex items-center gap-2">
-                  <Check className="h-5 w-5 text-primary" />
-                  <span>{amenity}</span>
-                </div>
-              ))}
+              {getAmenities().length > 0 ? (
+                getAmenities().map((amenity) => (
+                  <div key={amenity} className="flex items-center gap-2">
+                    <Check className="h-5 w-5 text-primary" />
+                    <span>{amenity}</span>
+                  </div>
+                ))
+              ) : (
+                <p className="col-span-2 text-muted-foreground">
+                  No amenities listed
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -139,30 +335,41 @@ export default function PropertyPage({ params }: { params: { id: string } }) {
             <CardContent className="p-6">
               <div className="mb-4 flex items-baseline justify-between">
                 <div>
-                  <span className="text-2xl font-bold">${property.price}</span>
+                  <span className="text-2xl font-bold">
+                    ${property.pricing.basePrice}
+                  </span>
                   <span className="text-muted-foreground"> / night</span>
                 </div>
-                <div className="flex items-center">
+                {/* <div className="flex items-center">
                   <Star className="mr-1 h-4 w-4 fill-primary text-primary" />
-                  <span className="font-medium">{property.rating}</span>
-                </div>
+                  <span className="font-medium">New</span>
+                </div> */}
               </div>
 
               <div className="space-y-4">
-                <DatePickerWithRange className="w-full" />
+                <DatePickerWithRange
+                  className="w-full"
+                  // onChange={(range) => {
+                  //   if (range?.from && range?.to) {
+                  //     const diffTime = Math.abs(
+                  //       range.to.getTime() - range.from.getTime()
+                  //     );
+                  //     const diffDays = Math.ceil(
+                  //       diffTime / (1000 * 60 * 60 * 24)
+                  //     );
+                  //     setNights(diffDays || 1);
+                  //   }
+                  // }}
+                />
 
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Guests</label>
-                    {/* <select className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                      {Array.from({ length: property.maxGuests }, (_, i) => (
-                        <option key={i + 1} value={i + 1}>
-                          {i + 1} {i === 0 ? "guest" : "guests"}
-                        </option>
-                      ))}
-                    </select> */}
-                    <Select>
-                      <SelectTrigger className="w-[180px]">
+                    <Select
+                      value={guests.toString()}
+                      onValueChange={(value) => setGuests(parseInt(value))}
+                    >
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Guests Count" />
                       </SelectTrigger>
                       <SelectContent>
@@ -177,12 +384,7 @@ export default function PropertyPage({ params }: { params: { id: string } }) {
                                 {i + 1} {i === 0 ? "Guest" : "Guests"}
                               </SelectItem>
                             )
-                          )}{" "}
-                          {/* <SelectItem value="apple">Apple</SelectItem>
-                          <SelectItem value="banana">Banana</SelectItem>
-                          <SelectItem value="blueberry">Blueberry</SelectItem>
-                          <SelectItem value="grapes">Grapes</SelectItem>
-                          <SelectItem value="pineapple">Pineapple</SelectItem> */}
+                          )}
                         </SelectGroup>
                       </SelectContent>
                     </Select>
@@ -197,21 +399,25 @@ export default function PropertyPage({ params }: { params: { id: string } }) {
 
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span>${property.price} x 7 nights</span>
-                    <span>${property.price * 7}</span>
+                    <span>
+                      ${property.pricing.basePrice} x {nights} nights
+                    </span>
+                    <span>${property.pricing.basePrice * nights}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Cleaning fee</span>
-                    <span>$50</span>
+                    <span>${property.pricing.cleaningFee}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Service fee</span>
-                    <span>$80</span>
+                    <span>
+                      ${Math.round(property.pricing.basePrice * nights * 0.1)}
+                    </span>
                   </div>
                   <Separator className="my-2" />
                   <div className="flex justify-between font-semibold">
                     <span>Total</span>
-                    <span>${property.price * 7 + 50 + 80}</span>
+                    <span>${calculateTotal()}</span>
                   </div>
                 </div>
               </div>
