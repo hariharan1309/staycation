@@ -126,11 +126,6 @@ export async function POST(req: Request) {
                 <li>Check-in time: After 3:00 PM</li>
                 <li>Check-out time: Before 11:00 AM</li>
                 <li>Photo ID will be required at check-in</li>
-                ${
-                  body.specialInstructions
-                    ? `<li>Special instructions: ${body.specialInstructions}</li>`
-                    : ""
-                }
               </ul>
             </div>
             
@@ -195,19 +190,10 @@ export async function POST(req: Request) {
                   : ""
               }
               ${
-                body.roomType
-                  ? `<p><strong>Room Type:</strong> ${body.roomType}</p>`
-                  : ""
-              }
-              ${
                 body.totalAmount
                   ? `<p><strong>Total Amount:</strong> ₹${body.totalAmount}</p>`
                   : ""
-              }
-              ${
-                body.specialInstructions
-                  ? `<p><strong>Special Requests:</strong> ${body.specialInstructions}</p>`
-                  : ""
+              } : ""
               }
             </div>
             
