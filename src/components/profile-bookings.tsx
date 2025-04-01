@@ -1,24 +1,36 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import { Calendar, ChevronLeft, ChevronRight, MapPin, Search } from "lucide-react"
+import { useState } from "react";
+import Image from "next/image";
+import {
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  Search,
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ProfileBookingsProps {
-  userRole: "guest" | "owner"
+  userRole: "guest" | "owner";
 }
 
 export function ProfileBookings({ userRole }: ProfileBookingsProps) {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [sortOrder, setSortOrder] = useState("newest")
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortOrder, setSortOrder] = useState("newest");
 
   // Mock bookings data
   const bookings = [
@@ -82,38 +94,41 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
       guestName: "Olivia Smith",
       guestImage: "/placeholder.svg?height=40&width=40",
     },
-  ]
+  ];
 
   // Filter bookings based on search query and status
   const filteredBookings = bookings.filter((booking) => {
     const matchesSearch =
       booking.propertyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      booking.location.toLowerCase().includes(searchQuery.toLowerCase())
+      booking.location.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesStatus = statusFilter === "all" || booking.status === statusFilter
+    const matchesStatus =
+      statusFilter === "all" || booking.status === statusFilter;
 
-    return matchesSearch && matchesStatus
-  })
+    return matchesSearch && matchesStatus;
+  });
 
   // Sort bookings
   const sortedBookings = [...filteredBookings].sort((a, b) => {
     if (sortOrder === "newest") {
-      return new Date(b.dates.split(" - ")[0]).getTime() - new Date(a.dates.split(" - ")[0]).getTime()
+      return (
+        new Date(b.dates.split(" - ")[0]).getTime() -
+        new Date(a.dates.split(" - ")[0]).getTime()
+      );
     } else {
-      return new Date(a.dates.split(" - ")[0]).getTime() - new Date(b.dates.split(" - ")[0]).getTime()
+      return (
+        new Date(a.dates.split(" - ")[0]).getTime() -
+        new Date(b.dates.split(" - ")[0]).getTime()
+      );
     }
-  })
+  });
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-2xl font-bold">{userRole === "guest" ? "My Trips" : "Bookings"}</h2>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <Calendar className="mr-2 h-4 w-4" />
-            Export
-          </Button>
-        </div>
+        <h2 className="text-2xl font-bold">
+          {userRole === "guest" ? "My Trips" : "Bookings"}
+        </h2>
       </div>
 
       <Tabs defaultValue="all" onValueChange={setStatusFilter}>
@@ -122,7 +137,6 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
             <TabsTrigger value="completed">Completed</TabsTrigger>
-            <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
           </TabsList>
           <div className="flex gap-2">
             <div className="relative">
@@ -151,7 +165,9 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
             {sortedBookings.length === 0 ? (
               <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
                 <Calendar className="mb-4 h-12 w-12 text-muted-foreground" />
-                <h3 className="mb-2 text-xl font-semibold">No bookings found</h3>
+                <h3 className="mb-2 text-xl font-semibold">
+                  No bookings found
+                </h3>
                 <p className="mb-6 text-muted-foreground">
                   {userRole === "guest"
                     ? "You don't have any trips that match your search."
@@ -159,8 +175,8 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
                 </p>
                 <Button
                   onClick={() => {
-                    setSearchQuery("")
-                    setStatusFilter("all")
+                    setSearchQuery("");
+                    setStatusFilter("all");
                   }}
                 >
                   Clear Filters
@@ -182,36 +198,33 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
                       <div className="flex flex-1 flex-col">
                         <div className="mb-2 flex items-start justify-between">
                           <div>
-                            <h3 className="font-semibold">{booking.propertyName}</h3>
+                            <h3 className="font-semibold">
+                              {booking.propertyName}
+                            </h3>
                             <div className="mt-1 flex items-center text-sm text-muted-foreground">
                               <MapPin className="mr-1 h-3 w-3" />
                               {booking.location}
                             </div>
                           </div>
-                          <Badge
-                            variant={
-                              booking.status === "upcoming"
-                                ? "default"
-                                : booking.status === "completed"
-                                  ? "secondary"
-                                  : "destructive"
-                            }
-                          >
-                            {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                          </Badge>
                         </div>
                         <div className="mt-2 grid gap-2 text-sm md:grid-cols-3">
                           <div>
                             <p className="font-medium">Dates</p>
-                            <p className="text-muted-foreground">{booking.dates}</p>
+                            <p className="text-muted-foreground">
+                              {booking.dates}
+                            </p>
                           </div>
                           <div>
                             <p className="font-medium">Guests</p>
-                            <p className="text-muted-foreground">{booking.guests} guests</p>
+                            <p className="text-muted-foreground">
+                              {booking.guests} guests
+                            </p>
                           </div>
                           <div>
                             <p className="font-medium">Total</p>
-                            <p className="text-muted-foreground">${booking.total}</p>
+                            <p className="text-muted-foreground">
+                              ${booking.total}
+                            </p>
                           </div>
                         </div>
                         {userRole === "owner" && (
@@ -225,29 +238,15 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
                               />
                             </div>
                             <div>
-                              <p className="text-sm font-medium">{booking.guestName}</p>
-                              <p className="text-xs text-muted-foreground">Guest</p>
+                              <p className="text-sm font-medium">
+                                {booking.guestName}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                Guest
+                              </p>
                             </div>
                           </div>
                         )}
-                        <div className="mt-auto flex flex-wrap gap-2 pt-4">
-                          <Button size="sm" variant="outline">
-                            {userRole === "guest" ? "View Details" : "Manage Booking"}
-                          </Button>
-                          <Button size="sm" variant="outline">
-                            {userRole === "guest" ? "Contact Host" : "Message Guest"}
-                          </Button>
-                          {booking.status === "upcoming" && (
-                            <Button size="sm" variant="outline">
-                              {userRole === "guest" ? "Cancel Trip" : "Cancel Booking"}
-                            </Button>
-                          )}
-                          {booking.status === "completed" && userRole === "guest" && (
-                            <Button size="sm" variant="outline">
-                              Leave Review
-                            </Button>
-                          )}
-                        </div>
                       </div>
                     </div>
                   </CardContent>
@@ -259,10 +258,13 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
 
         <TabsContent value="upcoming" className="mt-6">
           <div className="space-y-4">
-            {sortedBookings.filter((b) => b.status === "upcoming").length === 0 ? (
+            {sortedBookings.filter((b) => b.status === "upcoming").length ===
+            0 ? (
               <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
                 <Calendar className="mb-4 h-12 w-12 text-muted-foreground" />
-                <h3 className="mb-2 text-xl font-semibold">No upcoming bookings</h3>
+                <h3 className="mb-2 text-xl font-semibold">
+                  No upcoming bookings
+                </h3>
                 <p className="mb-6 text-muted-foreground">
                   {userRole === "guest"
                     ? "You don't have any upcoming trips."
@@ -288,7 +290,9 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
                         <div className="flex flex-1 flex-col">
                           <div className="mb-2 flex items-start justify-between">
                             <div>
-                              <h3 className="font-semibold">{booking.propertyName}</h3>
+                              <h3 className="font-semibold">
+                                {booking.propertyName}
+                              </h3>
                               <div className="mt-1 flex items-center text-sm text-muted-foreground">
                                 <MapPin className="mr-1 h-3 w-3" />
                                 {booking.location}
@@ -299,15 +303,21 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
                           <div className="mt-2 grid gap-2 text-sm md:grid-cols-3">
                             <div>
                               <p className="font-medium">Dates</p>
-                              <p className="text-muted-foreground">{booking.dates}</p>
+                              <p className="text-muted-foreground">
+                                {booking.dates}
+                              </p>
                             </div>
                             <div>
                               <p className="font-medium">Guests</p>
-                              <p className="text-muted-foreground">{booking.guests} guests</p>
+                              <p className="text-muted-foreground">
+                                {booking.guests} guests
+                              </p>
                             </div>
                             <div>
                               <p className="font-medium">Total</p>
-                              <p className="text-muted-foreground">${booking.total}</p>
+                              <p className="text-muted-foreground">
+                                ${booking.total}
+                              </p>
                             </div>
                           </div>
                           {userRole === "owner" && (
@@ -321,22 +331,15 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
                                 />
                               </div>
                               <div>
-                                <p className="text-sm font-medium">{booking.guestName}</p>
-                                <p className="text-xs text-muted-foreground">Guest</p>
+                                <p className="text-sm font-medium">
+                                  {booking.guestName}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  Guest
+                                </p>
                               </div>
                             </div>
                           )}
-                          <div className="mt-auto flex flex-wrap gap-2 pt-4">
-                            <Button size="sm" variant="outline">
-                              {userRole === "guest" ? "View Details" : "Manage Booking"}
-                            </Button>
-                            <Button size="sm" variant="outline">
-                              {userRole === "guest" ? "Contact Host" : "Message Guest"}
-                            </Button>
-                            <Button size="sm" variant="outline">
-                              {userRole === "guest" ? "Cancel Trip" : "Cancel Booking"}
-                            </Button>
-                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -348,10 +351,13 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
 
         <TabsContent value="completed" className="mt-6">
           <div className="space-y-4">
-            {sortedBookings.filter((b) => b.status === "completed").length === 0 ? (
+            {sortedBookings.filter((b) => b.status === "completed").length ===
+            0 ? (
               <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
                 <Calendar className="mb-4 h-12 w-12 text-muted-foreground" />
-                <h3 className="mb-2 text-xl font-semibold">No completed bookings</h3>
+                <h3 className="mb-2 text-xl font-semibold">
+                  No completed bookings
+                </h3>
                 <p className="mb-6 text-muted-foreground">
                   {userRole === "guest"
                     ? "You don't have any completed trips."
@@ -377,7 +383,9 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
                         <div className="flex flex-1 flex-col">
                           <div className="mb-2 flex items-start justify-between">
                             <div>
-                              <h3 className="font-semibold">{booking.propertyName}</h3>
+                              <h3 className="font-semibold">
+                                {booking.propertyName}
+                              </h3>
                               <div className="mt-1 flex items-center text-sm text-muted-foreground">
                                 <MapPin className="mr-1 h-3 w-3" />
                                 {booking.location}
@@ -388,15 +396,21 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
                           <div className="mt-2 grid gap-2 text-sm md:grid-cols-3">
                             <div>
                               <p className="font-medium">Dates</p>
-                              <p className="text-muted-foreground">{booking.dates}</p>
+                              <p className="text-muted-foreground">
+                                {booking.dates}
+                              </p>
                             </div>
                             <div>
                               <p className="font-medium">Guests</p>
-                              <p className="text-muted-foreground">{booking.guests} guests</p>
+                              <p className="text-muted-foreground">
+                                {booking.guests} guests
+                              </p>
                             </div>
                             <div>
                               <p className="font-medium">Total</p>
-                              <p className="text-muted-foreground">${booking.total}</p>
+                              <p className="text-muted-foreground">
+                                ${booking.total}
+                              </p>
                             </div>
                           </div>
                           {userRole === "owner" && (
@@ -410,26 +424,15 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
                                 />
                               </div>
                               <div>
-                                <p className="text-sm font-medium">{booking.guestName}</p>
-                                <p className="text-xs text-muted-foreground">Guest</p>
+                                <p className="text-sm font-medium">
+                                  {booking.guestName}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  Guest
+                                </p>
                               </div>
                             </div>
                           )}
-                          <div className="mt-auto flex flex-wrap gap-2 pt-4">
-                            <Button size="sm" variant="outline">
-                              {userRole === "guest" ? "View Details" : "View Booking"}
-                            </Button>
-                            {userRole === "guest" && (
-                              <Button size="sm" variant="outline">
-                                Leave Review
-                              </Button>
-                            )}
-                            {userRole === "owner" && (
-                              <Button size="sm" variant="outline">
-                                View Review
-                              </Button>
-                            )}
-                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -441,10 +444,13 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
 
         <TabsContent value="cancelled" className="mt-6">
           <div className="space-y-4">
-            {sortedBookings.filter((b) => b.status === "cancelled").length === 0 ? (
+            {sortedBookings.filter((b) => b.status === "cancelled").length ===
+            0 ? (
               <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
                 <Calendar className="mb-4 h-12 w-12 text-muted-foreground" />
-                <h3 className="mb-2 text-xl font-semibold">No cancelled bookings</h3>
+                <h3 className="mb-2 text-xl font-semibold">
+                  No cancelled bookings
+                </h3>
                 <p className="mb-6 text-muted-foreground">
                   {userRole === "guest"
                     ? "You don't have any cancelled trips."
@@ -470,7 +476,9 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
                         <div className="flex flex-1 flex-col">
                           <div className="mb-2 flex items-start justify-between">
                             <div>
-                              <h3 className="font-semibold">{booking.propertyName}</h3>
+                              <h3 className="font-semibold">
+                                {booking.propertyName}
+                              </h3>
                               <div className="mt-1 flex items-center text-sm text-muted-foreground">
                                 <MapPin className="mr-1 h-3 w-3" />
                                 {booking.location}
@@ -481,15 +489,21 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
                           <div className="mt-2 grid gap-2 text-sm md:grid-cols-3">
                             <div>
                               <p className="font-medium">Dates</p>
-                              <p className="text-muted-foreground">{booking.dates}</p>
+                              <p className="text-muted-foreground">
+                                {booking.dates}
+                              </p>
                             </div>
                             <div>
                               <p className="font-medium">Guests</p>
-                              <p className="text-muted-foreground">{booking.guests} guests</p>
+                              <p className="text-muted-foreground">
+                                {booking.guests} guests
+                              </p>
                             </div>
                             <div>
                               <p className="font-medium">Total</p>
-                              <p className="text-muted-foreground">${booking.total}</p>
+                              <p className="text-muted-foreground">
+                                ${booking.total}
+                              </p>
                             </div>
                           </div>
                           {userRole === "owner" && (
@@ -503,8 +517,12 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
                                 />
                               </div>
                               <div>
-                                <p className="text-sm font-medium">{booking.guestName}</p>
-                                <p className="text-xs text-muted-foreground">Guest</p>
+                                <p className="text-sm font-medium">
+                                  {booking.guestName}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  Guest
+                                </p>
                               </div>
                             </div>
                           )}
@@ -525,28 +543,6 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
           </div>
         </TabsContent>
       </Tabs>
-
-      {/* Pagination */}
-      <div className="flex items-center justify-center gap-1">
-        <Button variant="outline" size="icon" disabled>
-          <ChevronLeft className="h-4 w-4" />
-          <span className="sr-only">Previous page</span>
-        </Button>
-        <Button variant="outline" size="sm" className="bg-primary text-primary-foreground">
-          1
-        </Button>
-        <Button variant="outline" size="sm">
-          2
-        </Button>
-        <Button variant="outline" size="sm">
-          3
-        </Button>
-        <Button variant="outline" size="icon">
-          <ChevronRight className="h-4 w-4" />
-          <span className="sr-only">Next page</span>
-        </Button>
-      </div>
     </div>
-  )
+  );
 }
-

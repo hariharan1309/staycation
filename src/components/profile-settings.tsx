@@ -271,24 +271,6 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
           <Button>Update Password</Button>
         </CardFooter>
       </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Account Deletion</CardTitle>
-          <CardDescription>
-            Permanently delete your account and all associated data.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Once you delete your account, there is no going back. All your data
-            will be permanently removed.
-          </p>
-          <Button variant="destructive" className="mt-4">
-            Delete Account
-          </Button>
-        </CardContent>
-      </Card>
     </div>
   );
 }

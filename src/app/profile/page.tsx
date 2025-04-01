@@ -20,13 +20,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { ProfileBookings } from "@/components/profile-bookings";
 import { ProfileProperties } from "@/components/profile-properties";
-import { ProfileReviews } from "@/components/profile-reviews";
-// import { ProfileSettings } from "@/components/profile-settings";
 import { ProfileCustomers } from "@/components/profile-customers";
-import { useRouter } from "next/navigation";
 import { AuthContext } from "@/components/authProvider/AuthProvider";
 import { ProfileSettings } from "@/components/profile-settings";
 
@@ -34,7 +30,6 @@ export default function ProfilePage() {
   // In a real app, this would come from authentication
   const authContext = useContext(AuthContext);
   const userType = authContext?.userType ?? "guest";
-  const router = useRouter();
 
   return (
     <main className="container px-4 py-8 md:px-6 md:py-12">
@@ -84,8 +79,8 @@ export default function ProfilePage() {
                     asChild
                   >
                     <Link href="/properties/new">
-                      <Plus className="mr-2 h-4 w-4" />
                       Add New Property
+                      <Plus className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>
                 )}
@@ -117,7 +112,7 @@ export default function ProfilePage() {
 
             {/* Dashboard Tab */}
             <TabsContent value="dashboard" className="space-y-6">
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mt-4">
                 <Card>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium">
@@ -147,42 +142,6 @@ export default function ProfilePage() {
                       {userType === "guest"
                         ? "Next trip in 15 days"
                         : "+8% from last month"}
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      {userType === "guest"
-                        ? "Saved Properties"
-                        : "Occupancy Rate"}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">
-                      {userType === "guest" ? "24" : "78%"}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {userType === "guest"
-                        ? "5 new this month"
-                        : "+5% from last month"}
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      {userType === "guest" ? "Reviews Given" : "New Inquiries"}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">
-                      {userType === "guest" ? "8" : "14"}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {userType === "guest"
-                        ? "Last review 2 weeks ago"
-                        : "3 require response"}
                     </p>
                   </CardContent>
                 </Card>
@@ -268,85 +227,11 @@ export default function ProfilePage() {
                   </Card>
                 ))}
               </div>
-
-              <div className="flex justify-center">
-                <Button variant="outline" asChild>
-                  <Link
-                    href={
-                      userType === "guest"
-                        ? "/profile/trips"
-                        : "/profile/bookings"
-                    }
-                  >
-                    View All {userType === "guest" ? "Trips" : "Bookings"}
-                  </Link>
-                </Button>
-              </div>
-
-              <Separator />
-
-              <h2 className="text-xl font-bold">Recent Activity</h2>
-              <div className="space-y-4">
-                {[
-                  {
-                    icon: <MessageSquare className="h-8 w-8 text-primary" />,
-                    title:
-                      userType === "guest"
-                        ? "Message from Host"
-                        : "New Message from Guest",
-                    description:
-                      userType === "guest"
-                        ? "Sarah (host of Beachfront Villa) sent you a message"
-                        : "John (guest) sent you a message about Mountain Cabin",
-                    time: "2 hours ago",
-                  },
-                  {
-                    icon: <Star className="h-8 w-8 text-primary" />,
-                    title:
-                      userType === "guest" ? "Review Reminder" : "New Review",
-                    description:
-                      userType === "guest"
-                        ? "Don't forget to leave a review for your stay at Mountain Cabin"
-                        : "Sarah left a 5-star review for Beachfront Villa",
-                    time: "1 day ago",
-                  },
-                  {
-                    icon: <Calendar className="h-8 w-8 text-primary" />,
-                    title:
-                      userType === "guest" ? "Upcoming Trip" : "New Booking",
-                    description:
-                      userType === "guest"
-                        ? "Your trip to Beachfront Villa is in 15 days"
-                        : "New booking for Mountain Cabin (Jun 5 - Jun 10)",
-                    time: "3 days ago",
-                  },
-                ].map((activity, i) => (
-                  <div key={i} className="flex gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                      {activity.icon}
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold">{activity.title}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {activity.description}
-                      </p>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {activity.time}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
             </TabsContent>
 
             {/* Bookings/Trips Tab */}
             <TabsContent value="bookings">
               <ProfileBookings userRole={userType as any} />
-            </TabsContent>
-
-            {/* Reviews Tab */}
-            <TabsContent value="reviews">
-              <ProfileReviews userRole={userType as any} />
             </TabsContent>
 
             {/* Properties Tab (Owner Only) */}
