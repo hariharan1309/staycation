@@ -44,14 +44,17 @@ export async function POST(req: Request) {
       month: "long",
       day: "numeric",
     });
+
+    // Get user and owner details
     const userDetails = (
       await getDoc(doc(fstore, "user", body.guestId))
     ).data();
-    const ownerDetail = (
+
+    const ownerDetails = (
       await getDoc(doc(fstore, "owner", body.ownerId))
     ).data();
 
-    // Company info for legitimacy
+    // Company info
     const companyName = "Staycation";
     const companyAddress = "India";
     const companyPhone = "+91 123 456 7890";
@@ -60,10 +63,13 @@ export async function POST(req: Request) {
     // Send confirmation email to the guest
     await transporter.sendMail({
       from: `"${companyName}" <${process.env.GMAIL_USER}>`,
-      to: body.email,
-      cc: "hariharana1309@gmail.com", // Send a copy to your email
-      subject: `Booking Confirmation #${bookingRef.id.slice(0, 8)}`,
-      text: `Thank you for your booking! Your confirmation number is ${bookingRef.id}. You're scheduled to check in on ${checkInDate} and check out on ${checkOutDate}.`, // Plain text alternative
+      to: userDetails?.email || body.email,
+      cc: "hariharana1309@gmail.com",
+      subject: `🏠 Your Staycation Booking is Confirmed! #${bookingRef.id.slice(
+        0,
+        8
+      )}`,
+      text: `Thank you for your booking! Your confirmation number is ${bookingRef.id}. You're scheduled to check in on ${checkInDate} and check out on ${checkOutDate}.`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -73,22 +79,20 @@ export async function POST(req: Request) {
           <title>Booking Confirmation</title>
         </head>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="text-align: center; margin-bottom: 20px;">
-            <img src="${
-              process.env.LOGO_URL || "https://yourwebsite.com/logo.png"
-            }" alt="${companyName}" style="max-width: 150px; height: auto;">
+          <div style="text-align: center; margin-bottom: 20px; background-color: #4CAF50; padding: 15px; border-radius: 5px;">
+            <h1 style="color: white; margin: 0;">Staycation</h1>
           </div>
           
           <div style="background-color: #f8f8f8; border-radius: 5px; padding: 25px; margin-bottom: 20px; border-left: 4px solid #4CAF50;">
-            <h2 style="color: #4CAF50; margin-top: 0;">Booking Confirmed!</h2>
-            <p>Dear ${body.name || "Guest"},</p>
-            <p>Thank you for choosing ${companyName}. We're delighted to confirm your upcoming stay with us.</p>
+            <h2 style="color: #4CAF50; margin-top: 0;">Your Booking is Confirmed!</h2>
+            <p>Dear ${userDetails?.firstName || body.name || "Guest"},</p>
+            <p>Thank you for choosing Staycation! We're excited to confirm your upcoming stay.</p>
             
-            <div style="background-color: white; border-radius: 5px; padding: 15px; margin: 20px 0;">
-              <h3 style="margin-top: 0; color: #333;">Reservation Details</h3>
+            <div style="background-color: white; border-radius: 5px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+              <h3 style="margin-top: 0; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px;">Reservation Details</h3>
               <p><strong>Confirmation Number:</strong> ${bookingRef.id}</p>
-              <p><strong>Check-in:</strong> ${checkInDate} (after 3:00 PM)</p>
-              <p><strong>Check-out:</strong> ${checkOutDate} (before 11:00 AM)</p>
+              <p><strong>Check-in:</strong> ${checkInDate}</p>
+              <p><strong>Check-out:</strong> ${checkOutDate} </p>
               ${
                 body.guests
                   ? `<p><strong>Guests:</strong> ${body.guests}</p>`
@@ -99,10 +103,22 @@ export async function POST(req: Request) {
                   ? `<p><strong>Room Type:</strong> ${body.roomType}</p>`
                   : ""
               }
+              ${
+                body.totalAmount
+                  ? `<p><strong>Total Amount:</strong> $ ${body.totalAmount}</p>`
+                  : ""
+              }
             </div>
             
-            <h3>What's Next?</h3>
-            <p>No further action is required. Simply present your confirmation number upon arrival.</p>
+            <div style="background-color: white; border-radius: 5px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+              <h3 style="margin-top: 0; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px;">Contact Details</h3>
+              <p><strong>Host:</strong> ${
+                ownerDetails?.firstName || "Your host"
+              } ${ownerDetails?.lastName || ""}</p>
+              <p><strong>Contact:</strong> ${
+                ownerDetails?.phoneNumber || "Contact your host through the app"
+              }</p>
+            </div>
             
             <div style="background-color: #fffaf0; border-radius: 5px; padding: 15px; margin: 20px 0; border-left: 4px solid #FFA500;">
               <h3 style="margin-top: 0; color: #FFA500;">Important Information</h3>
@@ -118,12 +134,12 @@ export async function POST(req: Request) {
               </ul>
             </div>
             
-            <p>If you have any questions or need to modify your reservation, please contact us at ${companyPhone}.</p>
+            <p>If you need to modify your reservation or have any questions, please contact your host or our support team at ${companyPhone}.</p>
             
-            <p>We look forward to welcoming you soon!</p>
+            <p>We hope you have a wonderful stay!</p>
             
             <p>Best regards,<br>
-            The ${companyName} Team</p>
+            The Staycation Team</p>
           </div>
           
           <div style="text-align: center; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 20px;">
@@ -131,18 +147,118 @@ export async function POST(req: Request) {
             ${companyAddress}<br>
             ${companyPhone}<br>
             <a href="https://${companyWebsite}" style="color: #4CAF50;">${companyWebsite}</a></p>
-            <p>This email was sent to confirm your booking. Please do not reply to this email.</p>
+            <p>This is an automated message. Please do not reply to this email.</p>
           </div>
         </body>
         </html>
       `,
       headers: {
-        "X-Entity-Ref-ID": bookingRef.id, // Helps prevent the email from being marked as spam
-        "List-Unsubscribe": `<mailto:unsubscribe@${companyWebsite}?subject=unsubscribe>`, // Improves deliverability
+        "X-Entity-Ref-ID": bookingRef.id,
+        "List-Unsubscribe": `<mailto:unsubscribe@${companyWebsite}?subject=unsubscribe>`,
+        Precedence: "bulk",
+        "MIME-Version": "1.0",
       },
     });
-    // set the owner email
-    await transporter.sendMail({});
+
+    // Send notification email to the owner
+    await transporter.sendMail({
+      from: `"${companyName}" <${process.env.GMAIL_USER}>`,
+      to: ownerDetails?.email || "hariharana1309@gmail.com",
+      subject: `🏠 New Booking Alert! #${bookingRef.id.slice(0, 8)}`,
+      text: `You have a new booking! Booking ID: ${bookingRef.id}. Guest will check in on ${checkInDate} and check out on ${checkOutDate}.`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>New Booking Notification</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="text-align: center; margin-bottom: 20px; background-color: #4CAF50; padding: 15px; border-radius: 5px;">
+            <h1 style="color: white; margin: 0;">Staycation</h1>
+          </div>
+          
+          <div style="background-color: #f8f8f8; border-radius: 5px; padding: 25px; margin-bottom: 20px; border-left: 4px solid #4CAF50;">
+            <h2 style="color: #4CAF50; margin-top: 0;">New Booking Alert!</h2>
+            <p>Dear ${ownerDetails?.firstName || "Property Owner"},</p>
+            <p>Great news! You have a new booking for your property.</p>
+            
+            <div style="background-color: white; border-radius: 5px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+              <h3 style="margin-top: 0; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px;">Booking Details</h3>
+              <p><strong>Booking ID:</strong> ${bookingRef.id}</p>
+              <p><strong>Check-in:</strong> ${checkInDate}</p>
+              <p><strong>Check-out:</strong> ${checkOutDate}</p>
+              ${
+                body.guests
+                  ? `<p><strong>Number of Guests:</strong> ${body.guests}</p>`
+                  : ""
+              }
+              ${
+                body.roomType
+                  ? `<p><strong>Room Type:</strong> ${body.roomType}</p>`
+                  : ""
+              }
+              ${
+                body.totalAmount
+                  ? `<p><strong>Total Amount:</strong> ₹${body.totalAmount}</p>`
+                  : ""
+              }
+              ${
+                body.specialInstructions
+                  ? `<p><strong>Special Requests:</strong> ${body.specialInstructions}</p>`
+                  : ""
+              }
+            </div>
+            
+            <div style="background-color: white; border-radius: 5px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+              <h3 style="margin-top: 0; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px;">Guest Information</h3>
+              <p><strong>Name:</strong> ${
+                userDetails?.firstName || body.name || ""
+              } ${userDetails?.lastName || ""}</p>
+              <p><strong>Email:</strong> ${
+                userDetails?.email || body.email || ""
+              }</p>
+              <p><strong>Phone:</strong> ${
+                userDetails?.phoneNumber || body.phoneNumber || ""
+              }</p>
+            </div>
+            
+            <p>Please ensure your property is ready for the guest's arrival. You can contact the guest directly if you need to communicate any specific instructions.</p>
+            
+            <div style="background-color: #e6f7ff; border-radius: 5px; padding: 15px; margin: 20px 0; border-left: 4px solid #1890ff;">
+              <h3 style="margin-top: 0; color: #1890ff;">Next Steps</h3>
+              <ol style="padding-left: 20px;">
+                <li>Review the booking details</li>
+                <li>Prepare your property for the guest's arrival</li>
+                <li>Contact the guest if you need any additional information</li>
+                <li>Ensure a smooth check-in process</li>
+              </ol>
+            </div>
+            
+            <p>Thank you for being a valued host on Staycation!</p>
+            
+            <p>Best regards,<br>
+            The Staycation Team</p>
+          </div>
+          
+          <div style="text-align: center; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 20px;">
+            <p>${companyName}<br>
+            ${companyAddress}<br>
+            ${companyPhone}<br>
+            <a href="https://${companyWebsite}" style="color: #4CAF50;">${companyWebsite}</a></p>
+            <p>This is an automated message. Please do not reply to this email.</p>
+          </div>
+        </body>
+        </html>
+      `,
+      headers: {
+        "X-Entity-Ref-ID": bookingRef.id,
+        "List-Unsubscribe": `<mailto:unsubscribe@${companyWebsite}?subject=unsubscribe>`,
+        Precedence: "bulk",
+        "MIME-Version": "1.0",
+      },
+    });
 
     return NextResponse.json({
       success: true,
