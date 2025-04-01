@@ -22,7 +22,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ProfileBookings } from "@/components/profile-bookings";
 import { ProfileProperties } from "@/components/profile-properties";
-import { ProfileCustomers } from "@/components/profile-customers";
 import { AuthContext } from "@/components/authProvider/AuthProvider";
 import { ProfileSettings } from "@/components/profile-settings";
 
@@ -30,6 +29,7 @@ export default function ProfilePage() {
   // In a real app, this would come from authentication
   const authContext = useContext(AuthContext);
   const userType = authContext?.userType ?? "guest";
+  // const userType = "host";
 
   return (
     <main className="container px-4 py-8 md:px-6 md:py-12">
@@ -104,7 +104,6 @@ export default function ProfilePage() {
               {userType === "host" && (
                 <>
                   <TabsTrigger value="properties">Properties</TabsTrigger>
-                  <TabsTrigger value="customers">Customers</TabsTrigger>
                 </>
               )}
               <TabsTrigger value="settings">Settings</TabsTrigger>
@@ -204,23 +203,6 @@ export default function ProfilePage() {
                               </p>
                             </div>
                           </div>
-                          <div className="mt-auto flex flex-wrap gap-2 pt-4">
-                            <Button size="sm" variant="outline">
-                              {userType === "guest"
-                                ? "View Booking"
-                                : "Manage Booking"}
-                            </Button>
-                            <Button size="sm" variant="outline">
-                              {userType === "guest"
-                                ? "Contact Host"
-                                : "Message Guest"}
-                            </Button>
-                            {userType === "guest" && (
-                              <Button size="sm" variant="outline">
-                                Cancel
-                              </Button>
-                            )}
-                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -241,12 +223,6 @@ export default function ProfilePage() {
               </TabsContent>
             )}
 
-            {/* Customers Tab (Owner Only) */}
-            {userType === "host" && (
-              <TabsContent value="customers">
-                <ProfileCustomers />
-              </TabsContent>
-            )}
             <TabsContent value="settings">
               <ProfileSettings userRole={userType as any} />
             </TabsContent>
