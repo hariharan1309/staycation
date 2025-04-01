@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -24,13 +24,38 @@ import { ProfileBookings } from "@/components/profile-bookings";
 import { ProfileProperties } from "@/components/profile-properties";
 import { AuthContext } from "@/components/authProvider/AuthProvider";
 import { ProfileSettings } from "@/components/profile-settings";
-
+import { getCookieVal } from "@/lib/cookie";
+// Sample User Data (Replace with Dynamic Data Later)
+const sampleUser = {
+  firstName: "Hari",
+  lastName: "",
+  avatar: "https://api.dicebear.com/9.x/lorelei/svg?flip=true",
+  email: "sample@giaoed.com",
+  createdAt: "9 March 2025 at 08:10:04 UTC+5:30",
+  address: "",
+  country: "",
+};
 export default function ProfilePage() {
   // In a real app, this would come from authentication
   const authContext = useContext(AuthContext);
   const userType = authContext?.userType ?? "guest";
-  // const userType = "host";
-
+  const [userVal, setUserVal] = useState(sampleUser);
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const user = await getCookieVal();
+        const userDetail = await fetch(
+          `/api/profile?id=${user?.value}&type=${userType}`
+        );
+        const data = await userDetail.json();
+        console.log(data);
+        setUserVal((prev) => ({ ...prev, ...data.data }));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getData();
+  }, []);
   return (
     <main className="container px-4 py-8 md:px-6 md:py-12 pt-4 md:pt-6">
       <div className="grid gap-6 md:grid-cols-[280px_1fr] lg:grid-cols-[280px_1fr]">
@@ -40,25 +65,22 @@ export default function ProfilePage() {
             <CardContent className="p-6">
               <div className="flex flex-col items-center text-center">
                 <Avatar className="h-24 w-24">
-                  <AvatarImage
-                    src="/placeholder.svg?height=96&width=96"
-                    alt="User avatar"
-                  />
+                  <AvatarImage src={userVal.avatar} alt={userVal.firstName} />
                   <AvatarFallback>JD</AvatarFallback>
                 </Avatar>
-                <h2 className="mt-4 text-xl font-bold">John Doe</h2>
-                <p className="text-sm text-muted-foreground">
-                  john.doe@example.com
-                </p>
+                <h2 className="mt-4 text-xl font-bold">
+                  {userVal.firstName + " " + userVal.lastName}
+                </h2>
+                <p className="text-sm text-muted-foreground">{userVal.email}</p>
               </div>
               <div className="space-y-4 p-6">
                 <div className="flex items-center gap-3">
                   <User className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <p className="text-sm font-medium">Member Since</p>
-                    <p className="text-sm text-muted-foreground">
-                      January 2023
-                    </p>
+                    <p className="text-sm font-medium">Joined on </p>
+                    {/* <p className="text-sm text-muted-foreground">
+                      {formatDate(new Date(userVal.createdAt), "MMM YYYY")}
+                    </p> */}
                   </div>
                 </div>
                 {userType === "host" && (
@@ -66,9 +88,6 @@ export default function ProfilePage() {
                     <Building className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Properties</p>
-                      <p className="text-sm text-muted-foreground">
-                        4 active listings
-                      </p>
                     </div>
                   </div>
                 )}
@@ -91,13 +110,13 @@ export default function ProfilePage() {
 
         {/* Main Content */}
         <div className="space-y-6">
-          <Tabs defaultValue="dashboard">
+          <Tabs defaultValue="settings">
             <TabsList
               className={`grid w-full ${
                 userType === "host" ? "grid-cols-5" : "grid-cols-4"
               }`}
             >
-              <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+              <TabsTrigger value="settings">Settings</TabsTrigger>
               <TabsTrigger value="bookings">
                 {userType === "guest" ? "My Trips" : "Bookings"}
               </TabsTrigger>
@@ -106,11 +125,10 @@ export default function ProfilePage() {
                   <TabsTrigger value="properties">Properties</TabsTrigger>
                 </>
               )}
-              <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
 
             {/* Dashboard Tab */}
-            <TabsContent value="dashboard" className="space-y-6">
+            {/* <TabsContent value="dashboard" className="space-y-6">
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mt-4">
                 <Card>
                   <CardHeader className="pb-2">
@@ -209,7 +227,7 @@ export default function ProfilePage() {
                   </Card>
                 ))}
               </div>
-            </TabsContent>
+            </TabsContent> */}
 
             {/* Bookings/Trips Tab */}
             <TabsContent value="bookings">
@@ -224,7 +242,7 @@ export default function ProfilePage() {
             )}
 
             <TabsContent value="settings">
-              <ProfileSettings userRole={userType as any} />
+              <ProfileSettings userRole={userType as any} userVal={userVal} />
             </TabsContent>
           </Tabs>
         </div>
