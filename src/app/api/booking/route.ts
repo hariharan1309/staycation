@@ -16,7 +16,6 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    // Add booking to Firebase
     const bookingRef = await addDoc(collection(fstore, "bookings"), {
       ...body,
       createdAt: serverTimestamp(),
@@ -25,22 +24,19 @@ export async function POST(req: Request) {
     });
 
     // Send confirmation email
-    if (body.email) {
-      await transporter.sendMail({
-        from: process.env.GMAIL_USER,
-        to: body.email,
-        subject: "Booking Confirmation",
-        html: `
-          <h1>Booking Confirmation</h1>
-          <p>Thank you for your booking!</p>
-          <p><strong>Booking ID:</strong> ${bookingRef.id}</p>
-          <p><strong>Check-in Date:</strong> ${body.checkIn}</p>
-          <p><strong>Check-out Date:</strong> ${body.checkOut}</p>
-          <p>We look forward to welcoming you soon!</p>
-        `,
-      });
-    }
-
+    await transporter.sendMail({
+      from: process.env.GMAIL_USER,
+      to: `hariharana1309@gmail.com`,
+      subject: "Booking Confirmation",
+      html: `
+        <h1>Booking Confirmation</h1>
+        <p>Thank you for your booking!</p>
+        <p><strong>Booking ID:</strong> ${bookingRef.id}</p>
+        <p><strong>Check-in Date:</strong> ${body.checkIn}</p>
+        <p><strong>Check-out Date:</strong> ${body.checkOut}</p>
+        <p>We look forward to welcoming you soon!</p>
+      `,
+    });
     return NextResponse.json({
       success: true,
       bookingId: bookingRef.id,
