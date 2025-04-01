@@ -126,6 +126,26 @@
   body {
     font-family: Arial, Helvetica, sans-serif;
   }
+  .booked-date {
+    position: relative;
+    text-decoration: line-through;
+    color: #B71C1C;
+    opacity: 0.7;
+  }
   
+  .rdp-day_selected {
+    background-color: var(--primary) !important;
+    color: white !important;
+    text-decoration: none !important;
+  }
+  
+  .date-range-calendar .rdp-day_disabled:not(.rdp-day_selected) {
+    background-color: #FFEBEE;
+    color: #B71C1C;
+  }
+  
+  .date-range-calendar .rdp-day_range_middle {
+    background-color: rgb(var(--primary) / 0.5) !important;
+  }
 
 }

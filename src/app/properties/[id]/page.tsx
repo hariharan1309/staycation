@@ -30,45 +30,52 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getCookieVal } from "@/lib/cookie";
 import { toast } from "sonner";
 import { AuthContext } from "@/components/authProvider/AuthProvider";
+import { DateRange } from "react-day-picker";
 
-// import { loadStripe } from "@stripe/stripe-js";
-// Define property type for type safety
-type PropertyType = {
+// Define interfaces for type safety
+interface Location {
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  zipCode: string;
+  directions?: string;
+}
+
+interface Pricing {
+  basePrice: number;
+  cleaningFee: number;
+  securityDeposit: number;
+  minNights: number;
+  maxNights: number;
+  weeklyDiscount: number;
+  monthlyDiscount: number;
+  taxes: boolean;
+  instantBook: boolean;
+}
+
+interface Amenities {
+  pool: boolean;
+  beachfront: boolean;
+  parking: boolean;
+  tv: boolean;
+  workspace: boolean;
+  wifi: boolean;
+  ac: boolean;
+  heating: boolean;
+  washer: boolean;
+  kitchen: boolean;
+  outdoorDining: boolean;
+  [key: string]: boolean;
+}
+
+interface Property {
   id: string;
   title: string;
   description: string;
-  location: {
-    address: string;
-    city: string;
-    state: string;
-    country: string;
-    zipCode: string;
-    directions?: string;
-  };
-  pricing: {
-    basePrice: number;
-    cleaningFee: number;
-    securityDeposit: number;
-    minNights: number;
-    maxNights: number;
-    weeklyDiscount: number;
-    monthlyDiscount: number;
-    taxes: boolean;
-    instantBook: boolean;
-  };
-  amenities: {
-    pool: boolean;
-    beachfront: boolean;
-    parking: boolean;
-    tv: boolean;
-    workspace: boolean;
-    wifi: boolean;
-    ac: boolean;
-    heating: boolean;
-    washer: boolean;
-    kitchen: boolean;
-    outdoorDining: boolean;
-  };
+  location: Location;
+  pricing: Pricing;
+  amenities: Amenities;
   images: string[];
   bedrooms: number;
   bathrooms: number;
@@ -76,44 +83,52 @@ type PropertyType = {
   type: string;
   owner: string;
   createdAt: string;
-};
+}
+
+interface Booking {
+  id?: string;
+  propertyId?: string;
+  guestId?: string;
+  ownerId?: string;
+  checkIn: Date;
+  checkOut: Date;
+  guests: number;
+  nights: number;
+  totalAmount?: number;
+  paymentStatus: "pending" | "completed";
+}
+
+interface AuthContextType {
+  user: string | null;
+}
 
 export default function PropertyPage() {
-  const [property, setProperty] = useState<PropertyType | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [property, setProperty] = useState<Property | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [booking, setBooking] = useState({
+  const [booking, setBooking] = useState<Booking>({
     nights: 1,
     guests: 1,
     checkIn: new Date(),
     checkOut: new Date(new Date().setDate(new Date().getDate() + 1)),
+    paymentStatus: "pending",
   });
-  const authContext = useContext(AuthContext);
+  const authContext = useContext(AuthContext) as AuthContextType | null;
   const userId = authContext?.user;
-  const [bookingsList, setBookingsList] = useState([]);
-  const params = useParams();
+  const [bookingsList, setBookingsList] = useState<Booking[]>([]);
+  const [dateError, setDateError] = useState<string | null>(null);
+  const params = useParams<{ id: string }>();
   const router = useRouter();
-  const [dateError, setDateError] = useState(null);
 
   useEffect(() => {
-    const getProperty = async () => {
+    const fetchPropertyData = async () => {
+      if (!params.id) return;
+
       try {
         setLoading(true);
-        const res = await fetch(`/api/properties/${params.id}/`, {});
-
-        if (!res.ok) {
-          throw new Error(`Failed to fetch property: ${res.status}`);
-        }
-
-        const data = await res.json();
-
-        if (data.status === 200 && data.property) {
-          setProperty(data.property);
-        } else {
-          throw new Error(data.message || "Failed to fetch property data");
-        }
+        await Promise.all([fetchProperty(), fetchBookings()]);
       } catch (err) {
-        console.error("Error fetching property:", err);
+        console.error("Error fetching data:", err);
         setError(
           err instanceof Error ? err.message : "An unknown error occurred"
         );
@@ -121,29 +136,56 @@ export default function PropertyPage() {
         setLoading(false);
       }
     };
-    const getBookings = async () => {
-      try {
-        const req = await fetch(`/api/booking/${params.id}`);
-        const bookingResp = await req.json();
-        if (bookingResp.booking.length) {
-          console.log(bookingResp);
-          setBookingsList(bookingResp.booking);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    if (params.id) {
-      getProperty();
-      getBookings();
-    }
+
+    fetchPropertyData();
   }, [params.id]);
 
+  const fetchProperty = async (): Promise<void> => {
+    try {
+      const res = await fetch(`/api/properties/${params.id}/`);
+
+      if (!res.ok) {
+        throw new Error(`Failed to fetch property: ${res.status}`);
+      }
+
+      const data = await res.json();
+
+      if (data.status === 200 && data.property) {
+        setProperty(data.property);
+      } else {
+        throw new Error(data.message || "Failed to fetch property data");
+      }
+    } catch (err) {
+      console.error("Error fetching property:", err);
+      throw err;
+    }
+  };
+
+  const fetchBookings = async (): Promise<void> => {
+    try {
+      const req = await fetch(`/api/booking/${params.id}`);
+      const bookingResp = await req.json();
+
+      if (bookingResp.booking && bookingResp.booking.length) {
+        setBookingsList(
+          bookingResp.booking.map((booking: any) => ({
+            ...booking,
+            checkIn: new Date(booking.checkIn),
+            checkOut: new Date(booking.checkOut),
+          }))
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      throw error;
+    }
+  };
+
   // Get amenities as array for rendering
-  const getAmenities = () => {
+  const getAmenities = (): string[] => {
     if (!property?.amenities) return [];
 
-    const amenitiesMap = {
+    const amenitiesMap: Record<string, string> = {
       pool: "Private Pool",
       beachfront: "Beachfront",
       ac: "Air Conditioning",
@@ -159,11 +201,11 @@ export default function PropertyPage() {
 
     return Object.entries(property.amenities)
       .filter(([_, value]) => value === true)
-      .map(([key]) => amenitiesMap[key as keyof typeof amenitiesMap]);
+      .map(([key]) => amenitiesMap[key] || key);
   };
 
   // Calculate total price
-  const calculateTotal = () => {
+  const calculateTotal = (): number => {
     if (!property) return 0;
 
     const baseTotal = property.pricing.basePrice * booking.nights;
@@ -172,60 +214,13 @@ export default function PropertyPage() {
 
     return baseTotal + cleaningFee + serviceFee;
   };
-  async function handleReserveWithoutPayment() {
-    try {
-      const userID = await getCookieVal();
-      if (userID?.value === property?.owner) {
-        toast.warning("Can't Book Own Property");
-        return;
-      }
-      const response = await fetch("/api/booking", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          propertyId: property?.id,
-          guestId: userID?.value || "guest",
-          ownerId: property?.owner,
-          checkIn: booking.checkIn,
-          checkOut: booking.checkOut,
-          guests: booking.guests,
-          nights: booking.nights,
-          totalAmount: calculateTotal(),
-          paymentStatus: "pending",
-        }),
-      });
 
-      if (!response.ok) throw new Error("Failed to create booking");
-
-      const data = await response.json();
-      // Redirect to confirmation page
-      router.push(`/booking-confirmation?id=${data.bookingId}`);
-    } catch (error) {
-      console.error(error);
-      alert("Failed to create booking. Please try again.");
-    }
-  }
-
-  // Function to calculate disabled dates from existing bookings
-  const getDisabledDates = (bookings) => {
-    const disabledDates = [];
-
-    bookings.forEach((booking) => {
-      const checkIn = new Date(booking.checkIn);
-      const checkOut = new Date(booking.checkOut);
-
-      // Generate all dates between checkIn and checkOut
-      let currentDate = new Date(checkIn);
-      while (currentDate < checkOut) {
-        disabledDates.push(new Date(currentDate));
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
-    });
-
-    return disabledDates;
-  };
   // Function to check if dates overlap with existing bookings
-  const checkDateOverlap = (start, end, bookings) => {
+  const checkDateOverlap = (
+    start: Date,
+    end: Date,
+    bookings: Booking[]
+  ): Booking | null => {
     for (const booking of bookings) {
       const bookingStart = new Date(booking.checkIn);
       const bookingEnd = new Date(booking.checkOut);
@@ -241,22 +236,132 @@ export default function PropertyPage() {
     return null;
   };
 
-  // Helper to format dates for display
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
+  // Get disabled dates from existing bookings
+  const getDisabledDates = (): Date[] => {
+    const disabledDates: Date[] = [];
+
+    bookingsList.forEach((booking) => {
+      const checkIn = new Date(booking.checkIn);
+      const checkOut = new Date(booking.checkOut);
+
+      // Generate all dates between checkIn and checkOut
+      let currentDate = new Date(checkIn);
+      while (currentDate < checkOut) {
+        disabledDates.push(new Date(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
     });
+
+    return disabledDates;
   };
-  async function handleBookWithPayment() {
+
+  // Handle date range selection
+  const handleDateRangeChange = (range: DateRange | undefined): void => {
+    if (!range || !range.from || !range.to) return;
+
+    // Check if selected range overlaps with existing bookings
+    const overlappingBooking = checkDateOverlap(
+      range.from,
+      range.to,
+      bookingsList
+    );
+
+    if (overlappingBooking) {
+      setDateError(
+        `These dates are unavailable. The property is booked from ${formatDate(
+          overlappingBooking.checkIn
+        )} to ${formatDate(overlappingBooking.checkOut)}`
+      );
+    } else {
+      setDateError(null);
+      const nights = Math.ceil(
+        (range.to.getTime() - range.from.getTime()) / (1000 * 60 * 60 * 24)
+      );
+
+      setBooking((prev) => ({
+        ...prev,
+        checkIn: range.from!,
+        checkOut: range.to!,
+        nights: nights > 0 ? nights : 1,
+        paymentStatus: "pending",
+      }));
+    }
+  };
+
+  const handleReserveWithoutPayment = async (): Promise<void> => {
     try {
-      const userID = await getCookieVal();
-      if (userID?.value === property?.owner) {
-        toast.warning("Can't Book Own Property");
+      const userCookie = await getCookieVal();
+      const userID = userCookie?.value;
+
+      if (!userID) {
+        toast.error("Please log in to book this property");
         return;
       }
+
+      if (userID === property?.owner) {
+        toast.warning("You can't book your own property");
+        return;
+      }
+
+      if (dateError) {
+        toast.error("Please select valid dates");
+        return;
+      }
+
+      const response = await fetch("/api/booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          propertyId: property?.id,
+          guestId: userID,
+          ownerId: property?.owner,
+          checkIn: booking.checkIn,
+          checkOut: booking.checkOut,
+          guests: booking.guests,
+          nights: booking.nights,
+          totalAmount: calculateTotal(),
+          paymentStatus: "pending",
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create booking");
+      }
+
+      const data = await response.json();
+      // Redirect to confirmation page
+      router.push(`/booking-confirmation?id=${data.bookingId}`);
+    } catch (error) {
+      console.error("Booking error:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to create booking. Please try again."
+      );
+    }
+  };
+
+  const handleBookWithPayment = async (): Promise<void> => {
+    try {
+      const userCookie = await getCookieVal();
+      const userID = userCookie?.value;
+
+      if (!userID) {
+        toast.error("Please log in to book this property");
+        return;
+      }
+
+      if (userID === property?.owner) {
+        toast.warning("You can't book your own property");
+        return;
+      }
+
+      if (dateError) {
+        toast.error("Please select valid dates");
+        return;
+      }
+
       const response = await fetch("/api/checkout_session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -265,28 +370,46 @@ export default function PropertyPage() {
           propertyTitle: property?.title,
           nights: booking.nights,
           guests: booking.guests,
-          userID: userID?.value,
+          userID: userID,
           totalAmount: calculateTotal(),
-          guestId: userID?.value || "guest",
+          guestId: userID,
           ownerId: property?.owner,
           checkIn: booking.checkIn,
           checkOut: booking.checkOut,
         }),
       });
 
-      if (!response.ok) throw new Error("Failed to create checkout session");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.message || "Failed to create checkout session"
+        );
+      }
 
       const data = await response.json();
       // Redirect to Stripe checkout
       window.location.href = data.url;
     } catch (error) {
-      console.error(error);
-      alert("Failed to process payment. Please try again.");
+      console.error("Payment error:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to process payment. Please try again."
+      );
     }
-  }
+  };
+
+  // Format date for display
+  const formatDate = (date: Date): string => {
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
   // Format location string
-  const getLocationString = () => {
+  const getLocationString = (): string => {
     if (!property?.location) return "";
     const { city, state, country } = property.location;
     return `${city}, ${state}, ${country}`;
@@ -401,15 +524,16 @@ export default function PropertyPage() {
             {getLocationString()}
           </div>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className={userId === property.owner ? " " : "hidden"}
-          onClick={() => router.push(`/properties/${params.id}/edit`)}
-        >
-          <Edit className="mr-2 h-4 w-4" />
-          Edit
-        </Button>
+        {userId === property.owner && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.push(`/properties/${params.id}/edit`)}
+          >
+            <Edit className="mr-2 h-4 w-4" />
+            Edit
+          </Button>
+        )}
       </div>
 
       {property.images && property.images.length > 0 ? (
@@ -486,9 +610,9 @@ export default function PropertyPage() {
                 {bookingsList.length > 0 ? (
                   <div className="space-y-4">
                     <h4 className="font-medium">Recent Bookings</h4>
-                    {bookingsList.map((booking, index) => (
+                    {bookingsList.slice(0, 5).map((booking, index) => (
                       <div
-                        key={index}
+                        key={booking.id || index}
                         className="border-b pb-3 last:border-b-0"
                       >
                         <div className="flex justify-between text-sm">
@@ -506,7 +630,7 @@ export default function PropertyPage() {
                           <span className="font-medium">Status:</span>
                           <span
                             className={
-                              booking.paymentStatus === "paid"
+                              booking.paymentStatus === "completed"
                                 ? "text-green-600"
                                 : "text-amber-600"
                             }
@@ -545,74 +669,26 @@ export default function PropertyPage() {
                     </span>
                     <span className="text-muted-foreground"> / night</span>
                   </div>
-                  {/* <div className="flex items-center">
-                  <Star className="mr-1 h-4 w-4 fill-primary text-primary" />
-                  <span className="font-medium">New</span>
-                </div> */}
                 </div>
 
                 <div className="space-y-4">
                   <DatePickerWithRange
                     className="w-full"
                     initialDateRange={{
-                      from: new Date(),
-                      to: new Date(
-                        new Date().setDate(
-                          new Date().getDate() + booking.nights
-                        )
-                      ),
+                      from: booking.checkIn,
+                      to: booking.checkOut,
                     }}
-                    // onChange={(range) => {
-                    //   if (range) {
-                    //     setBooking((prev) => ({
-                    //       ...prev,
-                    //       nights: Math.ceil(
-                    //         //@ts-ignore
-                    //         (range?.to?.getTime() - range.from.getTime()) /
-                    //           (1000 * 60 * 60 * 24)
-                    //       ),
-                    //     }));
-                    //   }
-                    // }}
-                    // Add this to the component logic
-
-                    // Modify the date change handler
-                    onChange={(range) => {
-                      if (range) {
-                        // Check if selected range overlaps with existing bookings
-                        const isOverlapping = checkDateOverlap(
-                          range.from,
-                          range.to,
-                          bookingsList
-                        );
-
-                        if (isOverlapping) {
-                          setDateError(
-                            `These dates are unavailable. The property is booked from ${formatDate(
-                              isOverlapping.checkIn
-                            )} to ${formatDate(isOverlapping.checkOut)}`
-                          );
-                        } else {
-                          setDateError(null);
-                          setBooking((prev) => ({
-                            ...prev,
-                            checkIn: range.from,
-                            checkOut: range.to,
-                            nights: Math.ceil(
-                              (range?.to?.getTime() - range.from.getTime()) /
-                                (1000 * 60 * 60 * 24)
-                            ),
-                          }));
-                        }
-                      }
-                    }}
+                    onChange={handleDateRangeChange}
+                    disabledDates={getDisabledDates()}
                   />
+
                   {dateError && (
                     <div className="text-red-500 text-sm mt-1 flex items-center">
                       <span className="mr-1">⚠️</span>
                       {dateError}
                     </div>
                   )}
+
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Guests</label>
@@ -651,7 +727,7 @@ export default function PropertyPage() {
                     <Button
                       className="w-1/2"
                       onClick={handleReserveWithoutPayment}
-                      disabled={dateError !== null}
+                      disabled={!!dateError}
                     >
                       Reserve
                     </Button>
@@ -659,7 +735,7 @@ export default function PropertyPage() {
                       className="w-1/2"
                       variant="default"
                       onClick={handleBookWithPayment}
-                      disabled={dateError !== null}
+                      disabled={!!dateError}
                     >
                       Book Now
                     </Button>

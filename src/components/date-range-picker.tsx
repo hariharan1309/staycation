@@ -18,12 +18,14 @@ interface DatePickerWithRangeProps {
   className?: string;
   onChange?: (range: DateRange | undefined) => void;
   initialDateRange?: DateRange;
+  disabledDates?: Date[];
 }
 
 export function DatePickerWithRange({
   className,
   onChange,
   initialDateRange,
+  disabledDates = [],
 }: DatePickerWithRangeProps) {
   const [date, setDate] = React.useState<DateRange | undefined>(
     initialDateRange || {
@@ -37,6 +39,19 @@ export function DatePickerWithRange({
     if (onChange) {
       onChange(selectedRange);
     }
+  };
+
+  // Function to customize day rendering
+  const modifiers = {
+    booked: disabledDates,
+  };
+
+  const modifiersStyles = {
+    booked: {
+      backgroundColor: "#FFEBEE",
+      color: "#B71C1C",
+      textDecoration: "line-through",
+    },
   };
 
   return (
@@ -73,7 +88,50 @@ export function DatePickerWithRange({
             selected={date}
             onSelect={handleSelect}
             numberOfMonths={2}
+            disabled={(date) =>
+              // Disable dates in the past
+              date < new Date(new Date().setHours(0, 0, 0, 0)) ||
+              // Disable booked dates
+              disabledDates.some(
+                (disabledDate) =>
+                  disabledDate.toDateString() === date.toDateString()
+              )
+            }
+            modifiers={modifiers}
+            modifiersStyles={modifiersStyles}
+            className="date-range-calendar"
+            components={{
+              DayContent: ({ date: dayDate }) => {
+                const isBooked = disabledDates.some(
+                  (disabledDate) =>
+                    disabledDate.toDateString() === dayDate.toDateString()
+                );
+                return (
+                  <div
+                    className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-md",
+                      isBooked && "booked-date"
+                    )}
+                  >
+                    {dayDate.getDate()}
+                    {isBooked && (
+                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-red-500" />
+                    )}
+                  </div>
+                );
+              },
+            }}
           />
+          <div className="p-3 border-t text-xs">
+            <div className="flex items-center mt-2">
+              <div className="w-3 h-3 bg-red-100 border border-red-500 mr-2 rounded-full"></div>
+              <span>Booked Dates (Unavailable)</span>
+            </div>
+            <div className="flex items-center mt-2">
+              <div className="w-3 h-3 bg-primary/10 border border-primary mr-2 rounded-full"></div>
+              <span>Selected Range</span>
+            </div>
+          </div>
         </PopoverContent>
       </Popover>
     </div>
