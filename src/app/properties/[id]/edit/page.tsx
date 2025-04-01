@@ -261,10 +261,6 @@ export default function EditPropertyPage() {
         images: [],
       };
 
-      toast.loading("Updating property...", {
-        duration: 1000,
-      });
-
       // Send data to API
       const response = await fetch(`/api/properties/${params.id}/edit`, {
         method: "PUT",

@@ -97,7 +97,7 @@ export default function PropertyPage() {
     const getProperty = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/api/properties/${params.id}/`);
+        const res = await fetch(`/api/properties/${params.id}/`, {});
 
         if (!res.ok) {
           throw new Error(`Failed to fetch property: ${res.status}`);

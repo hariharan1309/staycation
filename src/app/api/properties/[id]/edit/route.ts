@@ -8,9 +8,7 @@ export const PUT = async (req: Request, context: any) => {
     const data = await req.json();
     // Save property data with image URLs
     const propertyRef = doc(fstore, "property", id);
-    await updateDoc(propertyRef, {
-      data,
-    });
+    await updateDoc(propertyRef, data);
 
     return NextResponse.json(
       { success: true, message: " Updated Successfully" },
