@@ -32,7 +32,7 @@ export default function ProfilePage() {
   // const userType = "host";
 
   return (
-    <main className="container px-4 py-8 md:px-6 md:py-12">
+    <main className="container px-4 py-8 md:px-6 md:py-12 pt-4 md:pt-6">
       <div className="grid gap-6 md:grid-cols-[280px_1fr] lg:grid-cols-[280px_1fr]">
         {/* Sidebar */}
         <div className="space-y-6">

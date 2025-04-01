@@ -1,10 +1,10 @@
 import { fstore } from "@/lib/firebase";
-import { collection, doc, getDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { NextResponse } from "next/server";
 
 export const GET = async (req: Request, context: { params: any }) => {
   try {
-    const {id} = await context.params;
+    const { id } = await context.params;
     const data = await getDoc(doc(fstore, "property", id));
     if (!data.exists()) {
       return new NextResponse(
