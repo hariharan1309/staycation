@@ -28,6 +28,7 @@ import { ProfileReviews } from "@/components/profile-reviews";
 import { ProfileCustomers } from "@/components/profile-customers";
 import { useRouter } from "next/navigation";
 import { AuthContext } from "@/components/authProvider/AuthProvider";
+import { ProfileSettings } from "@/components/profile-settings";
 
 export default function ProfilePage() {
   // In a real app, this would come from authentication
@@ -54,54 +55,14 @@ export default function ProfilePage() {
                 <p className="text-sm text-muted-foreground">
                   john.doe@example.com
                 </p>
-                {/* <Badge className="mt-2" variant="outline">
-                  {userType === "host" ? "Property Owner" : "Guest"}
-                </Badge>
-                {userType === "host" && (
-                  <Badge className="mt-1" variant="secondary">
-                    Superhost
-                  </Badge>
-                )} */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="mt-4 w-full"
-                  onClick={() => {
-                    router.push("/profile/settings");
-                  }}
-                >
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit Profile
-                </Button>
               </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="space-y-4">
+              <div className="space-y-4 p-6">
                 <div className="flex items-center gap-3">
                   <User className="h-5 w-5 text-muted-foreground" />
                   <div>
                     <p className="text-sm font-medium">Member Since</p>
                     <p className="text-sm text-muted-foreground">
                       January 2023
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <MessageSquare className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium">Response Rate</p>
-                    <p className="text-sm text-muted-foreground">98%</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Star className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium">Rating</p>
-                    <p className="text-sm text-muted-foreground">
-                      4.9 (42 reviews)
                     </p>
                   </div>
                 </div>
@@ -116,15 +77,7 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {userType === "host" && (
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="mb-4 text-sm font-medium">Quick Actions</h3>
-                <div className="space-y-2">
+                {userType === "host" && (
                   <Button
                     variant="outline"
                     className="w-full justify-start"
@@ -135,20 +88,10 @@ export default function ProfilePage() {
                       Add New Property
                     </Link>
                   </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start"
-                    asChild
-                  >
-                    <Link href="/dashboard">
-                      <Home className="mr-2 h-4 w-4" />
-                      Go to Dashboard
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Main Content */}
@@ -163,13 +106,13 @@ export default function ProfilePage() {
               <TabsTrigger value="bookings">
                 {userType === "guest" ? "My Trips" : "Bookings"}
               </TabsTrigger>
-              <TabsTrigger value="reviews">Reviews</TabsTrigger>
               {userType === "host" && (
                 <>
                   <TabsTrigger value="properties">Properties</TabsTrigger>
                   <TabsTrigger value="customers">Customers</TabsTrigger>
                 </>
               )}
+              <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
 
             {/* Dashboard Tab */}
@@ -419,6 +362,9 @@ export default function ProfilePage() {
                 <ProfileCustomers />
               </TabsContent>
             )}
+            <TabsContent value="settings">
+              <ProfileSettings userRole={userType as any} />
+            </TabsContent>
           </Tabs>
         </div>
       </div>

@@ -89,12 +89,6 @@ export function NavUser({
               Account
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild className="cursor-pointer">
-            <Link href={"/profile/settings"}>
-              <Settings />
-              Settings
-            </Link>
-          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
