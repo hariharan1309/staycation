@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -24,28 +24,19 @@ import { Separator } from "@/components/ui/separator";
 import { ProfileBookings } from "@/components/profile-bookings";
 import { ProfileProperties } from "@/components/profile-properties";
 import { ProfileReviews } from "@/components/profile-reviews";
-import { ProfileSettings } from "@/components/profile-settings";
+// import { ProfileSettings } from "@/components/profile-settings";
 import { ProfileCustomers } from "@/components/profile-customers";
 import { useRouter } from "next/navigation";
+import { AuthContext } from "@/components/authProvider/AuthProvider";
 
 export default function ProfilePage() {
   // In a real app, this would come from authentication
-  const [userRole, setUserRole] = useState<"guest" | "owner">("owner");
+  const authContext = useContext(AuthContext);
+  const userType = authContext?.userType ?? "guest";
   const router = useRouter();
-  // Toggle role for demo purposes
-  const toggleRole = () => {
-    setUserRole(userRole === "guest" ? "owner" : "guest");
-  };
 
   return (
     <main className="container px-4 py-8 md:px-6 md:py-12">
-      {/* Role toggle for demo purposes */}
-      <div className="mb-6 flex justify-end">
-        <Button variant="outline" onClick={toggleRole}>
-          Switch to {userRole === "guest" ? "Owner" : "Guest"} View
-        </Button>
-      </div>
-
       <div className="grid gap-6 md:grid-cols-[280px_1fr] lg:grid-cols-[280px_1fr]">
         {/* Sidebar */}
         <div className="space-y-6">
@@ -64,9 +55,9 @@ export default function ProfilePage() {
                   john.doe@example.com
                 </p>
                 {/* <Badge className="mt-2" variant="outline">
-                  {userRole === "owner" ? "Property Owner" : "Guest"}
+                  {userType === "host" ? "Property Owner" : "Guest"}
                 </Badge>
-                {userRole === "owner" && (
+                {userType === "host" && (
                   <Badge className="mt-1" variant="secondary">
                     Superhost
                   </Badge>
@@ -114,7 +105,7 @@ export default function ProfilePage() {
                     </p>
                   </div>
                 </div>
-                {userRole === "owner" && (
+                {userType === "host" && (
                   <div className="flex items-center gap-3">
                     <Building className="h-5 w-5 text-muted-foreground" />
                     <div>
@@ -129,7 +120,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          {userRole === "owner" && (
+          {userType === "host" && (
             <Card>
               <CardContent className="p-6">
                 <h3 className="mb-4 text-sm font-medium">Quick Actions</h3>
@@ -165,15 +156,15 @@ export default function ProfilePage() {
           <Tabs defaultValue="dashboard">
             <TabsList
               className={`grid w-full ${
-                userRole === "owner" ? "grid-cols-5" : "grid-cols-4"
+                userType === "host" ? "grid-cols-5" : "grid-cols-4"
               }`}
             >
               <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
               <TabsTrigger value="bookings">
-                {userRole === "guest" ? "My Trips" : "Bookings"}
+                {userType === "guest" ? "My Trips" : "Bookings"}
               </TabsTrigger>
               <TabsTrigger value="reviews">Reviews</TabsTrigger>
-              {userRole === "owner" && (
+              {userType === "host" && (
                 <>
                   <TabsTrigger value="properties">Properties</TabsTrigger>
                   <TabsTrigger value="customers">Customers</TabsTrigger>
@@ -187,12 +178,12 @@ export default function ProfilePage() {
                 <Card>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium">
-                      {userRole === "guest" ? "Total Trips" : "Total Revenue"}
+                      {userType === "guest" ? "Total Trips" : "Total Revenue"}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {userRole === "guest" ? "12" : "$8,450"}
+                      {userType === "guest" ? "12" : "$8,450"}
                     </div>
                     <p className="text-xs text-muted-foreground">
                       +18% from last month
@@ -202,15 +193,15 @@ export default function ProfilePage() {
                 <Card>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium">
-                      {userRole === "guest" ? "Upcoming Trips" : "Bookings"}
+                      {userType === "guest" ? "Upcoming Trips" : "Bookings"}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {userRole === "guest" ? "2" : "32"}
+                      {userType === "guest" ? "2" : "32"}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {userRole === "guest"
+                      {userType === "guest"
                         ? "Next trip in 15 days"
                         : "+8% from last month"}
                     </p>
@@ -219,17 +210,17 @@ export default function ProfilePage() {
                 <Card>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium">
-                      {userRole === "guest"
+                      {userType === "guest"
                         ? "Saved Properties"
                         : "Occupancy Rate"}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {userRole === "guest" ? "24" : "78%"}
+                      {userType === "guest" ? "24" : "78%"}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {userRole === "guest"
+                      {userType === "guest"
                         ? "5 new this month"
                         : "+5% from last month"}
                     </p>
@@ -238,15 +229,15 @@ export default function ProfilePage() {
                 <Card>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium">
-                      {userRole === "guest" ? "Reviews Given" : "New Inquiries"}
+                      {userType === "guest" ? "Reviews Given" : "New Inquiries"}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {userRole === "guest" ? "8" : "14"}
+                      {userType === "guest" ? "8" : "14"}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {userRole === "guest"
+                      {userType === "guest"
                         ? "Last review 2 weeks ago"
                         : "3 require response"}
                     </p>
@@ -255,7 +246,7 @@ export default function ProfilePage() {
               </div>
 
               <h2 className="text-xl font-bold">
-                {userRole === "guest" ? "Upcoming Trips" : "Recent Bookings"}
+                {userType === "guest" ? "Upcoming Trips" : "Recent Bookings"}
               </h2>
               <div className="space-y-4">
                 {[1, 2].map((i) => (
@@ -286,7 +277,7 @@ export default function ProfilePage() {
                               </div>
                             </div>
                             <Badge>
-                              {userRole === "guest" ? "Confirmed" : "Paid"}
+                              {userType === "guest" ? "Confirmed" : "Paid"}
                             </Badge>
                           </div>
                           <div className="mt-2 grid gap-2 text-sm md:grid-cols-3">
@@ -313,16 +304,16 @@ export default function ProfilePage() {
                           </div>
                           <div className="mt-auto flex flex-wrap gap-2 pt-4">
                             <Button size="sm" variant="outline">
-                              {userRole === "guest"
+                              {userType === "guest"
                                 ? "View Booking"
                                 : "Manage Booking"}
                             </Button>
                             <Button size="sm" variant="outline">
-                              {userRole === "guest"
+                              {userType === "guest"
                                 ? "Contact Host"
                                 : "Message Guest"}
                             </Button>
-                            {userRole === "guest" && (
+                            {userType === "guest" && (
                               <Button size="sm" variant="outline">
                                 Cancel
                               </Button>
@@ -339,12 +330,12 @@ export default function ProfilePage() {
                 <Button variant="outline" asChild>
                   <Link
                     href={
-                      userRole === "guest"
+                      userType === "guest"
                         ? "/profile/trips"
                         : "/profile/bookings"
                     }
                   >
-                    View All {userRole === "guest" ? "Trips" : "Bookings"}
+                    View All {userType === "guest" ? "Trips" : "Bookings"}
                   </Link>
                 </Button>
               </div>
@@ -357,11 +348,11 @@ export default function ProfilePage() {
                   {
                     icon: <MessageSquare className="h-8 w-8 text-primary" />,
                     title:
-                      userRole === "guest"
+                      userType === "guest"
                         ? "Message from Host"
                         : "New Message from Guest",
                     description:
-                      userRole === "guest"
+                      userType === "guest"
                         ? "Sarah (host of Beachfront Villa) sent you a message"
                         : "John (guest) sent you a message about Mountain Cabin",
                     time: "2 hours ago",
@@ -369,9 +360,9 @@ export default function ProfilePage() {
                   {
                     icon: <Star className="h-8 w-8 text-primary" />,
                     title:
-                      userRole === "guest" ? "Review Reminder" : "New Review",
+                      userType === "guest" ? "Review Reminder" : "New Review",
                     description:
-                      userRole === "guest"
+                      userType === "guest"
                         ? "Don't forget to leave a review for your stay at Mountain Cabin"
                         : "Sarah left a 5-star review for Beachfront Villa",
                     time: "1 day ago",
@@ -379,9 +370,9 @@ export default function ProfilePage() {
                   {
                     icon: <Calendar className="h-8 w-8 text-primary" />,
                     title:
-                      userRole === "guest" ? "Upcoming Trip" : "New Booking",
+                      userType === "guest" ? "Upcoming Trip" : "New Booking",
                     description:
-                      userRole === "guest"
+                      userType === "guest"
                         ? "Your trip to Beachfront Villa is in 15 days"
                         : "New booking for Mountain Cabin (Jun 5 - Jun 10)",
                     time: "3 days ago",
@@ -407,23 +398,23 @@ export default function ProfilePage() {
 
             {/* Bookings/Trips Tab */}
             <TabsContent value="bookings">
-              <ProfileBookings userRole={userRole} />
+              <ProfileBookings userRole={userType as any} />
             </TabsContent>
 
             {/* Reviews Tab */}
             <TabsContent value="reviews">
-              <ProfileReviews userRole={userRole} />
+              <ProfileReviews userRole={userType as any} />
             </TabsContent>
 
             {/* Properties Tab (Owner Only) */}
-            {userRole === "owner" && (
+            {userType === "host" && (
               <TabsContent value="properties">
                 <ProfileProperties />
               </TabsContent>
             )}
 
             {/* Customers Tab (Owner Only) */}
-            {userRole === "owner" && (
+            {userType === "host" && (
               <TabsContent value="customers">
                 <ProfileCustomers />
               </TabsContent>

@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  BellIcon,
-  CreditCardIcon,
-  LogOutIcon,
-  MoreVerticalIcon,
-  Settings,
-  UserCircleIcon,
-} from "lucide-react";
+import { LogOutIcon, Settings, UserCircleIcon } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -20,7 +13,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { useIsMobile } from "@/hooks/use-mobile";
 import Link from "next/link";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
@@ -33,9 +25,10 @@ export function NavUser({
   setUserType,
 }: {
   user: {
-    name: string;
-    email: string;
+    firstName: string;
+    lastName: string;
     avatar: string;
+    email: string;
   };
   setUser: ((user: string | null) => void) | null;
   setUserType: ((type: string) => void) | null;
@@ -58,7 +51,7 @@ export function NavUser({
       <DropdownMenuTrigger asChild>
         <div className="cursor-pointer p-1">
           <Avatar className="h-8 w-8 rounded-full grayscale">
-            <AvatarImage src={user.avatar} alt={user.name} />
+            <AvatarImage src={user.avatar} alt={user.firstName} />
             <AvatarFallback className="rounded-full">CN</AvatarFallback>
           </Avatar>
         </div>
@@ -72,11 +65,16 @@ export function NavUser({
         <DropdownMenuLabel className="p-0 font-normal">
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
             <Avatar className="h-8 w-8 rounded-full">
-              <AvatarImage src={user.avatar} alt={user.name} />
+              <AvatarImage
+                src={user.avatar}
+                alt={user.firstName + " " + user.lastName}
+              />
               <AvatarFallback className="rounded-lg">CN</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">{user.name}</span>
+              <span className="truncate font-medium">
+                {user.firstName + " " + user.lastName}
+              </span>
               <span className="truncate text-xs text-muted-foreground">
                 {user.email}
               </span>

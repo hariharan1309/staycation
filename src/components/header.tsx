@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -17,6 +17,23 @@ import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
 import { AuthContext } from "./authProvider/AuthProvider";
 import { NavUser } from "./nav-user";
+import { getCookieVal } from "@/lib/cookie";
+
+// Sample User Data (Replace with Dynamic Data Later)
+const sampleUser = {
+  firstName: "Hari",
+  lastName: "",
+  avatar: "https://api.dicebear.com/9.x/lorelei/svg?flip=true",
+  email: "sample@giaoed.com",
+};
+
+const routes = [
+  { href: "/", label: "Home", icon: <HomeIcon /> },
+  { href: "/properties", label: "Properties", icon: <BuildingIcon /> },
+  { href: "/about", label: "About", icon: <InfoIcon /> },
+  { href: "/contact", label: "Contact", icon: <MessageCircleIcon /> },
+  { href: "/help", label: "Help", icon: <HelpCircleIcon /> },
+];
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,22 +44,22 @@ export function Header() {
   const userType = authContext?.userType ?? "guest";
   const setUser = authContext?.setUser ?? null;
   const setUserType = authContext?.setUserType ?? null;
-
-  const routes = [
-    { href: "/", label: "Home", icon: <HomeIcon /> },
-    { href: "/properties", label: "Properties", icon: <BuildingIcon /> },
-    { href: "/about", label: "About", icon: <InfoIcon /> },
-    { href: "/contact", label: "Contact", icon: <MessageCircleIcon /> },
-    { href: "/help", label: "Help", icon: <HelpCircleIcon /> },
-  ];
-
-  // Sample User Data (Replace with Dynamic Data Later)
-  const sampleUser = {
-    name: "Hari",
-    avatar: "https://avatars.dicebear.com/api/avataaars/hari.svg",
-    email: "sample@giaoed.com",
-  };
-
+  const [userVal, setUserVal] = useState(sampleUser);
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const user = await getCookieVal();
+        const userDetail = await fetch(
+          `/api/profile?id=${user?.value}&type=${userType}`
+        );
+        const data = await userDetail.json();
+        setUserVal((prev) => ({ ...prev, ...data.data }));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getData();
+  }, []);
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between px-4 md:px-6">
@@ -74,7 +91,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           {user ? (
             <NavUser
-              user={sampleUser}
+              user={userVal}
               setUser={setUser}
               setUserType={setUserType}
             />
