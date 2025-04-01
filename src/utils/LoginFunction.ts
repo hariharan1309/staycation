@@ -15,7 +15,7 @@ type CookieOptions = {
 const getCookieOptions = (): CookieOptions => ({
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
-  sameSite: "strict",
+  sameSite: "lax",
   maxAge: REFRESH_TOKEN_MAX_AGE,
 });
 
