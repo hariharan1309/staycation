@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +21,7 @@ import { PropertyAmenitiesForm } from "@/components/property-amenities-form";
 import { PropertyImagesForm } from "@/components/property-images-form";
 import { PropertyPricingForm } from "@/components/property-pricing-form";
 import { toast } from "sonner";
-// import { useToast } from "@/components/ui/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Define types for the property data
 export interface PropertyImage {
@@ -59,7 +60,7 @@ export interface PropertyPricing {
   securityDeposit: number;
   weeklyDiscount: number;
   monthlyDiscount: number;
-  instantBook: boolean;
+  // instantBook: boolean;
   minNights: number;
   maxNights: number;
   taxes: boolean;
@@ -80,6 +81,10 @@ export interface PropertyFormData {
 
 export default function EditPropertyPage() {
   const [activeTab, setActiveTab] = useState<string>("basic");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const params = useParams();
 
   const [formData, setFormData] = useState<PropertyFormData>({
     // Basic Info
@@ -125,12 +130,97 @@ export default function EditPropertyPage() {
       securityDeposit: 200,
       weeklyDiscount: 10,
       monthlyDiscount: 20,
-      instantBook: true,
+      // instantBook: true,
       minNights: 2,
       maxNights: 30,
       taxes: true,
     },
   });
+
+  // Fetch existing property data
+  useEffect(() => {
+    const getProperty = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/properties/${params.id}/`);
+
+        if (!res.ok) {
+          throw new Error(`Failed to fetch property: ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        if (data.status === 200 && data.property) {
+          // Map the API data to form data structure
+          const property = data.property;
+
+          // Create image array in the format expected by the form
+          const imageArray = property.images
+            ? property.images.map((url: string, index: number) => ({
+                id: index,
+                url: url,
+                main: index === 0, // First image is main by default
+              }))
+            : [];
+
+          setFormData({
+            title: property.title || "",
+            description: property.description || "",
+            type: property.type || "apartment",
+            bedrooms: property.bedrooms || 1,
+            bathrooms: property.bathrooms || 1,
+            maxGuests: property.maxGuests || 2,
+            location: {
+              address: property.location?.address || "",
+              city: property.location?.city || "",
+              state: property.location?.state || "",
+              zipCode: property.location?.zipCode || "",
+              country: property.location?.country || "United States",
+              directions: property.location?.directions || "",
+            },
+            amenities: {
+              wifi: property.amenities?.wifi || false,
+              kitchen: property.amenities?.kitchen || false,
+              ac: property.amenities?.ac || false,
+              heating: property.amenities?.heating || false,
+              tv: property.amenities?.tv || false,
+              parking: property.amenities?.parking || false,
+              pool: property.amenities?.pool || false,
+              beachfront: property.amenities?.beachfront || false,
+              washer: property.amenities?.washer || false,
+              workspace: property.amenities?.workspace || false,
+              outdoorDining: property.amenities?.outdoorDining || false,
+            },
+            images: imageArray,
+            pricing: {
+              basePrice: property.pricing?.basePrice || 100,
+              cleaningFee: property.pricing?.cleaningFee || 50,
+              securityDeposit: property.pricing?.securityDeposit || 200,
+              weeklyDiscount: property.pricing?.weeklyDiscount || 10,
+              monthlyDiscount: property.pricing?.monthlyDiscount || 20,
+              // instantBook: property.pricing?.instantBook || true,
+              minNights: property.pricing?.minNights || 2,
+              maxNights: property.pricing?.maxNights || 30,
+              taxes: property.pricing?.taxes || true,
+            },
+          });
+        } else {
+          throw new Error(data.message || "Failed to fetch property data");
+        }
+      } catch (err) {
+        console.error("Error fetching property:", err);
+        setError(
+          err instanceof Error ? err.message : "An unknown error occurred"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (params.id) {
+      getProperty();
+    }
+  }, [params.id]);
 
   const updateFormData = (section: string, data: any): void => {
     setFormData((prev) => ({
@@ -155,9 +245,9 @@ export default function EditPropertyPage() {
     }
   };
 
-  const handleSubmit = async (): Promise<void> => {
+  const handleSubmit = async () => {
     try {
-      // Validate form data before submission
+      // Validate form data
       if (!formData.title || !formData.description) {
         toast.warning("Missing Information", {
           description: "Please fill in all required fields",
@@ -165,30 +255,110 @@ export default function EditPropertyPage() {
         return;
       }
 
-      // Here you would typically send the data to your API
-      console.log("Submitting property:", formData);
+      const finalData = {
+        ...formData,
+        // images: formData.images.map((img) => img.url), // Convert to array of URLs
+        images: [],
+      };
 
-      // Show success message
-      toast.success("Property Created", {
-        description: "Your property has been successfully created",
+      toast.loading("Updating property...", {
+        duration: 1000,
       });
 
-      // Redirect to the properties page or the new property page
-      // router.push("/properties");
-    } catch (error) {
-      toast.error("Error", {
-        description: "Failed to create property. Please try again.",
+      // Send data to API
+      const response = await fetch(`/api/properties/${params.id}/edit`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(finalData),
       });
+
+      if (!response.ok) throw new Error("Failed to update property");
+      const data = await response.json();
+
+      toast.success("Property updated successfully!");
+      router.push(`/properties/${params.id}`);
+    } catch (error: any) {
+      console.error("Error:", error);
+      toast.error("Error updating property", { description: error.message });
     }
   };
+
+  // Render loading state
+  if (loading) {
+    return (
+      <main className="container px-4 py-8 md:px-6 md:py-12">
+        <div className="mb-6 flex items-center gap-2">
+          <Button variant="ghost" size="icon" disabled>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <Skeleton className="h-8 w-60" />
+        </div>
+
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-7 w-40 mb-2" />
+            <Skeleton className="h-5 w-72" />
+          </CardHeader>
+          <CardContent>
+            <div className="w-full px-2 md:p-5 lg:px-10">
+              <Skeleton className="h-10 w-full mb-6" />
+              <div className="mt-6 p-4 md:p-6 lg:p-8">
+                <Skeleton className="h-12 w-full mb-4" />
+                <Skeleton className="h-12 w-full mb-4" />
+                <Skeleton className="h-12 w-full mb-4" />
+                <Skeleton className="h-12 w-full" />
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <Skeleton className="h-10 w-28" />
+            <Skeleton className="h-10 w-28" />
+          </CardFooter>
+        </Card>
+      </main>
+    );
+  }
+
+  // Render error state
+  if (error) {
+    return (
+      <main className="container px-4 py-8 md:px-6 md:py-12">
+        <div className="mb-6 flex items-center gap-2">
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="/properties">
+              <ArrowLeft className="h-5 w-5" />
+              <span className="sr-only">Back to properties</span>
+            </Link>
+          </Button>
+          <h1 className="text-2xl font-bold md:text-[28px]">Error</h1>
+        </div>
+
+        <Card className="bg-red-50">
+          <CardHeader>
+            <CardTitle className="text-red-700">
+              Failed to Load Property
+            </CardTitle>
+            <CardDescription className="text-red-600">{error}</CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button asChild>
+              <Link href="/properties">Return to Properties</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+      </main>
+    );
+  }
 
   return (
     <main className="container px-4 py-8 md:px-6 md:py-12">
       <div className="mb-6 flex items-center gap-2">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/properties">
+          <Link href={`/properties/${params.id}`}>
             <ArrowLeft className="h-5 w-5" />
-            <span className="sr-only">Back to properties</span>
+            <span className="sr-only">Back to property</span>
           </Link>
         </Button>
         <h1 className="text-2xl font-bold md:text-[28px]">Update Property</h1>
@@ -274,7 +444,7 @@ export default function EditPropertyPage() {
           {activeTab === "pricing" ? (
             <Button type="submit" onClick={handleSubmit}>
               <Check className="mr-2 h-4 w-4" />
-              Save Property
+              Save Changes
             </Button>
           ) : (
             <Button onClick={handleNextTab}>
