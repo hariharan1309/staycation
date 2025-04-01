@@ -93,6 +93,8 @@ export default function PropertyPage() {
   const [bookingsList, setBookingsList] = useState([]);
   const params = useParams();
   const router = useRouter();
+  const [dateError, setDateError] = useState(null);
+
   useEffect(() => {
     const getProperty = async () => {
       try {
@@ -204,6 +206,50 @@ export default function PropertyPage() {
     }
   }
 
+  // Function to calculate disabled dates from existing bookings
+  const getDisabledDates = (bookings) => {
+    const disabledDates = [];
+
+    bookings.forEach((booking) => {
+      const checkIn = new Date(booking.checkIn);
+      const checkOut = new Date(booking.checkOut);
+
+      // Generate all dates between checkIn and checkOut
+      let currentDate = new Date(checkIn);
+      while (currentDate < checkOut) {
+        disabledDates.push(new Date(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    });
+
+    return disabledDates;
+  };
+  // Function to check if dates overlap with existing bookings
+  const checkDateOverlap = (start, end, bookings) => {
+    for (const booking of bookings) {
+      const bookingStart = new Date(booking.checkIn);
+      const bookingEnd = new Date(booking.checkOut);
+
+      if (
+        (start >= bookingStart && start < bookingEnd) ||
+        (end > bookingStart && end <= bookingEnd) ||
+        (start <= bookingStart && end >= bookingEnd)
+      ) {
+        return booking;
+      }
+    }
+    return null;
+  };
+
+  // Helper to format dates for display
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
   async function handleBookWithPayment() {
     try {
       const userID = await getCookieVal();
@@ -429,128 +475,231 @@ export default function PropertyPage() {
           </div>
         </div>
 
-        <div className={userId === property.owner ? " hidden " : ""}>
-          <Card className="sticky top-24">
-            <CardContent className="p-6">
-              <div className="mb-4 flex items-baseline justify-between">
-                <div>
-                  <span className="text-2xl font-bold">
-                    ${property.pricing.basePrice}
-                  </span>
-                  <span className="text-muted-foreground"> / night</span>
-                </div>
-                {/* <div className="flex items-center">
+        <div>
+          {userId === property.owner ? (
+            <Card className="sticky top-24">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold mb-4">
+                  Property Bookings
+                </h3>
+
+                {bookingsList.length > 0 ? (
+                  <div className="space-y-4">
+                    <h4 className="font-medium">Recent Bookings</h4>
+                    {bookingsList.map((booking, index) => (
+                      <div
+                        key={index}
+                        className="border-b pb-3 last:border-b-0"
+                      >
+                        <div className="flex justify-between text-sm">
+                          <span className="font-medium">Dates:</span>
+                          <span>
+                            {formatDate(booking.checkIn)} -{" "}
+                            {formatDate(booking.checkOut)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="font-medium">Guests:</span>
+                          <span>{booking.guests}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="font-medium">Status:</span>
+                          <span
+                            className={
+                              booking.paymentStatus === "paid"
+                                ? "text-green-600"
+                                : "text-amber-600"
+                            }
+                          >
+                            {booking.paymentStatus.charAt(0).toUpperCase() +
+                              booking.paymentStatus.slice(1)}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-8 text-center text-muted-foreground">
+                    <p>No bookings as of now</p>
+                  </div>
+                )}
+
+                <Button
+                  className="w-full mt-4"
+                  variant="outline"
+                  onClick={() =>
+                    router.push(`/properties/${params.id}/bookings`)
+                  }
+                >
+                  View All Bookings
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="sticky top-24">
+              <CardContent className="p-6">
+                <div className="mb-4 flex items-baseline justify-between">
+                  <div>
+                    <span className="text-2xl font-bold">
+                      ${property.pricing.basePrice}
+                    </span>
+                    <span className="text-muted-foreground"> / night</span>
+                  </div>
+                  {/* <div className="flex items-center">
                   <Star className="mr-1 h-4 w-4 fill-primary text-primary" />
                   <span className="font-medium">New</span>
                 </div> */}
-              </div>
+                </div>
 
-              <div className="space-y-4">
-                <DatePickerWithRange
-                  className="w-full"
-                  initialDateRange={{
-                    from: new Date(),
-                    to: new Date(
-                      new Date().setDate(new Date().getDate() + booking.nights)
-                    ),
-                  }}
-                  onChange={(range) => {
-                    if (range) {
-                      setBooking((prev) => ({
-                        ...prev,
-                        nights: Math.ceil(
-                          //@ts-ignore
-                          (range?.to?.getTime() - range.from.getTime()) /
-                            (1000 * 60 * 60 * 24)
-                        ),
-                      }));
-                    }
-                  }}
-                />
+                <div className="space-y-4">
+                  <DatePickerWithRange
+                    className="w-full"
+                    initialDateRange={{
+                      from: new Date(),
+                      to: new Date(
+                        new Date().setDate(
+                          new Date().getDate() + booking.nights
+                        )
+                      ),
+                    }}
+                    // onChange={(range) => {
+                    //   if (range) {
+                    //     setBooking((prev) => ({
+                    //       ...prev,
+                    //       nights: Math.ceil(
+                    //         //@ts-ignore
+                    //         (range?.to?.getTime() - range.from.getTime()) /
+                    //           (1000 * 60 * 60 * 24)
+                    //       ),
+                    //     }));
+                    //   }
+                    // }}
+                    // Add this to the component logic
 
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Guests</label>
-                    <Select
-                      value={booking.guests.toString()}
-                      onValueChange={(value) =>
-                        setBooking((prev) => ({
-                          ...prev,
-                          guests: parseInt(value),
-                        }))
+                    // Modify the date change handler
+                    onChange={(range) => {
+                      if (range) {
+                        // Check if selected range overlaps with existing bookings
+                        const isOverlapping = checkDateOverlap(
+                          range.from,
+                          range.to,
+                          bookingsList
+                        );
+
+                        if (isOverlapping) {
+                          setDateError(
+                            `These dates are unavailable. The property is booked from ${formatDate(
+                              isOverlapping.checkIn
+                            )} to ${formatDate(isOverlapping.checkOut)}`
+                          );
+                        } else {
+                          setDateError(null);
+                          setBooking((prev) => ({
+                            ...prev,
+                            checkIn: range.from,
+                            checkOut: range.to,
+                            nights: Math.ceil(
+                              (range?.to?.getTime() - range.from.getTime()) /
+                                (1000 * 60 * 60 * 24)
+                            ),
+                          }));
+                        }
                       }
+                    }}
+                  />
+                  {dateError && (
+                    <div className="text-red-500 text-sm mt-1 flex items-center">
+                      <span className="mr-1">⚠️</span>
+                      {dateError}
+                    </div>
+                  )}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Guests</label>
+                      <Select
+                        value={booking.guests.toString()}
+                        onValueChange={(value) =>
+                          setBooking((prev) => ({
+                            ...prev,
+                            guests: parseInt(value),
+                          }))
+                        }
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Guests Count" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {Array.from(
+                              { length: property.maxGuests },
+                              (_, i) => (
+                                <SelectItem
+                                  key={i + 1}
+                                  value={(i + 1).toString()}
+                                >
+                                  {i + 1} {i === 0 ? "Guest" : "Guests"}
+                                </SelectItem>
+                              )
+                            )}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 w-full">
+                    <Button
+                      className="w-1/2"
+                      onClick={handleReserveWithoutPayment}
+                      disabled={dateError !== null}
                     >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Guests Count" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {Array.from(
-                            { length: property.maxGuests },
-                            (_, i) => (
-                              <SelectItem
-                                key={i + 1}
-                                value={(i + 1).toString()}
-                              >
-                                {i + 1} {i === 0 ? "Guest" : "Guests"}
-                              </SelectItem>
-                            )
-                          )}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+                      Reserve
+                    </Button>
+                    <Button
+                      className="w-1/2"
+                      variant="default"
+                      onClick={handleBookWithPayment}
+                      disabled={dateError !== null}
+                    >
+                      Book Now
+                    </Button>
+                  </div>
+                  <p className="text-center text-sm text-muted-foreground">
+                    "Book Now" requires payment to confirm
+                  </p>
+
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span>
+                        ${property.pricing.basePrice} x {booking.nights} nights
+                      </span>
+                      <span>
+                        ${property.pricing.basePrice * booking.nights}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Cleaning fee</span>
+                      <span>${property.pricing.cleaningFee}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Service fee</span>
+                      <span>
+                        $
+                        {Math.round(
+                          property.pricing.basePrice * booking.nights * 0.1
+                        )}
+                      </span>
+                    </div>
+                    <Separator className="my-2" />
+                    <div className="flex justify-between font-semibold">
+                      <span>Total</span>
+                      <span>${calculateTotal()}</span>
+                    </div>
                   </div>
                 </div>
-
-                <div className="flex gap-2 w-full">
-                  <Button
-                    className="w-1/2"
-                    onClick={handleReserveWithoutPayment}
-                  >
-                    Reserve
-                  </Button>
-                  <Button
-                    className="w-1/2"
-                    variant="default"
-                    onClick={handleBookWithPayment}
-                  >
-                    Book Now
-                  </Button>
-                </div>
-
-                <p className="text-center text-sm text-muted-foreground">
-                  "Book Now" requires payment to confirm
-                </p>
-
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span>
-                      ${property.pricing.basePrice} x {booking.nights} nights
-                    </span>
-                    <span>${property.pricing.basePrice * booking.nights}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Cleaning fee</span>
-                    <span>${property.pricing.cleaningFee}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Service fee</span>
-                    <span>
-                      $
-                      {Math.round(
-                        property.pricing.basePrice * booking.nights * 0.1
-                      )}
-                    </span>
-                  </div>
-                  <Separator className="my-2" />
-                  <div className="flex justify-between font-semibold">
-                    <span>Total</span>
-                    <span>${calculateTotal()}</span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </main>
