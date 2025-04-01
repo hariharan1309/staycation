@@ -34,6 +34,7 @@ const sampleUser = {
   createdAt: "9 March 2025 at 08:10:04 UTC+5:30",
   address: "",
   country: "",
+  phoneNumber: "",
 };
 export default function ProfilePage() {
   // In a real app, this would come from authentication
@@ -242,7 +243,7 @@ export default function ProfilePage() {
             )}
 
             <TabsContent value="settings">
-              <ProfileSettings userRole={userType as any} userVal={userVal} />
+              <ProfileSettings userRole={userType as any} />
             </TabsContent>
           </Tabs>
         </div>

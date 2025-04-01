@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CreditCard, Upload, Plus } from "lucide-react";
 
@@ -33,16 +33,25 @@ import {
   reauthenticateWithCredential,
 } from "firebase/auth";
 import { toast } from "sonner";
+import { getCookieVal } from "@/lib/cookie";
 
 interface ProfileSettingsProps {
   userRole: "guest" | "host";
-  userVal: any;
 }
-
-export function ProfileSettings({ userRole, userVal }: ProfileSettingsProps) {
+const sampleUser = {
+  firstName: "Hari",
+  lastName: "",
+  avatar: "https://api.dicebear.com/9.x/lorelei/svg?flip=true",
+  email: "sample@giaoed.com",
+  createdAt: "9 March 2025 at 08:10:04 UTC+5:30",
+  phoneNumber: "",
+  address: "",
+  country: "",
+};
+export function ProfileSettings({ userRole }: ProfileSettingsProps) {
   const router = useRouter();
-
-  const [personalInfo, setPersonalInfo] = useState(userVal);
+  const [userVal, setUserVal] = useState(sampleUser);
+  const [personalInfo, setPersonalInfo] = useState(sampleUser);
   const [passwords, setPasswords] = useState({
     currentPassword: "",
     newPassword: "",
@@ -51,6 +60,23 @@ export function ProfileSettings({ userRole, userVal }: ProfileSettingsProps) {
 
   const [isLoading, setIsLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const user = await getCookieVal();
+        const userDetail = await fetch(
+          `/api/profile?id=${user?.value}&type=${userRole}`
+        );
+        const data = await userDetail.json();
+        console.log(data);
+        setPersonalInfo((prev: any) => ({ ...prev, ...data.data }));
+        setUserVal((prev: any) => ({ ...prev, ...data.data }));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getData();
+  }, []);
 
   const handlePersonalInfoChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
