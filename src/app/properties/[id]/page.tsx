@@ -3,10 +3,12 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowLeft,
+  Calendar,
   Check,
   Edit,
   ImageMinus,
   MapPin,
+  SeparatorVertical,
   Share,
   Star,
 } from "lucide-react";
@@ -31,6 +33,8 @@ import { getCookieVal } from "@/lib/cookie";
 import { toast } from "sonner";
 import { AuthContext } from "@/components/authProvider/AuthProvider";
 import { DateRange } from "react-day-picker";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 
 // Define interfaces for type safety
 interface Location {
@@ -110,7 +114,7 @@ export default function PropertyPage() {
     nights: 1,
     guests: 1,
     checkIn: new Date(),
-    checkOut: new Date(new Date().setDate(new Date().getDate() + 1)),
+    checkOut: new Date(new Date().setDate(new Date().getDate() + 2)),
     paymentStatus: "pending",
   });
   const authContext = useContext(AuthContext) as AuthContextType | null;
@@ -166,13 +170,18 @@ export default function PropertyPage() {
       const req = await fetch(`/api/booking/${params.id}`);
       const bookingResp = await req.json();
 
-      if (bookingResp.booking && bookingResp.booking.length) {
-        setBookingsList(
-          bookingResp.booking.map((booking: any) => ({
+      if (Array.isArray(bookingResp.booking)) {
+        const listVal = bookingResp.booking.map(
+          (booking: { checkIn: string; checkOut: string }) => ({
             ...booking,
             checkIn: new Date(booking.checkIn),
             checkOut: new Date(booking.checkOut),
-          }))
+          })
+        );
+        setBookingsList(
+          listVal.sort(
+            (a: any, b: any) => b.checkIn.getTime() - a.checkIn.getTime()
+          )
         );
       }
     } catch (error) {
@@ -603,60 +612,69 @@ export default function PropertyPage() {
           {userId === property.owner ? (
             <Card className="sticky top-24">
               <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4">
-                  Property Bookings
-                </h3>
+                <h3 className="text-lg font-semibold mb-4">Recent Bookings </h3>
 
                 {bookingsList.length > 0 ? (
-                  <div className="space-y-4">
-                    <h4 className="font-medium">Recent Bookings</h4>
-                    {bookingsList.slice(0, 5).map((booking, index) => (
-                      <div
-                        key={booking.id || index}
-                        className="border-b pb-3 last:border-b-0"
-                      >
-                        <div className="flex justify-between text-sm">
-                          <span className="font-medium">Dates:</span>
-                          <span>
-                            {formatDate(booking.checkIn)} -{" "}
-                            {formatDate(booking.checkOut)}
-                          </span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="font-medium">Guests:</span>
-                          <span>{booking.guests}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="font-medium">Status:</span>
-                          <span
-                            className={
-                              booking.paymentStatus === "completed"
-                                ? "text-green-600"
-                                : "text-amber-600"
-                            }
-                          >
-                            {booking.paymentStatus.charAt(0).toUpperCase() +
-                              booking.paymentStatus.slice(1)}
-                          </span>
-                        </div>
-                      </div>
+                  <div className="space-y-3">
+                    {bookingsList.slice(0, 3).map((booking, index) => (
+                      <Card key={booking.id || index}>
+                        <CardContent className="p-4">
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm font-medium">Dates</span>
+                              <Badge variant="outline">
+                                {formatDate(booking.checkIn)} -{" "}
+                                {formatDate(booking.checkOut)}
+                              </Badge>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 relative">
+                              <div className="flex justify-between items-center">
+                                <span className="text-sm font-medium">
+                                  Guests
+                                </span>
+                                <Badge variant="secondary">
+                                  {booking.guests}
+                                </Badge>
+                              </div>
+                              <div className="absolute w-[2px] h-full bg-primary/20 left-1/2"></div>
+                              <div className=" flex justify-between items-center">
+                                <span className="text-sm font-medium">
+                                  Payment
+                                </span>
+                                <Badge
+                                  variant={
+                                    booking.paymentStatus === "completed"
+                                      ? "default"
+                                      : "outline"
+                                  }
+                                  className={
+                                    booking.paymentStatus === "completed"
+                                      ? "bg-green-500"
+                                      : "text-amber-500 border-amber-500"
+                                  }
+                                >
+                                  {booking.paymentStatus
+                                    .charAt(0)
+                                    .toUpperCase() +
+                                    booking.paymentStatus.slice(1)}
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
                     ))}
                   </div>
                 ) : (
-                  <div className="py-8 text-center text-muted-foreground">
-                    <p>No bookings as of now</p>
-                  </div>
+                  <Card>
+                    <CardContent className="p-6 flex justify-center items-center">
+                      <div className="text-center text-muted-foreground">
+                        <Calendar className="mx-auto h-12 w-12 text-muted-foreground/50 mb-2" />
+                        <p>No bookings as of now</p>
+                      </div>
+                    </CardContent>
+                  </Card>
                 )}
-
-                <Button
-                  className="w-full mt-4"
-                  variant="outline"
-                  onClick={() =>
-                    router.push(`/properties/${params.id}/bookings`)
-                  }
-                >
-                  View All Bookings
-                </Button>
               </CardContent>
             </Card>
           ) : (
@@ -684,8 +702,7 @@ export default function PropertyPage() {
 
                   {dateError && (
                     <div className="text-red-500 text-sm mt-1 flex items-center">
-                      <span className="mr-1">⚠️</span>
-                      {dateError}
+                      <Label className="mr-1">⚠️ {dateError}</Label>
                     </div>
                   )}
 
