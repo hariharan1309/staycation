@@ -4,12 +4,13 @@ import Link from "next/link";
 import {
   ArrowLeft,
   Check,
+  Edit,
   ImageMinus,
   MapPin,
   Share,
   Star,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCookieVal } from "@/lib/cookie";
 import { toast } from "sonner";
+import { AuthContext } from "@/components/authProvider/AuthProvider";
 
 // import { loadStripe } from "@stripe/stripe-js";
 // Define property type for type safety
@@ -86,6 +88,9 @@ export default function PropertyPage() {
     checkIn: new Date(),
     checkOut: new Date(new Date().setDate(new Date().getDate() + 1)),
   });
+  const authContext = useContext(AuthContext);
+  const userId = authContext?.user;
+
   const params = useParams();
   const router = useRouter();
   useEffect(() => {
@@ -338,9 +343,14 @@ export default function PropertyPage() {
             {getLocationString()}
           </div>
         </div>
-        <Button variant="ghost" size="sm">
-          <Share className="mr-2 h-4 w-4" />
-          Share
+        <Button
+          variant="ghost"
+          size="sm"
+          className={userId === property.owner ? " " : "hidden"}
+          onClick={() => router.push(`/properties/${params.id}/edit`)}
+        >
+          <Edit className="mr-2 h-4 w-4" />
+          Edit
         </Button>
       </div>
 
@@ -371,7 +381,7 @@ export default function PropertyPage() {
               </p>
             </div>
             <Image
-              src={"/placeholder.svg"}
+              src={"https://api.dicebear.com/9.x/lorelei/svg?flip=true"}
               alt={"Host"}
               width={56}
               height={56}
@@ -407,7 +417,7 @@ export default function PropertyPage() {
           </div>
         </div>
 
-        <div>
+        <div className={userId === property.owner ? " hidden " : ""}>
           <Card className="sticky top-24">
             <CardContent className="p-6">
               <div className="mb-4 flex items-baseline justify-between">
