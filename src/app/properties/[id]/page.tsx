@@ -90,7 +90,7 @@ export default function PropertyPage() {
   });
   const authContext = useContext(AuthContext);
   const userId = authContext?.user;
-
+  const [bookingsList, setBookingsList] = useState([]);
   const params = useParams();
   const router = useRouter();
   useEffect(() => {
@@ -119,9 +119,21 @@ export default function PropertyPage() {
         setLoading(false);
       }
     };
-
+    const getBookings = async () => {
+      try {
+        const req = await fetch(`/api/booking/${params.id}`);
+        const bookingResp = await req.json();
+        if (bookingResp.booking.length) {
+          console.log(bookingResp);
+          setBookingsList(bookingResp.booking);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
     if (params.id) {
       getProperty();
+      getBookings();
     }
   }, [params.id]);
 
