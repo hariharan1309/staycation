@@ -191,7 +191,7 @@ export async function POST(req: Request) {
               }
               ${
                 body.totalAmount
-                  ? `<p><strong>Total Amount:</strong> ₹${body.totalAmount}</p>`
+                  ? `<p><strong>Total Amount:</strong> $${body.totalAmount}</p>`
                   : ""
               } : ""
               }
