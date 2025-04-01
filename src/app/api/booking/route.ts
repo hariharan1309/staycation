@@ -44,14 +44,20 @@ export async function POST(req: Request) {
       month: "long",
       day: "numeric",
     });
-    
+    const userDetails = (
+      await getDoc(doc(fstore, "user", body.guestId))
+    ).data();
+    const ownerDetail = (
+      await getDoc(doc(fstore, "owner", body.ownerId))
+    ).data();
+
     // Company info for legitimacy
     const companyName = "Staycation";
     const companyAddress = "India";
     const companyPhone = "+91 123 456 7890";
     const companyWebsite = "www.staycation.com";
 
-    // Send confirmation email with improved template
+    // Send confirmation email to the guest
     await transporter.sendMail({
       from: `"${companyName}" <${process.env.GMAIL_USER}>`,
       to: body.email,
@@ -135,6 +141,8 @@ export async function POST(req: Request) {
         "List-Unsubscribe": `<mailto:unsubscribe@${companyWebsite}?subject=unsubscribe>`, // Improves deliverability
       },
     });
+    // set the owner email
+    await transporter.sendMail({});
 
     return NextResponse.json({
       success: true,
