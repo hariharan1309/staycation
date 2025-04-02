@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
+import NoImg from "../../public/noImage.png";
 
 interface PropertyGalleryProps {
   images: { main: boolean; url: string; publicId?: string }[];
@@ -47,7 +48,7 @@ export function PropertyGallery({ images }: PropertyGalleryProps) {
             </DialogTitle>
             <div className="relative h-[500px] w-full">
               <Image
-                src={images[currentImageIndex].url || "/placeholder.svg"}
+                src={images[currentImageIndex].url || NoImg}
                 alt={`Property image ${currentImageIndex + 1}`}
                 fill
                 className="object-contain"
@@ -108,7 +109,7 @@ export function PropertyGallery({ images }: PropertyGalleryProps) {
             <DialogTrigger asChild>
               <div className="relative cursor-pointer overflow-hidden rounded-lg h-[190px]">
                 <Image
-                  src={image.url || "/placeholder.svg"}
+                  src={image.url || NoImg}
                   alt={`Property image ${index + 2}`}
                   fill
                   className="object-cover transition-transform hover:scale-105"
@@ -121,7 +122,7 @@ export function PropertyGallery({ images }: PropertyGalleryProps) {
               </DialogTitle>
               <div className="relative h-[500px] w-full">
                 <Image
-                  src={image.url || "/placeholder.svg"}
+                  src={image.url || NoImg}
                   alt={`Property image ${index + 2}`}
                   fill
                   className="object-contain"

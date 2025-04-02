@@ -48,61 +48,6 @@ const testimonials = [
 export function TestimonialCarousel() {
   return (
     <div className="relative">
-      {/* <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {visibleTestimonials().map((testimonial) => (
-          <Card key={testimonial.id} className="border-none shadow-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <Image
-                  src={testimonial.avatar || "/placeholder.svg"}
-                  alt={testimonial.name}
-                  width={50}
-                  height={50}
-                  className="rounded-full"
-                />
-                <div>
-                  <h4 className="font-semibold">{testimonial.name}</h4>
-                  <p className="text-sm text-muted-foreground">{testimonial.location}</p>
-                </div>
-              </div>
-              <div className="mt-4 flex">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`h-4 w-4 ${
-                      i < testimonial.rating ? "fill-primary text-primary" : "fill-muted text-muted"
-                    }`}
-                  />
-                ))}
-              </div>
-              <p className="mt-4 text-sm">{testimonial.text}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {totalPages > 1 && (
-        <div className="mt-8 flex items-center justify-center gap-2">
-          <Button variant="outline" size="icon" onClick={handlePrevious} aria-label="Previous testimonials">
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          {Array.from({ length: totalPages }).map((_, i) => (
-            <Button
-              key={i}
-              variant={i === currentIndex ? "default" : "outline"}
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => setCurrentIndex(i)}
-              aria-label={`Go to page ${i + 1}`}
-            >
-              {i + 1}
-            </Button>
-          ))}
-          <Button variant="outline" size="icon" onClick={handleNext} aria-label="Next testimonials">
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-      )} */}
       <Carousel
         opts={{
           loop: true,

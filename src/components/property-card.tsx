@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { MapPin, Star } from "lucide-react";
-
+import NoImg from "../../public/noImage.png";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -33,7 +33,7 @@ export function PropertyCard({
       <Card className="overflow-hidden transition-all hover:shadow-md">
         <div className="relative aspect-[4/3] w-full">
           <Image
-            src={imageUrl || "/placeholder.svg"}
+            src={imageUrl || NoImg}
             alt={title}
             fill
             className="object-cover"

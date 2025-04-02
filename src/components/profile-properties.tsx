@@ -12,7 +12,7 @@ import {
   Star,
   Trash,
 } from "lucide-react";
-
+import NoImg from "../../public/noImage.png";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -177,9 +177,7 @@ export function ProfileProperties({
               <div className="relative aspect-[4/3] w-full">
                 <Image
                   src={
-                    property.images?.length > 0
-                      ? property.images[0]
-                      : "/placeholder.svg"
+                    property.images?.length > 0 ? property.images[0].url : NoImg
                   }
                   alt={property.title}
                   fill

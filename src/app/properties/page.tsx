@@ -27,7 +27,7 @@ import {
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-
+import NoImg from "../../../public/noImage.png";
 // Define interfaces for type safety
 interface Location {
   address: string;
@@ -144,10 +144,7 @@ export default function PropertiesPage() {
             rating: property.rating || (Math.random() * 1.0 + 4.0).toFixed(1), // Generate rating if not available
             reviewCount:
               property.reviewCount || Math.floor(Math.random() * 100) + 50, // Generate review count if not available
-            imageUrl:
-              property.images?.length > 0
-                ? property.images[0].url
-                : "/placeholder.svg?height=300&width=400",
+            imageUrl: property.images?.length > 0 ? property.images[0].url : "",
             bedrooms: property.bedrooms,
             bathrooms: property.bathrooms,
             guests: property.maxGuests,
@@ -603,7 +600,7 @@ export default function PropertiesPage() {
                 >
                   <div className="relative h-48 w-full sm:h-auto sm:w-1/3">
                     <Image
-                      src={property.imageUrl || "/placeholder.svg"}
+                      src={property.imageUrl || NoImg}
                       alt={property.title}
                       className="object-cover"
                       fill
