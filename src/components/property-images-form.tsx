@@ -30,7 +30,7 @@ export function PropertyImagesForm({
 
   useEffect(() => {
     updateImages(localImages);
-  }, [localImages, updateImages]);
+  }, [localImages]);
 
   const handleDrag = (e: React.DragEvent): void => {
     e.preventDefault();
