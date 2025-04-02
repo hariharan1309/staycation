@@ -6,22 +6,31 @@ import { ImageIcon, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PropertyImage } from "@/app/properties/new/page";
+import { toast } from "sonner";
 
 interface PropertyImagesFormProps {
   images: PropertyImage[];
   updateImages: (images: PropertyImage[]) => void;
+  propertyId?: string; // Optional property ID for naming
 }
 
 export function PropertyImagesForm({
   images,
   updateImages,
+  propertyId = "new",
 }: PropertyImagesFormProps) {
   const [localImages, setLocalImages] = useState<PropertyImage[]>(images || []);
   const [dragActive, setDragActive] = useState<boolean>(false);
+  const [uploading, setUploading] = useState<boolean>(false);
+
+  // Cloudinary configuration
+  const CLOUDINARY_UPLOAD_PRESET = "property-image"; // Create this in Cloudinary dashboard
+  const CLOUDINARY_CLOUD_NAME = "dd9ypuuzi";
+  const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
 
   useEffect(() => {
     updateImages(localImages);
-  }, [localImages]);
+  }, [localImages, updateImages]);
 
   const handleDrag = (e: React.DragEvent): void => {
     e.preventDefault();
@@ -39,38 +48,97 @@ export function PropertyImagesForm({
     setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFiles(e.dataTransfer.files);
+      uploadToCloudinary(e.dataTransfer.files);
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files && e.target.files.length > 0) {
-      handleFiles(e.target.files);
+      uploadToCloudinary(e.target.files);
     }
   };
 
-  const handleFiles = (files: FileList): void => {
-    const newImages = Array.from(files).map((file, index) => ({
-      id: Date.now() + index,
-      url: URL.createObjectURL(file), // Show preview
-      main: localImages.length === 0 && index === 0, // First image is main by default
-    }));
+  const uploadToCloudinary = async (files: FileList): Promise<void> => {
+    setUploading(true);
+    const newImages: PropertyImage[] = [];
 
-    setLocalImages((prevImages) => [...prevImages, ...newImages]);
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const timestamp = Date.now();
+        const uniqueFileName = `property-${propertyId}-${timestamp}-${i}`;
+
+        // Create form data for upload
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+        formData.append("public_id", uniqueFileName);
+
+        // Upload to Cloudinary
+        const response = await fetch(CLOUDINARY_UPLOAD_URL, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to upload image ${i + 1}`);
+        }
+
+        const data = await response.json();
+
+        // Add to our images array
+        newImages.push({
+          id: timestamp + i,
+          url: data.secure_url,
+          publicId: data.public_id, // Store Cloudinary public_id for deletion
+          main: localImages.length === 0 && i === 0, // First image is main by default
+        });
+      }
+
+      setLocalImages((prevImages) => [...prevImages, ...newImages]);
+      toast.success(`${newImages.length} image(s) uploaded successfully`);
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload one or more images");
+    } finally {
+      setUploading(false);
+    }
   };
 
-  const removeImage = (id: number): void => {
-    const updatedImages = localImages.filter((image) => image.id !== id);
+  const removeImage = async (id: number, publicId?: string): Promise<void> => {
+    try {
+      if (publicId) {
+        // Delete from Cloudinary (this requires a server endpoint)
+        const response = await fetch("/api/cloudinary/delete", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ publicId }),
+        });
 
-    // If we removed the main image, set the first remaining image as main
-    if (
-      localImages.find((image) => image.id === id)?.main &&
-      updatedImages.length > 0
-    ) {
-      updatedImages[0].main = true;
+        if (!response.ok) {
+          throw new Error("Failed to remove image from Cloudinary");
+        }
+      }
+
+      // Remove from local state
+      const updatedImages = localImages.filter((image) => image.id !== id);
+
+      // If we removed the main image, set the first remaining image as main
+      if (
+        localImages.find((image) => image.id === id)?.main &&
+        updatedImages.length > 0
+      ) {
+        updatedImages[0].main = true;
+      }
+
+      setLocalImages(updatedImages);
+      toast.success("Image removed");
+    } catch (error) {
+      console.error("Deletion error:", error);
+      toast.error("Failed to remove image");
     }
-
-    setLocalImages(updatedImages);
   };
 
   const setMainImage = (id: number): void => {
@@ -94,7 +162,7 @@ export function PropertyImagesForm({
       <div
         className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 text-center ${
           dragActive ? "border-primary bg-primary/5" : "border-border"
-        }`}
+        } ${uploading ? "opacity-50" : ""}`}
         onDragEnter={handleDrag}
         onDragOver={handleDrag}
         onDragLeave={handleDrag}
@@ -112,11 +180,18 @@ export function PropertyImagesForm({
           accept="image/*"
           className="hidden"
           onChange={handleFileChange}
+          disabled={uploading}
         />
-        <Button asChild>
+        <Button asChild disabled={uploading}>
           <label htmlFor="image-upload" className="cursor-pointer">
-            <Upload className="mr-2 h-4 w-4" />
-            Browse Files
+            {uploading ? (
+              "Uploading..."
+            ) : (
+              <>
+                <Upload className="mr-2 h-4 w-4" />
+                Browse Files
+              </>
+            )}
           </label>
         </Button>
       </div>
@@ -142,7 +217,7 @@ export function PropertyImagesForm({
                     variant="destructive"
                     size="icon"
                     className="absolute right-2 top-2 h-6 w-6 rounded-full"
-                    onClick={() => removeImage(image.id)}
+                    onClick={() => removeImage(image.id, image.publicId)}
                   >
                     <X className="h-4 w-4" />
                   </Button>
