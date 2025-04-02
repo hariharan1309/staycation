@@ -27,20 +27,17 @@ export function PropertyFilters({
 
   // Standardized amenities list that matches the property data structure
   const amenities = [
-    { key: "wifi", label: "WiFi" },
-    { key: "pool", label: "Pool" },
-    { key: "kitchen", label: "Kitchen" },
-    { key: "ac", label: "Air conditioning" },
-    { key: "heating", label: "Heating" },
-    { key: "washer", label: "Washer" },
-    { key: "dryer", label: "Dryer" },
-    { key: "parking", label: "Free parking" },
-    { key: "gym", label: "Gym" },
-    { key: "beachfront", label: "Beach access" },
-    { key: "oceanView", label: "Ocean view" },
-    { key: "mountainView", label: "Mountain view" },
-    { key: "fireplace", label: "Fireplace" },
-    { key: "outdoorDining", label: "Outdoor dining" },
+    { key: "wifi", label: "WiFi", value: false },
+    { key: "pool", label: "Pool", value: false },
+    { key: "kitchen", label: "Kitchen", value: false },
+    { key: "ac", label: "Air conditioning", value: false },
+    { key: "heating", label: "Heating", value: false },
+    { key: "washer", label: "Washer", value: false },
+    { key: "parking", label: "Free parking", value: false },
+    { key: "beachfront", label: "Beach access", value: false },
+    { key: "outdoorDining", label: "Outdoor dining", value: false },
+    { key: "tv", label: "TV", value: false }, // Added from JSON
+    { key: "workspace", label: "Workspace", value: false }, // Added from JSON
   ];
 
   const handleAmenityChange = (amenityKey: string, checked: boolean) => {
@@ -100,14 +97,14 @@ export function PropertyFilters({
       <div>
         <h3 className="mb-4 text-sm font-medium">Bedrooms</h3>
         <div className="flex flex-wrap gap-2">
-          {[null, 1, 2, 3, 4, 5].map((num, i) => (
+          {[null, 1, 2, 3, 4].map((num, i) => (
             <Button
               key={i}
               variant={bedrooms === num ? "default" : "outline"}
               size="sm"
               onClick={() => setBedrooms(num)}
             >
-              {num === null ? "Any" : num === 5 ? "5+" : num}
+              {num === null ? "Any" : num === 4 ? "4+" : num}
             </Button>
           ))}
         </div>
@@ -119,14 +116,14 @@ export function PropertyFilters({
       <div>
         <h3 className="mb-4 text-sm font-medium">Bathrooms</h3>
         <div className="flex flex-wrap gap-2">
-          {[null, 1, 2, 3, 4, 5].map((num, i) => (
+          {[null, 1, 2, 3, 4].map((num, i) => (
             <Button
               key={i}
               variant={bathrooms === num ? "default" : "outline"}
               size="sm"
               onClick={() => setBathrooms(num)}
             >
-              {num === null ? "Any" : num === 5 ? "5+" : num}
+              {num === null ? "Any" : num === 4 ? "4+" : num}
             </Button>
           ))}
         </div>
@@ -138,14 +135,14 @@ export function PropertyFilters({
       <div>
         <h3 className="mb-4 text-sm font-medium">Guests</h3>
         <div className="flex flex-wrap gap-2">
-          {[null, 1, 2, 4, 6, 8].map((num, i) => (
+          {[null, 1, 2, 4, 6].map((num, i) => (
             <Button
               key={i}
               variant={guests === num ? "default" : "outline"}
               size="sm"
               onClick={() => setGuests(num)}
             >
-              {num === null ? "Any" : num === 8 ? "8+" : num}
+              {num === null ? "Any" : num === 6 ? "6+" : num}
             </Button>
           ))}
         </div>

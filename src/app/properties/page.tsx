@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Image from "next/image";
 
 // Define interfaces for type safety
 interface Location {
@@ -320,72 +321,6 @@ export default function PropertiesPage() {
       guests: 4,
       amenities: ["WiFi", "Kitchen", "Air conditioning", "Elevator"],
     },
-    {
-      id: "4",
-      title: "Seaside Cottage",
-      location: "Santorini, Greece",
-      price: 150,
-      rating: 4.9,
-      reviewCount: 112,
-      imageUrl: "/placeholder.svg?height=300&width=400",
-      bedrooms: 1,
-      bathrooms: 1,
-      guests: 2,
-      amenities: ["Ocean view", "WiFi", "Kitchen", "Air conditioning"],
-      featured: true,
-    },
-    {
-      id: "5",
-      title: "Modern Loft",
-      location: "New York, USA",
-      price: 220,
-      rating: 4.6,
-      reviewCount: 88,
-      imageUrl: "/placeholder.svg?height=300&width=400",
-      bedrooms: 1,
-      bathrooms: 1,
-      guests: 3,
-      amenities: ["WiFi", "Kitchen", "Air conditioning", "Gym"],
-    },
-    {
-      id: "6",
-      title: "Rustic Farmhouse",
-      location: "Tuscany, Italy",
-      price: 170,
-      rating: 4.8,
-      reviewCount: 102,
-      imageUrl: "/placeholder.svg?height=300&width=400",
-      bedrooms: 4,
-      bathrooms: 3,
-      guests: 8,
-      amenities: ["Pool", "WiFi", "Kitchen", "Garden"],
-    },
-    {
-      id: "7",
-      title: "Tropical Bungalow",
-      location: "Phuket, Thailand",
-      price: 90,
-      rating: 4.5,
-      reviewCount: 65,
-      imageUrl: "/placeholder.svg?height=300&width=400",
-      bedrooms: 1,
-      bathrooms: 1,
-      guests: 2,
-      amenities: ["Beach access", "WiFi", "Air conditioning"],
-    },
-    {
-      id: "8",
-      title: "City Center Studio",
-      location: "Barcelona, Spain",
-      price: 110,
-      rating: 4.6,
-      reviewCount: 79,
-      imageUrl: "/placeholder.svg?height=300&width=400",
-      bedrooms: 0,
-      bathrooms: 1,
-      guests: 2,
-      amenities: ["WiFi", "Kitchen", "Air conditioning"],
-    },
   ];
 
   return (
@@ -394,7 +329,13 @@ export default function PropertiesPage() {
 
       {/* Search Bar */}
       <div className="mb-8">
-        <PropertySearchBar initialValue={searchQuery} onSearch={handleSearch} />
+        <PropertySearchBar
+          initialValue={searchQuery}
+          onSearch={handleSearch}
+          onClear={clearFilters} // Pass your existing clearFilters function
+          placeholder="Search by location, property name..."
+          className="max-w-[80vw] mx-auto"
+        />
       </div>
 
       {/* Mobile Filter Button */}
@@ -561,10 +502,11 @@ export default function PropertiesPage() {
                   className="flex flex-col overflow-hidden rounded-lg border sm:flex-row"
                 >
                   <div className="relative h-48 w-full sm:h-auto sm:w-1/3">
-                    <img
+                    <Image
                       src={property.imageUrl || "/placeholder.svg"}
                       alt={property.title}
-                      className="h-full w-full object-cover"
+                      className="size-40 md:size-80 object-cover"
+                      fill
                     />
                     {property.featured && (
                       <div className="absolute left-2 top-2 rounded-md bg-primary px-2 py-1 text-xs font-medium text-primary-foreground">
