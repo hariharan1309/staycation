@@ -31,7 +31,10 @@ const sampleUser = {
   lastName: "",
   avatar: "https://api.dicebear.com/9.x/lorelei/svg?flip=true",
   email: "sample@giaoed.com",
-  createdAt: "9 March 2025 at 08:10:04 UTC+5:30",
+  createdAt: {
+    seconds: 100000000,
+    nanoseconds: 128292021,
+  },
   address: "",
   country: "",
   phoneNumber: "",
@@ -57,6 +60,17 @@ export default function ProfilePage() {
     };
     getData();
   }, []);
+  const formatTimestamp = (timestamp: {
+    seconds: number;
+    nanoseconds: number;
+  }) => {
+    return new Date(timestamp.seconds * 1000).toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
   return (
     <main className="container px-4 py-8 md:px-6 md:py-12 pt-4 md:pt-6">
       <div className="grid gap-6 md:grid-cols-[280px_1fr] lg:grid-cols-[280px_1fr]">
@@ -79,9 +93,9 @@ export default function ProfilePage() {
                   <User className="h-5 w-5 text-muted-foreground" />
                   <div>
                     <p className="text-sm font-medium">Joined on </p>
-                    {/* <p className="text-sm text-muted-foreground">
-                      {formatDate(new Date(userVal.createdAt), "MMM YYYY")}
-                    </p> */}
+                    <p className="text-sm text-muted-foreground">
+                      {formatTimestamp(userVal.createdAt)}
+                    </p>
                   </div>
                 </div>
                 {userType === "host" && (

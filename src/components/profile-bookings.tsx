@@ -144,7 +144,7 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
             <TabsTrigger value="completed">Completed</TabsTrigger>
           </TabsList>
           <div className="flex gap-2">
-            <div className="relative">
+            {/* <div className="relative">
               <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder="Search by property ID..."
@@ -152,7 +152,7 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-            </div>
+            </div> */}
             <Select
               value={sortOrder}
               onValueChange={(value: "newest" | "oldest") =>
@@ -458,14 +458,14 @@ export function ProfileBookings({ userRole }: ProfileBookingsProps) {
                                   </p>
                                 </div>
                               )}
-                              {booking.stripeSessionId && (
+                              {/* {booking.stripeSessionId && (
                                 <div>
                                   <p className="font-medium">Payment ID</p>
                                   <p className="text-muted-foreground text-xs">
                                     {booking.stripeSessionId}
                                   </p>
                                 </div>
-                              )}
+                              )} */}
                             </div>
                             {userRole === "owner" && (
                               <div className="mt-2">

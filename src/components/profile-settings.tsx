@@ -162,6 +162,7 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
         "auth/requires-recent-login":
           "Please log in again before changing your password.",
       };
+      console.log(error);
       toast.error(errorMessages[error.code] || "Failed to update password.");
     } finally {
       setPasswordLoading(false);
@@ -265,7 +266,7 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
         </CardFooter>
       </Card>
 
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Password</CardTitle>
           <CardDescription>Change your password.</CardDescription>
@@ -279,6 +280,7 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
               type="password"
               value={passwords.currentPassword}
               onChange={handlePasswordChange}
+              className="max-w-lg"
             />
           </div>
           <div className="space-y-2">
@@ -289,6 +291,7 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
               type="password"
               value={passwords.newPassword}
               onChange={handlePasswordChange}
+              className="max-w-lg"
             />
           </div>
           <div className="space-y-2">
@@ -298,6 +301,7 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
               name="confirmPassword"
               type="password"
               value={passwords.confirmPassword}
+              className="max-w-lg"
               onChange={handlePasswordChange}
             />
           </div>
@@ -315,7 +319,7 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
             {passwordLoading ? "Updating..." : "Update Password"}
           </Button>
         </CardFooter>
-      </Card>
+      </Card> */}
     </div>
   );
 }
