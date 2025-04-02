@@ -10,6 +10,9 @@ import Team5 from "../../../public/team/team5.png";
 import Team6 from "../../../public/team/team6.png";
 import Team7 from "../../../public/team/team7.png";
 import Team8 from "../../../public/team/team8.png";
+import TeamImg from "../../../public/team.png";
+import ValueImg from "../../../public/value.png";
+import JoinImg from "../../../public/join.png";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -42,10 +45,10 @@ export default function AboutPage() {
           </div>
           <div className="relative aspect-video overflow-hidden rounded-lg md:aspect-square">
             <Image
-              src="/team.png?height=600&width=600"
+              src={TeamImg}
               alt="Our team"
               fill
-              className="object-cover"
+              className="object-cover h-[600px] w-[600px]"
             />
           </div>
         </div>
@@ -147,10 +150,10 @@ export default function AboutPage() {
         <div className="grid gap-8 md:grid-cols-2">
           <div className="relative aspect-video overflow-hidden rounded-lg md:aspect-square">
             <Image
-              src="/value.png?height=600&width=600"
+              src={ValueImg}
               alt="Our values"
               fill
-              className="object-cover"
+              className="object-cover size-[600px]"
             />
           </div>
           <div className="flex flex-col justify-center">
@@ -273,7 +276,7 @@ export default function AboutPage() {
           </div>
           <div className="flex items-center justify-center relative">
             <Image
-              src="/join.png?height=400&width=400"
+              src={JoinImg}
               alt="Join Us"
               fill
               sizes="200"

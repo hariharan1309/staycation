@@ -4,7 +4,8 @@ import Image from "next/image";
 import { CalendarIcon, MapPinIcon, SearchIcon, UserIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
+import HeroImg from "../../public/hero1.png";
+import RentImg from "../../public/rent2.png";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -85,10 +86,10 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative h-[600px] w-full">
         <Image
-          src="/hero1.png?height=600&width=1600"
+          src={HeroImg}
           alt="Beautiful vacation destination"
           fill
-          className="object-cover brightness-75"
+          className="object-cover brightness-75 h-[600px] w-[1600px]"
           priority
         />
         <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
@@ -381,7 +382,7 @@ export default function Home() {
               </div>
               <div className="flex items-center justify-center">
                 <Image
-                  src="/rent2.png?height=300&width=400"
+                  src={RentImg}
                   alt="Property owner"
                   width={400}
                   height={300}

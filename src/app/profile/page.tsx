@@ -167,108 +167,6 @@ export default function ProfilePage() {
               )}
             </TabsList>
 
-            {/* Dashboard Tab */}
-            {/* <TabsContent value="dashboard" className="space-y-6">
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mt-4">
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      {userType === "guest" ? "Total Trips" : "Total Revenue"}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">
-                      {userType === "guest" ? "12" : "$8,450"}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      +18% from last month
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      {userType === "guest" ? "Upcoming Trips" : "Bookings"}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">
-                      {userType === "guest" ? "2" : "32"}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {userType === "guest"
-                        ? "Next trip in 15 days"
-                        : "+8% from last month"}
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <h2 className="text-xl font-bold">
-                {userType === "guest" ? "Upcoming Trips" : "Recent Bookings"}
-              </h2>
-              <div className="space-y-4">
-                {[1, 2].map((i) => (
-                  <Card key={i}>
-                    <CardContent className="p-6">
-                      <div className="flex flex-col gap-4 sm:flex-row">
-                        <div className="relative h-40 w-full sm:h-auto sm:w-1/3 md:w-1/4">
-                          <Image
-                            src="/placeholder.svg?height=160&width=240"
-                            alt="Property"
-                            fill
-                            className="rounded-md object-cover"
-                          />
-                        </div>
-                        <div className="flex flex-1 flex-col">
-                          <div className="mb-2 flex items-start justify-between">
-                            <div>
-                              <h3 className="font-semibold">
-                                {i === 1
-                                  ? "Beachfront Villa"
-                                  : "Mountain Cabin"}
-                              </h3>
-                              <div className="mt-1 flex items-center text-sm text-muted-foreground">
-                                <MapPin className="mr-1 h-3 w-3" />
-                                {i === 1
-                                  ? "Bali, Indonesia"
-                                  : "Aspen, Colorado"}
-                              </div>
-                            </div>
-                            <Badge>
-                              {userType === "guest" ? "Confirmed" : "Paid"}
-                            </Badge>
-                          </div>
-                          <div className="mt-2 grid gap-2 text-sm md:grid-cols-3">
-                            <div>
-                              <p className="font-medium">Dates</p>
-                              <p className="text-muted-foreground">
-                                {i === 1
-                                  ? "May 12 - May 18, 2023"
-                                  : "Jun 5 - Jun 10, 2023"}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="font-medium">Guests</p>
-                              <p className="text-muted-foreground">
-                                {i === 1 ? "4" : "2"} guests
-                              </p>
-                            </div>
-                            <div>
-                              <p className="font-medium">Total</p>
-                              <p className="text-muted-foreground">
-                                ${i === 1 ? "840" : "1,200"}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent> */}
-
             {/* Bookings/Trips Tab */}
             <TabsContent value="bookings">
               <ProfileBookings userRole={userType as any} />
@@ -277,7 +175,10 @@ export default function ProfilePage() {
             {/* Properties Tab (Owner Only) */}
             {userType === "host" && (
               <TabsContent value="properties">
-                <ProfileProperties data={properties} getProperties={getProperties} />
+                <ProfileProperties
+                  data={properties}
+                  getProperties={getProperties}
+                />
               </TabsContent>
             )}
 
