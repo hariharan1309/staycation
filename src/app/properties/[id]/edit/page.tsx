@@ -28,6 +28,7 @@ export interface PropertyImage {
   id: number;
   url: string;
   main: boolean;
+  publicId?: string;
 }
 
 export interface PropertyLocation {
@@ -263,8 +264,11 @@ export default function EditPropertyPage() {
 
       const finalData = {
         ...formData,
-        // images: formData.images.map((img) => img.url), // Convert to array of URLs
-        images: [],
+        images: formData.images.map((img) => ({
+          url: img.url,
+          main: img.main,
+          publicId: img.publicId,
+        })),
       };
 
       // Send data to API

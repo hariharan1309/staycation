@@ -19,6 +19,7 @@ interface DatePickerWithRangeProps {
   onChange?: (range: DateRange | undefined) => void;
   initialDateRange?: DateRange;
   disabledDates?: Date[];
+  showInfo?: boolean;
 }
 
 export function DatePickerWithRange({
@@ -26,6 +27,7 @@ export function DatePickerWithRange({
   onChange,
   initialDateRange,
   disabledDates = [],
+  showInfo,
 }: DatePickerWithRangeProps) {
   const [date, setDate] = React.useState<DateRange | undefined>(
     initialDateRange || {
@@ -122,7 +124,7 @@ export function DatePickerWithRange({
               },
             }}
           />
-          <div className="p-3 border-t text-xs">
+          <div className={`p-3 border-t text-xs ${showInfo ? "" : " hidden"}`}>
             <div className="flex items-center mt-2">
               <div className="w-3 h-3 bg-red-100 border border-red-500 mr-2 rounded-full"></div>
               <span>Booked Dates (Unavailable)</span>

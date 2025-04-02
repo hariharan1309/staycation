@@ -1,6 +1,9 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import { CalendarIcon, MapPinIcon, SearchIcon, UserIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
@@ -9,8 +12,59 @@ import { DatePickerWithRange } from "@/components/date-range-picker";
 import { PropertyCard } from "@/components/property-card";
 import { TestimonialCarousel } from "@/components/testimonial-carousel";
 import { FeaturedDestinations } from "@/components/featured-destinations";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function Home() {
+  const router = useRouter();
+  const [searchParams, setSearchParams] = useState({
+    country: "",
+    checkIn: new Date().toISOString().split("T")[0],
+    checkOut: new Date(new Date().setDate(new Date().getDate() + 7))
+      .toISOString()
+      .split("T")[0],
+    guests: 2,
+  });
+
+  const handleCountryChange = (value: any) => {
+    setSearchParams((prev) => ({ ...prev, country: value }));
+  };
+
+  const handleDateRangeChange = (range: any) => {
+    setSearchParams((prev) => ({
+      ...prev,
+      checkIn: range?.from ? range.from.toISOString().split("T")[0] : null,
+      checkOut: range?.to ? range.to.toISOString().split("T")[0] : null,
+    }));
+  };
+
+  const handleGuestsChange = (e: any) => {
+    setSearchParams((prev) => ({
+      ...prev,
+      guests: parseInt(e.target.value, 10) || 1,
+    }));
+  };
+
+  const handleSearch = () => {
+    const queryParams = new URLSearchParams();
+    if (searchParams.country)
+      queryParams.append("country", searchParams.country);
+    if (searchParams.checkIn)
+      queryParams.append("checkIn", searchParams.checkIn);
+    if (searchParams.checkOut)
+      queryParams.append("checkOut", searchParams.checkOut);
+    if (searchParams.guests)
+      queryParams.append("guests", searchParams.guests.toString());
+
+    router.push(`/properties?${queryParams.toString()}`);
+  };
+
   return (
     <main className="flex-1">
       {/* Hero Section */}
@@ -38,7 +92,33 @@ export default function Home() {
                   <MapPinIcon className="h-4 w-4" />
                   <span>Where</span>
                 </div>
-                <Input placeholder="Destination" className="h-10" />
+                <Select
+                  value={searchParams.country}
+                  onValueChange={handleCountryChange}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select the Country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="United States">
+                        United States
+                      </SelectItem>
+                      <SelectItem value="Canada">Canada</SelectItem>
+                      <SelectItem value="Mexico">Mexico</SelectItem>
+                      <SelectItem value="United Kingdom">
+                        United Kingdom
+                      </SelectItem>
+                      <SelectItem value="France">France</SelectItem>
+                      <SelectItem value="Germany">Germany</SelectItem>
+                      <SelectItem value="Italy">Italy</SelectItem>
+                      <SelectItem value="Spain">Spain</SelectItem>
+                      <SelectItem value="Australia">Australia</SelectItem>
+                      <SelectItem value="Japan">Japan</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2 md:col-span-2">
@@ -46,7 +126,10 @@ export default function Home() {
                   <CalendarIcon className="h-4 w-4" />
                   <span>When</span>
                 </div>
-                <DatePickerWithRange className="h-10" />
+                <DatePickerWithRange
+                  className="h-10"
+                  onChange={handleDateRangeChange}
+                />
               </div>
 
               <div className="space-y-2">
@@ -57,11 +140,16 @@ export default function Home() {
                 <div className="flex items-center gap-2">
                   <Input
                     type="number"
-                    defaultValue={2}
                     min={1}
+                    value={searchParams.guests}
+                    onChange={handleGuestsChange}
                     className="h-10"
                   />
-                  <Button size="sm" className="h-10 px-6">
+                  <Button
+                    size="sm"
+                    className="h-10 px-6"
+                    onClick={handleSearch}
+                  >
                     <SearchIcon className="mr-2 h-4 w-4" />
                     Search
                   </Button>
@@ -72,6 +160,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Rest of the component remains the same */}
       {/* Featured Properties */}
       <section className="py-12 md:py-16 lg:py-20">
         <div className="container px-4 md:px-6">
@@ -257,9 +346,7 @@ export default function Home() {
                   <Button asChild>
                     <Link href="/auth/signup/?type=host">Become a Host</Link>
                   </Button>
-                  <Button variant="outline">
-                    Learn More
-                  </Button>
+                  <Button variant="outline">Learn More</Button>
                 </div>
               </div>
               <div className="flex items-center justify-center">
