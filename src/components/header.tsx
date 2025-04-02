@@ -49,7 +49,8 @@ export function Header() {
     const getData = async () => {
       try {
         const user = await getCookieVal();
-        const userType= localStorage.getItem("userType");
+        const userType = localStorage.getItem("userType")?.replaceAll(`"`, "");
+        console.log(userType)
         const userDetail = await fetch(
           `/api/profile?id=${user?.value}&type=${userType}`
         );

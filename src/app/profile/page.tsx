@@ -45,11 +45,13 @@ export default function ProfilePage() {
   const userType = authContext?.userType;
   const [userVal, setUserVal] = useState(sampleUser);
   const [properties, setProperties] = useState([]);
+
   useEffect(() => {
     const getData = async () => {
       try {
         const user = await getCookieVal();
-        const userType = localStorage.getItem("userType");
+        const userType = localStorage.getItem("userType")?.replaceAll(`"`, "");
+        console.log(userType);
         const userDetail = await fetch(
           `/api/profile?id=${user?.value}&type=${userType}`
         );
@@ -75,8 +77,7 @@ export default function ProfilePage() {
   };
 
   useEffect(() => {
-    const userType = localStorage.getItem("userType");
-
+    const userType = localStorage.getItem("userType")?.replaceAll(`"`, "");
     if (userType === "host") {
       getProperties();
     }
@@ -124,7 +125,9 @@ export default function ProfilePage() {
                     <Building className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Properties</p>
-                      <p>{properties.length || "Nil"}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {properties.length || "Nil"}
+                      </p>
                     </div>
                   </div>
                 )}
@@ -274,7 +277,7 @@ export default function ProfilePage() {
             {/* Properties Tab (Owner Only) */}
             {userType === "host" && (
               <TabsContent value="properties">
-                <ProfileProperties />
+                <ProfileProperties data={properties} />
               </TabsContent>
             )}
 

@@ -67,7 +67,8 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
     const getData = async () => {
       try {
         const user = await getCookieVal();
-        const userType = localStorage.getItem("userType");
+        const userType = localStorage.getItem("userType")?.replaceAll(`"`, "");
+        console.log(userType);
         const userDetail = await fetch(
           `/api/profile/?id=${user?.value}&type=${userType}`
         );
@@ -107,7 +108,8 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
     setIsLoading(true);
     try {
       const user = await getCookieVal();
-      const userType = localStorage.getItem("userType");
+      const userType = localStorage.getItem("userType")?.replaceAll(`"`, "");
+      console.log(userType);
       const response = await fetch(
         `/api/profile/edit?type=${userType}&id=${user?.value}`,
         {
