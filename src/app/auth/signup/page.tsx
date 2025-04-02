@@ -32,6 +32,7 @@ export default function SignUpPage() {
     firstName: "",
     lastName: "",
     email: "",
+    avatar: "https://api.dicebear.com/9.x/lorelei/svg?flip=true",
     password: "",
     confirmPassword: "",
     phoneNumber: "",

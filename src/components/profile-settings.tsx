@@ -65,7 +65,7 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
       try {
         const user = await getCookieVal();
         const userDetail = await fetch(
-          `/api/profile?id=${user?.value}&type=${userRole}`
+          `/api/profile/?id=${user?.value}&type=${userRole}`
         );
         const data = await userDetail.json();
         console.log(data);
@@ -102,16 +102,21 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/profile/update?role=${userRole}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(personalInfo),
-      });
+      const user = await getCookieVal();
+      const response = await fetch(
+        `/api/profile?type=${userRole}&id=${user?.value}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(personalInfo),
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to update profile");
 
       toast.success("Profile information updated successfully.");
       router.refresh();
+      window.location.replace("/profile");
     } catch (error: any) {
       toast.error(error.message || "Failed to update profile.");
     } finally {
