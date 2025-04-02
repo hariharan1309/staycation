@@ -156,11 +156,17 @@ export default function EditPropertyPage() {
 
           // Create image array in the format expected by the form
           const imageArray = property.images
-            ? property.images.map((url: string, index: number) => ({
-                id: index,
-                url: url,
-                main: index === 0, // First image is main by default
-              }))
+            ? property.images.map(
+                (
+                  image: { main: boolean; url: string; publicId?: "string" },
+                  index: number
+                ) => ({
+                  id: index,
+                  url: image.url,
+                  main: image.main,
+                  publicId: image.publicId,
+                })
+              )
             : [];
 
           setFormData({

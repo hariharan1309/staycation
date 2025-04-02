@@ -29,7 +29,7 @@ export interface PropertyImage {
   id: number;
   url: string;
   main: boolean;
-  publicId?: string; // Add this for Cloudinary public_id
+  publicId?: string;
 }
 
 export interface PropertyLocation {
