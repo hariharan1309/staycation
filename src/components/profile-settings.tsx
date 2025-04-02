@@ -279,61 +279,6 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
           </Button>
         </CardFooter>
       </Card>
-
-      {/* <Card>
-        <CardHeader>
-          <CardTitle>Password</CardTitle>
-          <CardDescription>Change your password.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4 max-w-3/4">
-          <div className="space-y-2">
-            <Label htmlFor="currentPassword">Current Password</Label>
-            <Input
-              id="currentPassword"
-              name="currentPassword"
-              type="password"
-              value={passwords.currentPassword}
-              onChange={handlePasswordChange}
-              className="max-w-lg"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="newPassword">New Password</Label>
-            <Input
-              id="newPassword"
-              name="newPassword"
-              type="password"
-              value={passwords.newPassword}
-              onChange={handlePasswordChange}
-              className="max-w-lg"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm New Password</Label>
-            <Input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              value={passwords.confirmPassword}
-              className="max-w-lg"
-              onChange={handlePasswordChange}
-            />
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-end max-w-3/4">
-          <Button
-            onClick={handleUpdatePassword}
-            disabled={
-              passwordLoading ||
-              !passwords.currentPassword ||
-              !passwords.newPassword ||
-              !passwords.confirmPassword
-            }
-          >
-            {passwordLoading ? "Updating..." : "Update Password"}
-          </Button>
-        </CardFooter>
-      </Card> */}
     </div>
   );
 }

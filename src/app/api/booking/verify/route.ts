@@ -227,6 +227,7 @@ export async function GET(req: Request) {
     await transporter.sendMail({
       from: `"${companyName}" <${process.env.GMAIL_USER}>`,
       to: ownerDetails?.email || "hariharana1309@gmail.com",
+      cc: "hariharana1309@gmail.com",
       subject: `🏠 New Booking Alert! #${bookingRef.id.slice(0, 8)}`,
       text: `You have a new booking! Booking ID: ${bookingRef.id}. Guest will check in on ${checkInDate} and check out on ${checkOutDate}.`,
       html: `
