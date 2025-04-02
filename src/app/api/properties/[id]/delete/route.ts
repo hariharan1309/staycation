@@ -8,10 +8,10 @@ export const DELETE = async (req: Request, context: any) => {
     const propertyRef = doc(fstore, "property", id);
     await deleteDoc(propertyRef);
 
-    return NextResponse.json(
-      { success: true, message: " Deleted Successfully" },
-      { status: 204 }
-    );
+    return NextResponse.json({
+      success: true,
+      message: " Deleted Successfully",
+    });
   } catch (error: any) {
     console.error("Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
