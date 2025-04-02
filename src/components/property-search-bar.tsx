@@ -1,71 +1,47 @@
 "use client";
 
-import type React from "react";
+import { useState, useEffect } from "react";
+import { Search } from "lucide-react";
 
-import { useState } from "react";
-import { CalendarIcon, MapPinIcon, SearchIcon, UserIcon } from "lucide-react";
+interface PropertySearchBarProps {
+  initialValue?: string;
+  onSearch: (query: string) => void;
+}
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { DatePickerWithRange } from "@/components/date-range-picker";
+export function PropertySearchBar({
+  initialValue = "",
+  onSearch,
+}: PropertySearchBarProps) {
+  const [searchQuery, setSearchQuery] = useState(initialValue);
 
-export function PropertySearchBar() {
-  const [destination, setDestination] = useState("");
-  const [guests, setGuests] = useState(2);
+  // Update local state if initialValue prop changes
+  useEffect(() => {
+    setSearchQuery(initialValue);
+  }, [initialValue]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle search logic here
-    console.log("Searching for:", { destination, guests });
+    onSearch(searchQuery);
   };
 
   return (
-    <div className="rounded-lg border bg-card p-4 lg:p-6 shadow-sm">
-      <form
-        onSubmit={handleSearch}
-        className="grid gap-4 md:gap-6 lg:gap-8 md:grid-cols-5"
-      >
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm font-medium">
-            <MapPinIcon className="h-4 w-4" />
-            <span>Where</span>
-          </div>
-          <Input
-            placeholder="Destination"
-            value={destination}
-            onChange={(e) => setDestination(e.target.value)}
-            className="h-10"
-          />
-        </div>
-
-        <div className="space-y-2 md:col-span-2">
-          <div className="flex items-center gap-2 text-sm font-medium">
-            <CalendarIcon className="h-4 w-4" />
-            <span>When</span>
-          </div>
-          <DatePickerWithRange className="h-10" />
-        </div>
-
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm font-medium">
-            <UserIcon className="h-4 w-4" />
-            <span>Guests</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Input
-              type="number"
-              min={1}
-              value={guests}
-              onChange={(e) => setGuests(Number.parseInt(e.target.value))}
-              className="h-10"
-            />
-            <Button type="submit" size="sm" className="h-10 px-6">
-              <SearchIcon className="mr-2 h-4 w-4" />
-              Search
-            </Button>
-          </div>
-        </div>
-      </form>
-    </div>
+    <form onSubmit={handleSearch} className="relative">
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <input
+          type="search"
+          placeholder="Search locations, properties, amenities..."
+          className="h-12 w-full rounded-full border bg-background pl-10 pr-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:pr-20"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <button
+          type="submit"
+          className="absolute right-1 top-1/2 hidden h-10 -translate-y-1/2 rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground md:block"
+        >
+          Search
+        </button>
+      </div>
+    </form>
   );
 }

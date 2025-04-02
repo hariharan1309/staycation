@@ -1,64 +1,74 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import { Slider } from "@/components/ui/slider"
-import { Separator } from "@/components/ui/separator"
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { Separator } from "@/components/ui/separator";
 
 interface PropertyFiltersProps {
-  onFilter: (filters: any) => void
+  onFilter: (filters: any) => void;
+  onClear: () => void;
+  maxPrice?: number;
 }
 
-export function PropertyFilters({ onFilter }: PropertyFiltersProps) {
-  const [priceRange, setPriceRange] = useState([0, 500])
-  const [bedrooms, setBedrooms] = useState<number | null>(null)
-  const [bathrooms, setBathrooms] = useState<number | null>(null)
-  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([])
+export function PropertyFilters({
+  onFilter,
+  onClear,
+  maxPrice = 1000,
+}: PropertyFiltersProps) {
+  const [priceRange, setPriceRange] = useState([0, maxPrice / 2]);
+  const [bedrooms, setBedrooms] = useState<number | null>(null);
+  const [bathrooms, setBathrooms] = useState<number | null>(null);
+  const [guests, setGuests] = useState<number | null>(null);
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
 
+  // Standardized amenities list that matches the property data structure
   const amenities = [
-    "WiFi",
-    "Pool",
-    "Kitchen",
-    "Air conditioning",
-    "Heating",
-    "Washer",
-    "Dryer",
-    "Free parking",
-    "Gym",
-    "Hot tub",
-    "Beach access",
-    "Ocean view",
-    "Mountain view",
-    "Fireplace",
-  ]
+    { key: "wifi", label: "WiFi" },
+    { key: "pool", label: "Pool" },
+    { key: "kitchen", label: "Kitchen" },
+    { key: "ac", label: "Air conditioning" },
+    { key: "heating", label: "Heating" },
+    { key: "washer", label: "Washer" },
+    { key: "dryer", label: "Dryer" },
+    { key: "parking", label: "Free parking" },
+    { key: "gym", label: "Gym" },
+    { key: "beachfront", label: "Beach access" },
+    { key: "oceanView", label: "Ocean view" },
+    { key: "mountainView", label: "Mountain view" },
+    { key: "fireplace", label: "Fireplace" },
+    { key: "outdoorDining", label: "Outdoor dining" },
+  ];
 
-  const handleAmenityChange = (amenity: string, checked: boolean) => {
+  const handleAmenityChange = (amenityKey: string, checked: boolean) => {
     if (checked) {
-      setSelectedAmenities([...selectedAmenities, amenity])
+      setSelectedAmenities([...selectedAmenities, amenityKey]);
     } else {
-      setSelectedAmenities(selectedAmenities.filter((a) => a !== amenity))
+      setSelectedAmenities(selectedAmenities.filter((a) => a !== amenityKey));
     }
-  }
+  };
 
   const handleApplyFilters = () => {
     onFilter({
       priceRange,
       bedrooms,
       bathrooms,
+      guests,
       amenities: selectedAmenities,
-    })
-  }
+    });
+  };
 
   const handleClearFilters = () => {
-    setPriceRange([0, 500])
-    setBedrooms(null)
-    setBathrooms(null)
-    setSelectedAmenities([])
-    onFilter({})
-  }
+    setPriceRange([0, maxPrice / 2]);
+    setBedrooms(null);
+    setBathrooms(null);
+    setGuests(null);
+    setSelectedAmenities([]);
+    onClear();
+  };
 
   return (
     <div className="space-y-6">
@@ -66,11 +76,21 @@ export function PropertyFilters({ onFilter }: PropertyFiltersProps) {
       <div>
         <h3 className="mb-4 text-sm font-medium">Price Range</h3>
         <div className="mb-6">
-          <Slider defaultValue={[0, 500]} max={1000} step={10} value={priceRange} onValueChange={setPriceRange} />
+          <Slider
+            defaultValue={[0, maxPrice / 2]}
+            max={maxPrice}
+            step={10}
+            value={priceRange}
+            onValueChange={setPriceRange}
+          />
         </div>
         <div className="flex items-center justify-between">
-          <div className="rounded-md border px-2 py-1 text-sm">${priceRange[0]}</div>
-          <div className="rounded-md border px-2 py-1 text-sm">${priceRange[1]}</div>
+          <div className="rounded-md border px-2 py-1 text-sm">
+            ${priceRange[0]}
+          </div>
+          <div className="rounded-md border px-2 py-1 text-sm">
+            ${priceRange[1]}
+          </div>
         </div>
       </div>
 
@@ -114,19 +134,40 @@ export function PropertyFilters({ onFilter }: PropertyFiltersProps) {
 
       <Separator />
 
+      {/* Guests */}
+      <div>
+        <h3 className="mb-4 text-sm font-medium">Guests</h3>
+        <div className="flex flex-wrap gap-2">
+          {[null, 1, 2, 4, 6, 8].map((num, i) => (
+            <Button
+              key={i}
+              variant={guests === num ? "default" : "outline"}
+              size="sm"
+              onClick={() => setGuests(num)}
+            >
+              {num === null ? "Any" : num === 8 ? "8+" : num}
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      <Separator />
+
       {/* Amenities */}
       <div>
         <h3 className="mb-4 text-sm font-medium">Amenities</h3>
         <div className="grid grid-cols-1 gap-3">
-          {amenities.map((amenity) => (
-            <div key={amenity} className="flex items-center space-x-2">
+          {amenities.map(({ key, label }) => (
+            <div key={key} className="flex items-center space-x-2">
               <Checkbox
-                id={`amenity-${amenity}`}
-                checked={selectedAmenities.includes(amenity)}
-                onCheckedChange={(checked) => handleAmenityChange(amenity, checked === true)}
+                id={`amenity-${key}`}
+                checked={selectedAmenities.includes(key)}
+                onCheckedChange={(checked) =>
+                  handleAmenityChange(key, checked === true)
+                }
               />
-              <Label htmlFor={`amenity-${amenity}`} className="text-sm font-normal">
-                {amenity}
+              <Label htmlFor={`amenity-${key}`} className="text-sm font-normal">
+                {label}
               </Label>
             </div>
           ))}
@@ -140,6 +181,5 @@ export function PropertyFilters({ onFilter }: PropertyFiltersProps) {
         </Button>
       </div>
     </div>
-  )
+  );
 }
-
