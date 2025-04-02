@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Grid, List, MapPin, Search, SlidersHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -17,123 +17,156 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// Mock data for properties
-const properties = [
-  {
-    id: "1",
-    title: "Beachfront Villa",
-    location: "Bali, Indonesia",
-    price: 120,
-    rating: 4.9,
-    reviewCount: 128,
-    imageUrl: "/placeholder.svg?height=300&width=400",
-    bedrooms: 3,
-    bathrooms: 2,
-    guests: 6,
-    amenities: ["Pool", "WiFi", "Kitchen", "Air conditioning"],
-    featured: true,
-  },
-  {
-    id: "2",
-    title: "Mountain Cabin",
-    location: "Aspen, Colorado",
-    price: 200,
-    rating: 4.8,
-    reviewCount: 96,
-    imageUrl: "/placeholder.svg?height=300&width=400",
-    bedrooms: 2,
-    bathrooms: 1,
-    guests: 4,
-    amenities: ["Fireplace", "WiFi", "Kitchen", "Heating"],
-  },
-  {
-    id: "3",
-    title: "Luxury Apartment",
-    location: "Paris, France",
-    price: 180,
-    rating: 4.7,
-    reviewCount: 74,
-    imageUrl: "/placeholder.svg?height=300&width=400",
-    bedrooms: 2,
-    bathrooms: 2,
-    guests: 4,
-    amenities: ["WiFi", "Kitchen", "Air conditioning", "Elevator"],
-  },
-  {
-    id: "4",
-    title: "Seaside Cottage",
-    location: "Santorini, Greece",
-    price: 150,
-    rating: 4.9,
-    reviewCount: 112,
-    imageUrl: "/placeholder.svg?height=300&width=400",
-    bedrooms: 1,
-    bathrooms: 1,
-    guests: 2,
-    amenities: ["Ocean view", "WiFi", "Kitchen", "Air conditioning"],
-    featured: true,
-  },
-  {
-    id: "5",
-    title: "Modern Loft",
-    location: "New York, USA",
-    price: 220,
-    rating: 4.6,
-    reviewCount: 88,
-    imageUrl: "/placeholder.svg?height=300&width=400",
-    bedrooms: 1,
-    bathrooms: 1,
-    guests: 3,
-    amenities: ["WiFi", "Kitchen", "Air conditioning", "Gym"],
-  },
-  {
-    id: "6",
-    title: "Rustic Farmhouse",
-    location: "Tuscany, Italy",
-    price: 170,
-    rating: 4.8,
-    reviewCount: 102,
-    imageUrl: "/placeholder.svg?height=300&width=400",
-    bedrooms: 4,
-    bathrooms: 3,
-    guests: 8,
-    amenities: ["Pool", "WiFi", "Kitchen", "Garden"],
-  },
-  {
-    id: "7",
-    title: "Tropical Bungalow",
-    location: "Phuket, Thailand",
-    price: 90,
-    rating: 4.5,
-    reviewCount: 65,
-    imageUrl: "/placeholder.svg?height=300&width=400",
-    bedrooms: 1,
-    bathrooms: 1,
-    guests: 2,
-    amenities: ["Beach access", "WiFi", "Air conditioning"],
-  },
-  {
-    id: "8",
-    title: "City Center Studio",
-    location: "Barcelona, Spain",
-    price: 110,
-    rating: 4.6,
-    reviewCount: 79,
-    imageUrl: "/placeholder.svg?height=300&width=400",
-    bedrooms: 0,
-    bathrooms: 1,
-    guests: 2,
-    amenities: ["WiFi", "Kitchen", "Air conditioning"],
-  },
-];
+// Define interfaces for type safety
+interface Location {
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  zipCode: string;
+  directions?: string;
+}
+
+interface Pricing {
+  basePrice: number;
+  cleaningFee: number;
+  securityDeposit: number;
+  minNights: number;
+  maxNights: number;
+  weeklyDiscount: number;
+  monthlyDiscount: number;
+  taxes: boolean;
+  instantBook: boolean;
+}
+
+interface Amenities {
+  pool: boolean;
+  beachfront: boolean;
+  parking: boolean;
+  tv: boolean;
+  workspace: boolean;
+  wifi: boolean;
+  ac: boolean;
+  heating: boolean;
+  washer: boolean;
+  kitchen: boolean;
+  outdoorDining: boolean;
+  [key: string]: boolean;
+}
+
+interface Property {
+  id: string;
+  title: string;
+  description: string;
+  location: Location;
+  pricing: Pricing;
+  amenities: Amenities;
+  images: { main: boolean; url: string; publicId?: string }[];
+  bedrooms: number;
+  bathrooms: number;
+  maxGuests: number;
+  type: string;
+  owner: string;
+  createdAt: string;
+  rating?: number;
+  reviewCount?: number;
+  featured?: boolean;
+}
+
+// Simplified property structure for display
+interface DisplayProperty {
+  id: string;
+  title: string;
+  location: string;
+  price: number;
+  rating: number;
+  reviewCount: number;
+  imageUrl: string;
+  bedrooms: number;
+  bathrooms: number;
+  guests: number;
+  amenities: string[];
+  featured?: boolean;
+}
 
 export default function PropertiesPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [filteredProperties, setFilteredProperties] = useState(properties);
+  const [loading, setLoading] = useState(true);
+  const [properties, setProperties] = useState<DisplayProperty[]>([]);
+  const [filteredProperties, setFilteredProperties] = useState<
+    DisplayProperty[]
+  >([]);
   const [sortOption, setSortOption] = useState("recommended");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const propertiesPerPage = 6;
 
+  // Get properties from API on component mount
+  useEffect(() => {
+    const fetchProperties = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch("/api/properties");
+        const data = await response.json();
+
+        if (data.status === 200 && Array.isArray(data.property)) {
+          // Convert API properties to display format
+          const displayProperties = data.property.map((property: Property) => ({
+            id: property.id,
+            title: property.title,
+            location: `${property.location.city}, ${property.location.country}`,
+            price: property.pricing.basePrice,
+            rating: property.rating || (Math.random() * 1.0 + 4.0).toFixed(1), // Generate rating if not available
+            reviewCount:
+              property.reviewCount || Math.floor(Math.random() * 100) + 50, // Generate review count if not available
+            imageUrl:
+              property.images?.length > 0
+                ? property.images[0].url
+                : "/placeholder.svg?height=300&width=400",
+            bedrooms: property.bedrooms,
+            bathrooms: property.bathrooms,
+            guests: property.maxGuests,
+            amenities: getPropertyAmenities(property.amenities),
+            featured: Math.random() > 0.7, // Randomly mark some properties as featured
+          }));
+
+          setProperties(displayProperties);
+          setFilteredProperties(displayProperties);
+        } else {
+          // If API fails, use mock data
+          setProperties(mockProperties);
+          setFilteredProperties(mockProperties);
+        }
+      } catch (error) {
+        console.error("Error fetching properties:", error);
+        // Use mock data if API fails
+        setProperties(mockProperties);
+        setFilteredProperties(mockProperties);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperties();
+  }, []);
+
+  // Helper function to extract amenities from property
+  const getPropertyAmenities = (amenities: Amenities): string[] => {
+    return Object.entries(amenities)
+      .filter(([_, isAvailable]) => isAvailable)
+      .map(([amenity]) => amenity.charAt(0).toUpperCase() + amenity.slice(1));
+  };
+
+  // Handle search input
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    applyFilters({ searchQuery: query });
+  };
+
+  // Handle sort selection
   const handleSort = (option: string) => {
     setSortOption(option);
+
     let sorted = [...filteredProperties];
 
     switch (option) {
@@ -148,14 +181,28 @@ export default function PropertiesPage() {
         break;
       default:
         // Default sorting (recommended)
-        sorted = [...properties];
+        sorted = [...filteredProperties].sort(
+          (a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0)
+        );
     }
 
     setFilteredProperties(sorted);
+    setCurrentPage(1);
   };
 
-  const handleFilter = (filters: any) => {
+  // Apply filters
+  const applyFilters = (filters: any) => {
     let results = [...properties];
+
+    // Apply search query if provided
+    if (filters.searchQuery || searchQuery) {
+      const query = (filters.searchQuery || searchQuery).toLowerCase();
+      results = results.filter(
+        (property) =>
+          property.title.toLowerCase().includes(query) ||
+          property.location.toLowerCase().includes(query)
+      );
+    }
 
     // Filter by price range
     if (filters.priceRange) {
@@ -180,6 +227,11 @@ export default function PropertiesPage() {
       );
     }
 
+    // Filter by guests
+    if (filters.guests) {
+      results = results.filter((property) => property.guests >= filters.guests);
+    }
+
     // Filter by amenities
     if (filters.amenities && filters.amenities.length > 0) {
       results = results.filter((property) =>
@@ -189,16 +241,160 @@ export default function PropertiesPage() {
       );
     }
 
+    // Apply current sort option to new filtered results
+    switch (sortOption) {
+      case "price-low":
+        results.sort((a, b) => a.price - b.price);
+        break;
+      case "price-high":
+        results.sort((a, b) => b.price - a.price);
+        break;
+      case "rating":
+        results.sort((a, b) => b.rating - a.rating);
+        break;
+      default:
+        // Default sorting (recommended)
+        results.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+    }
+
     setFilteredProperties(results);
+    setCurrentPage(1);
   };
+
+  // Clear all filters
+  const clearFilters = () => {
+    setSearchQuery("");
+    setFilteredProperties([...properties]);
+    setCurrentPage(1);
+    setSortOption("recommended");
+  };
+
+  // Pagination
+  const indexOfLastProperty = currentPage * propertiesPerPage;
+  const indexOfFirstProperty = indexOfLastProperty - propertiesPerPage;
+  const currentProperties = filteredProperties.slice(
+    indexOfFirstProperty,
+    indexOfLastProperty
+  );
+  const totalPages = Math.ceil(filteredProperties.length / propertiesPerPage);
+
+  // Mock data for fallback
+  const mockProperties: DisplayProperty[] = [
+    {
+      id: "1",
+      title: "Beachfront Villa",
+      location: "Bali, Indonesia",
+      price: 120,
+      rating: 4.9,
+      reviewCount: 128,
+      imageUrl: "/placeholder.svg?height=300&width=400",
+      bedrooms: 3,
+      bathrooms: 2,
+      guests: 6,
+      amenities: ["Pool", "WiFi", "Kitchen", "Air conditioning"],
+      featured: true,
+    },
+    {
+      id: "2",
+      title: "Mountain Cabin",
+      location: "Aspen, Colorado",
+      price: 200,
+      rating: 4.8,
+      reviewCount: 96,
+      imageUrl: "/placeholder.svg?height=300&width=400",
+      bedrooms: 2,
+      bathrooms: 1,
+      guests: 4,
+      amenities: ["Fireplace", "WiFi", "Kitchen", "Heating"],
+    },
+    {
+      id: "3",
+      title: "Luxury Apartment",
+      location: "Paris, France",
+      price: 180,
+      rating: 4.7,
+      reviewCount: 74,
+      imageUrl: "/placeholder.svg?height=300&width=400",
+      bedrooms: 2,
+      bathrooms: 2,
+      guests: 4,
+      amenities: ["WiFi", "Kitchen", "Air conditioning", "Elevator"],
+    },
+    {
+      id: "4",
+      title: "Seaside Cottage",
+      location: "Santorini, Greece",
+      price: 150,
+      rating: 4.9,
+      reviewCount: 112,
+      imageUrl: "/placeholder.svg?height=300&width=400",
+      bedrooms: 1,
+      bathrooms: 1,
+      guests: 2,
+      amenities: ["Ocean view", "WiFi", "Kitchen", "Air conditioning"],
+      featured: true,
+    },
+    {
+      id: "5",
+      title: "Modern Loft",
+      location: "New York, USA",
+      price: 220,
+      rating: 4.6,
+      reviewCount: 88,
+      imageUrl: "/placeholder.svg?height=300&width=400",
+      bedrooms: 1,
+      bathrooms: 1,
+      guests: 3,
+      amenities: ["WiFi", "Kitchen", "Air conditioning", "Gym"],
+    },
+    {
+      id: "6",
+      title: "Rustic Farmhouse",
+      location: "Tuscany, Italy",
+      price: 170,
+      rating: 4.8,
+      reviewCount: 102,
+      imageUrl: "/placeholder.svg?height=300&width=400",
+      bedrooms: 4,
+      bathrooms: 3,
+      guests: 8,
+      amenities: ["Pool", "WiFi", "Kitchen", "Garden"],
+    },
+    {
+      id: "7",
+      title: "Tropical Bungalow",
+      location: "Phuket, Thailand",
+      price: 90,
+      rating: 4.5,
+      reviewCount: 65,
+      imageUrl: "/placeholder.svg?height=300&width=400",
+      bedrooms: 1,
+      bathrooms: 1,
+      guests: 2,
+      amenities: ["Beach access", "WiFi", "Air conditioning"],
+    },
+    {
+      id: "8",
+      title: "City Center Studio",
+      location: "Barcelona, Spain",
+      price: 110,
+      rating: 4.6,
+      reviewCount: 79,
+      imageUrl: "/placeholder.svg?height=300&width=400",
+      bedrooms: 0,
+      bathrooms: 1,
+      guests: 2,
+      amenities: ["WiFi", "Kitchen", "Air conditioning"],
+    },
+  ];
 
   return (
     <main className="container px-4 py-8 md:px-6 md:py-12 lg:px-8">
       <h1 className="mb-6 text-3xl font-bold">Find Your Perfect Stay</h1>
 
-      {/* Search and Filter Bar */}
+      {/* Search Bar */}
       <div className="mb-8">
-        <PropertySearchBar />
+        <PropertySearchBar initialValue={searchQuery} onSearch={handleSearch} />
       </div>
 
       {/* Mobile Filter Button */}
@@ -213,22 +409,25 @@ export default function PropertiesPage() {
           <SheetContent side="left" className="w-[300px] sm:w-[400px]">
             <div className="py-4">
               <h2 className="mb-6 text-lg font-semibold">Filters</h2>
-              <PropertyFilters onFilter={handleFilter} />
+              <PropertyFilters onFilter={applyFilters} onClear={clearFilters} />
             </div>
           </SheetContent>
         </Sheet>
 
         <div className="flex items-center gap-2">
-          <select
-            className="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            value={sortOption}
-            onChange={(e) => handleSort(e.target.value)}
-          >
-            <option value="recommended">Recommended</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
-            <option value="rating">Top Rated</option>
-          </select>
+          <Select value={sortOption} onValueChange={handleSort}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="recommended">Recommended</SelectItem>
+                <SelectItem value="price-low">Price: Low to High</SelectItem>
+                <SelectItem value="price-high">Price: High to Low</SelectItem>
+                <SelectItem value="rating">Top Rated</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
 
           <div className="flex rounded-md border border-input">
             <Button
@@ -262,7 +461,7 @@ export default function PropertiesPage() {
         <div className="hidden w-[280px] shrink-0 md:block">
           <div className="sticky top-24 rounded-lg border p-6">
             <h2 className="mb-6 text-lg font-semibold">Filters</h2>
-            <PropertyFilters onFilter={handleFilter} />
+            <PropertyFilters onFilter={applyFilters} onClear={clearFilters} />
           </div>
         </div>
 
@@ -274,24 +473,10 @@ export default function PropertiesPage() {
               {filteredProperties.length} properties found
             </p>
             <div className="flex items-center gap-4">
-              {/* <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Sort by:</span>
-                <select
-                  className="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  value={sortOption}
-                  onChange={(e) => handleSort(e.target.value)}
-                >
-                  <option value="recommended">Recommended</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                  <option value="rating">Top Rated</option>
-                </select>
-              </div> */}
               <span className="text-sm font-medium">Sort by:</span>
-
-              <Select defaultValue="recommended">
+              <Select value={sortOption} onValueChange={handleSort}>
                 <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Sort by:" />
+                  <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
@@ -306,6 +491,7 @@ export default function PropertiesPage() {
                   </SelectGroup>
                 </SelectContent>
               </Select>
+
               <div className="flex rounded-md border border-input">
                 <Button
                   variant="ghost"
@@ -333,7 +519,14 @@ export default function PropertiesPage() {
             </div>
           </div>
 
-          {filteredProperties.length === 0 ? (
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+              <p className="mt-4 text-muted-foreground">
+                Loading properties...
+              </p>
+            </div>
+          ) : filteredProperties.length === 0 ? (
             <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
               <Search className="mb-4 h-12 w-12 text-muted-foreground" />
               <h3 className="mb-2 text-xl font-semibold">
@@ -342,13 +535,11 @@ export default function PropertiesPage() {
               <p className="mb-6 text-muted-foreground">
                 Try adjusting your filters to find more properties.
               </p>
-              <Button onClick={() => handleFilter({})}>
-                Clear all filters
-              </Button>
+              <Button onClick={clearFilters}>Clear all filters</Button>
             </div>
           ) : viewMode === "grid" ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredProperties.map((property) => (
+              {currentProperties.map((property) => (
                 <PropertyCard
                   key={property.id}
                   id={property.id}
@@ -364,7 +555,7 @@ export default function PropertiesPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              {filteredProperties.map((property) => (
+              {currentProperties.map((property) => (
                 <div
                   key={property.id}
                   className="flex flex-col overflow-hidden rounded-lg border sm:flex-row"
@@ -458,53 +649,76 @@ export default function PropertiesPage() {
           )}
 
           {/* Pagination */}
-          <div className="mt-8 flex justify-center">
-            <nav className="flex items-center gap-1">
-              <Button variant="outline" size="icon" disabled>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-4 w-4"
+          {filteredProperties.length > 0 && (
+            <div className="mt-8 flex justify-center">
+              <nav className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  disabled={currentPage === 1}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
                 >
-                  <path d="m15 18-6-6 6-6" />
-                </svg>
-                <span className="sr-only">Previous page</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="bg-primary text-primary-foreground"
-              >
-                1
-              </Button>
-              <Button variant="outline" size="sm">
-                2
-              </Button>
-              <Button variant="outline" size="sm">
-                3
-              </Button>
-              <Button variant="outline" size="icon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-4 w-4"
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-4 w-4"
+                  >
+                    <path d="m15 18-6-6 6-6" />
+                  </svg>
+                  <span className="sr-only">Previous page</span>
+                </Button>
+
+                {Array.from({ length: Math.min(totalPages, 3) }).map((_, i) => {
+                  const pageNum = i + 1;
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant="outline"
+                      size="sm"
+                      className={
+                        currentPage === pageNum
+                          ? "bg-primary text-primary-foreground"
+                          : ""
+                      }
+                      onClick={() => setCurrentPage(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  disabled={currentPage === totalPages || totalPages === 0}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
                 >
-                  <path d="m9 18 6-6-6-6" />
-                </svg>
-                <span className="sr-only">Next page</span>
-              </Button>
-            </nav>
-          </div>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-4 w-4"
+                  >
+                    <path d="m9 18 6-6-6-6" />
+                  </svg>
+                  <span className="sr-only">Next page</span>
+                </Button>
+              </nav>
+            </div>
+          )}
         </div>
       </div>
     </main>
