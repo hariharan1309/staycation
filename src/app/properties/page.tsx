@@ -1,8 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Grid, List, MapPin, Search, SlidersHorizontal } from "lucide-react";
-
+import {
+  Grid,
+  List,
+  MapPin,
+  Search,
+  SlidersHorizontal,
+  Calendar,
+  Users,
+} from "lucide-react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { PropertyCard } from "@/components/property-card";
@@ -17,6 +25,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
 
 // Define interfaces for type safety
 interface Location {
@@ -79,6 +89,7 @@ interface DisplayProperty {
   id: string;
   title: string;
   location: string;
+  country: string; // Added country field for filtering
   price: number;
   rating: number;
   reviewCount: number;
@@ -88,9 +99,13 @@ interface DisplayProperty {
   guests: number;
   amenities: string[];
   featured?: boolean;
+  availableForDates?: boolean; // Track date availability
 }
 
 export default function PropertiesPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [loading, setLoading] = useState(true);
   const [properties, setProperties] = useState<DisplayProperty[]>([]);
@@ -101,6 +116,14 @@ export default function PropertiesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const propertiesPerPage = 6;
+
+  // Get URL parameters
+  const urlCountry = searchParams.get("country") || "";
+  const urlCheckIn = searchParams.get("checkIn") || "";
+  const urlCheckOut = searchParams.get("checkOut") || "";
+  const urlGuests = searchParams.get("guests")
+    ? parseInt(searchParams.get("guests") as string)
+    : 0;
 
   // Get properties from API on component mount
   useEffect(() => {
@@ -116,6 +139,7 @@ export default function PropertiesPage() {
             id: property.id,
             title: property.title,
             location: `${property.location.city}, ${property.location.country}`,
+            country: property.location.country,
             price: property.pricing.basePrice,
             rating: property.rating || (Math.random() * 1.0 + 4.0).toFixed(1), // Generate rating if not available
             reviewCount:
@@ -129,20 +153,21 @@ export default function PropertiesPage() {
             guests: property.maxGuests,
             amenities: getPropertyAmenities(property.amenities),
             featured: Math.random() > 0.7, // Randomly mark some properties as featured
+            availableForDates: true, // Assume available by default
           }));
 
           setProperties(displayProperties);
-          setFilteredProperties(displayProperties);
+          // Apply URL filters after loading properties
+          applyUrlFilters(displayProperties);
         } else {
           // If API fails, use mock data
-          setProperties(mockProperties);
-          setFilteredProperties(mockProperties);
+          setProperties([]);
+          applyUrlFilters([]);
         }
       } catch (error) {
         console.error("Error fetching properties:", error);
-        // Use mock data if API fails
-        setProperties(mockProperties);
-        setFilteredProperties(mockProperties);
+        setProperties([]);
+        applyUrlFilters([]);
       } finally {
         setLoading(false);
       }
@@ -150,6 +175,41 @@ export default function PropertiesPage() {
 
     fetchProperties();
   }, []);
+
+  // Apply URL filters when properties are loaded
+  const applyUrlFilters = (propertiesData: DisplayProperty[]) => {
+    let results = [...propertiesData];
+
+    // Set search query from URL country
+    if (urlCountry) {
+      setSearchQuery(urlCountry);
+      results = results.filter(
+        (property) =>
+          property.country.toLowerCase().includes(urlCountry.toLowerCase()) ||
+          property.location.toLowerCase().includes(urlCountry.toLowerCase())
+      );
+    }
+
+    // Filter by guests
+    if (urlGuests > 0) {
+      results = results.filter((property) => property.guests >= urlGuests);
+    }
+
+    // Set date constraints (in a real app, you'd check availability)
+    if (urlCheckIn && urlCheckOut) {
+      // This is simplified - in a real app, you'd check the actual availability
+      // Here we're just randomly marking some properties as unavailable
+      results = results.map((property) => ({
+        ...property,
+        availableForDates: Math.random() > 0.3, // 70% chance of being available
+      }));
+
+      // Only show available properties
+      results = results.filter((property) => property.availableForDates);
+    }
+
+    setFilteredProperties(results);
+  };
 
   // Helper function to extract amenities from property
   const getPropertyAmenities = (amenities: Amenities): string[] => {
@@ -161,6 +221,20 @@ export default function PropertiesPage() {
   // Handle search input
   const handleSearch = (query: string) => {
     setSearchQuery(query);
+
+    // Update the URL with the search query (as country)
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("country", query);
+
+    // Keep existing params
+    if (urlCheckIn) params.set("checkIn", urlCheckIn);
+    if (urlCheckOut) params.set("checkOut", urlCheckOut);
+    if (urlGuests) params.set("guests", urlGuests.toString());
+
+    // Update URL
+    router.push(`/properties?${params.toString()}`);
+
+    // Apply filters with the new search query
     applyFilters({ searchQuery: query });
   };
 
@@ -178,7 +252,9 @@ export default function PropertiesPage() {
         sorted.sort((a, b) => b.price - a.price);
         break;
       case "rating":
-        sorted.sort((a, b) => b.rating - a.rating);
+        sorted.sort(
+          (a, b) => parseFloat(String(b.rating)) - parseFloat(String(a.rating))
+        );
         break;
       default:
         // Default sorting (recommended)
@@ -194,14 +270,16 @@ export default function PropertiesPage() {
   // Apply filters
   const applyFilters = (filters: any) => {
     let results = [...properties];
-
+    console.log(results);
+    console.log(filters);
     // Apply search query if provided
     if (filters.searchQuery || searchQuery) {
       const query = (filters.searchQuery || searchQuery).toLowerCase();
       results = results.filter(
         (property) =>
           property.title.toLowerCase().includes(query) ||
-          property.location.toLowerCase().includes(query)
+          property.location.toLowerCase().includes(query) ||
+          property.country.toLowerCase().includes(query)
       );
     }
 
@@ -228,9 +306,10 @@ export default function PropertiesPage() {
       );
     }
 
-    // Filter by guests
-    if (filters.guests) {
-      results = results.filter((property) => property.guests >= filters.guests);
+    // Filter by guests from either filter or URL
+    const guestsFilter = filters.guests || urlGuests;
+    if (guestsFilter) {
+      results = results.filter((property) => property.guests >= guestsFilter);
     }
 
     // Filter by amenities
@@ -242,6 +321,11 @@ export default function PropertiesPage() {
       );
     }
 
+    // Filter by dates (if provided in URL)
+    if (urlCheckIn && urlCheckOut) {
+      results = results.filter((property) => property.availableForDates);
+    }
+
     // Apply current sort option to new filtered results
     switch (sortOption) {
       case "price-low":
@@ -251,7 +335,9 @@ export default function PropertiesPage() {
         results.sort((a, b) => b.price - a.price);
         break;
       case "rating":
-        results.sort((a, b) => b.rating - a.rating);
+        results.sort(
+          (a, b) => parseFloat(String(b.rating)) - parseFloat(String(a.rating))
+        );
         break;
       default:
         // Default sorting (recommended)
@@ -265,6 +351,10 @@ export default function PropertiesPage() {
   // Clear all filters
   const clearFilters = () => {
     setSearchQuery("");
+
+    // Clear URL parameters
+    router.push("/properties");
+
     setFilteredProperties([...properties]);
     setCurrentPage(1);
     setSortOption("recommended");
@@ -279,49 +369,15 @@ export default function PropertiesPage() {
   );
   const totalPages = Math.ceil(filteredProperties.length / propertiesPerPage);
 
-  // Mock data for fallback
-  const mockProperties: DisplayProperty[] = [
-    {
-      id: "1",
-      title: "Beachfront Villa",
-      location: "Bali, Indonesia",
-      price: 120,
-      rating: 4.9,
-      reviewCount: 128,
-      imageUrl: "/placeholder.svg?height=300&width=400",
-      bedrooms: 3,
-      bathrooms: 2,
-      guests: 6,
-      amenities: ["Pool", "WiFi", "Kitchen", "Air conditioning"],
-      featured: true,
-    },
-    {
-      id: "2",
-      title: "Mountain Cabin",
-      location: "Aspen, Colorado",
-      price: 200,
-      rating: 4.8,
-      reviewCount: 96,
-      imageUrl: "/placeholder.svg?height=300&width=400",
-      bedrooms: 2,
-      bathrooms: 1,
-      guests: 4,
-      amenities: ["Fireplace", "WiFi", "Kitchen", "Heating"],
-    },
-    {
-      id: "3",
-      title: "Luxury Apartment",
-      location: "Paris, France",
-      price: 180,
-      rating: 4.7,
-      reviewCount: 74,
-      imageUrl: "/placeholder.svg?height=300&width=400",
-      bedrooms: 2,
-      bathrooms: 2,
-      guests: 4,
-      amenities: ["WiFi", "Kitchen", "Air conditioning", "Elevator"],
-    },
-  ];
+  // Format dates for display
+  const formatDateDisplay = (dateString: string) => {
+    if (!dateString) return "";
+    try {
+      return format(new Date(dateString), "MMM dd, yyyy");
+    } catch (e) {
+      return dateString;
+    }
+  };
 
   return (
     <main className="container px-4 py-8 md:px-6 md:py-12 lg:px-8">
@@ -332,11 +388,43 @@ export default function PropertiesPage() {
         <PropertySearchBar
           initialValue={searchQuery}
           onSearch={handleSearch}
-          onClear={clearFilters} // Pass your existing clearFilters function
+          onClear={clearFilters}
           placeholder="Search by location, property name..."
           className="max-w-[80vw] mx-auto"
         />
       </div>
+
+      {/* Active Filters Display */}
+      {(urlCountry || urlCheckIn || urlCheckOut || urlGuests > 0) && (
+        <div className="mb-6 flex flex-wrap gap-2">
+          {urlCountry && (
+            <Badge variant="outline" className="flex items-center gap-1">
+              <MapPin className="h-3 w-3" />
+              {urlCountry}
+            </Badge>
+          )}
+          {urlCheckIn && urlCheckOut && (
+            <Badge variant="outline" className="flex items-center gap-1">
+              <Calendar className="h-3 w-3" />
+              {formatDateDisplay(urlCheckIn)} - {formatDateDisplay(urlCheckOut)}
+            </Badge>
+          )}
+          {urlGuests > 0 && (
+            <Badge variant="outline" className="flex items-center gap-1">
+              <Users className="h-3 w-3" />
+              {urlGuests} guest{urlGuests !== 1 ? "s" : ""}
+            </Badge>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearFilters}
+            className="h-6 px-2"
+          >
+            Clear all
+          </Button>
+        </div>
+      )}
 
       {/* Mobile Filter Button */}
       <div className="mb-6 flex items-center justify-between md:hidden">
@@ -350,7 +438,11 @@ export default function PropertiesPage() {
           <SheetContent side="left" className="w-[300px] sm:w-[400px]">
             <div className="py-4">
               <h2 className="mb-6 text-lg font-semibold">Filters</h2>
-              <PropertyFilters onFilter={applyFilters} onClear={clearFilters} />
+              <PropertyFilters
+                onFilter={applyFilters}
+                onClear={clearFilters}
+                initialGuests={urlGuests}
+              />
             </div>
           </SheetContent>
         </Sheet>
@@ -402,7 +494,11 @@ export default function PropertiesPage() {
         <div className="hidden w-[280px] shrink-0 md:block">
           <div className="sticky top-24 rounded-lg border p-6">
             <h2 className="mb-6 text-lg font-semibold">Filters</h2>
-            <PropertyFilters onFilter={applyFilters} onClear={clearFilters} />
+            <PropertyFilters
+              onFilter={applyFilters}
+              onClear={clearFilters}
+              initialGuests={urlGuests}
+            />
           </div>
         </div>
 
@@ -491,6 +587,13 @@ export default function PropertiesPage() {
                   reviewCount={property.reviewCount}
                   imageUrl={property.imageUrl}
                   featured={property.featured}
+                  url={`/properties/${property.id}${
+                    urlCheckIn && urlCheckOut
+                      ? `?checkIn=${urlCheckIn}&checkOut=${urlCheckOut}&guests=${
+                          urlGuests || 1
+                        }`
+                      : ""
+                  }`}
                 />
               ))}
             </div>
@@ -505,7 +608,7 @@ export default function PropertiesPage() {
                     <Image
                       src={property.imageUrl || "/placeholder.svg"}
                       alt={property.title}
-                      className="size-40 md:size-80 object-cover"
+                      className="object-cover"
                       fill
                     />
                     {property.featured && (
@@ -572,6 +675,16 @@ export default function PropertiesPage() {
                         </div>
                       )}
                     </div>
+
+                    {/* Date information if available */}
+                    {urlCheckIn && urlCheckOut && (
+                      <div className="mt-2 text-sm text-muted-foreground">
+                        <Calendar className="mr-1 inline-block h-3 w-3" />
+                        {formatDateDisplay(urlCheckIn)} -{" "}
+                        {formatDateDisplay(urlCheckOut)}
+                      </div>
+                    )}
+
                     <div className="mt-auto flex items-center justify-between pt-4">
                       <div>
                         <span className="font-semibold">${property.price}</span>
@@ -581,7 +694,17 @@ export default function PropertiesPage() {
                         </span>
                       </div>
                       <Button asChild>
-                        <a href={`/properties/${property.id}`}>View Details</a>
+                        <a
+                          href={`/properties/${property.id}${
+                            urlCheckIn && urlCheckOut
+                              ? `?checkIn=${urlCheckIn}&checkOut=${urlCheckOut}&guests=${
+                                  urlGuests || 1
+                                }`
+                              : ""
+                          }`}
+                        >
+                          View Details
+                        </a>
                       </Button>
                     </div>
                   </div>

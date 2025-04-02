@@ -14,6 +14,7 @@ interface PropertyCardProps {
   reviewCount: number;
   imageUrl: string;
   featured?: boolean;
+  url: string;
 }
 
 export function PropertyCard({
@@ -25,9 +26,10 @@ export function PropertyCard({
   reviewCount,
   imageUrl,
   featured = false,
+  url,
 }: PropertyCardProps) {
   return (
-    <Link href={`/properties/${id}`}>
+    <Link href={url}>
       <Card className="overflow-hidden transition-all hover:shadow-md">
         <div className="relative aspect-[4/3] w-full">
           <Image

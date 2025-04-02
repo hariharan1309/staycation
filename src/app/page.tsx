@@ -115,7 +115,7 @@ export default function Home() {
                     <SelectValue placeholder="Select the Country" />
                   </SelectTrigger>
                   <SelectContent>
-                  <SelectGroup>
+                    <SelectGroup>
                       <SelectItem value="United States">
                         United States
                       </SelectItem>
@@ -206,6 +206,7 @@ export default function Home() {
                 rating={4.0 + index / 10}
                 reviewCount={10 + index}
                 imageUrl={`${property.images[0]?.url ?? "/placeholder.svg"}`}
+                url={`/properties/${property.id}`}
               />
             ))}
             {/* <PropertyCard

@@ -12,32 +12,34 @@ interface PropertyFiltersProps {
   onFilter: (filters: any) => void;
   onClear: () => void;
   maxPrice?: number;
+  initialGuests: number;
 }
 
 export function PropertyFilters({
   onFilter,
   onClear,
   maxPrice = 1000,
+  initialGuests,
 }: PropertyFiltersProps) {
   const [priceRange, setPriceRange] = useState([0, maxPrice / 2]);
   const [bedrooms, setBedrooms] = useState<number | null>(null);
   const [bathrooms, setBathrooms] = useState<number | null>(null);
-  const [guests, setGuests] = useState<number | null>(null);
+  const [guests, setGuests] = useState<number | null>(initialGuests || null);
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
 
   // Standardized amenities list that matches the property data structure
   const amenities = [
-    { key: "wifi", label: "WiFi", value: false },
-    { key: "pool", label: "Pool", value: false },
+    { key: "Wifi", label: "WiFi", value: false },
+    { key: "Pool", label: "Pool", value: false },
     { key: "kitchen", label: "Kitchen", value: false },
-    { key: "ac", label: "Air conditioning", value: false },
-    { key: "heating", label: "Heating", value: false },
-    { key: "washer", label: "Washer", value: false },
-    { key: "parking", label: "Free parking", value: false },
-    { key: "beachfront", label: "Beach access", value: false },
-    { key: "outdoorDining", label: "Outdoor dining", value: false },
-    { key: "tv", label: "TV", value: false }, // Added from JSON
-    { key: "workspace", label: "Workspace", value: false }, // Added from JSON
+    { key: "Ac", label: "Air conditioning", value: false },
+    { key: "Heating", label: "Heating", value: false },
+    { key: "Washer", label: "Washer", value: false },
+    { key: "Parking", label: "Free parking", value: false },
+    { key: "Beachfront", label: "Beach access", value: false },
+    { key: "OutdoorDining", label: "Outdoor dining", value: false },
+    { key: "Tv", label: "TV", value: false }, // Added from JSON
+    { key: "Workspace", label: "Workspace", value: false }, // Added from JSON
   ];
 
   const handleAmenityChange = (amenityKey: string, checked: boolean) => {
