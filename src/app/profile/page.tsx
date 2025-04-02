@@ -277,7 +277,7 @@ export default function ProfilePage() {
             {/* Properties Tab (Owner Only) */}
             {userType === "host" && (
               <TabsContent value="properties">
-                <ProfileProperties data={properties} />
+                <ProfileProperties data={properties} getProperties={getProperties} />
               </TabsContent>
             )}
 

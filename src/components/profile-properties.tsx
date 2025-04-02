@@ -39,8 +39,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { formatDate } from "date-fns";
+import { toast } from "sonner";
 
-export function ProfileProperties({ data }: { data: any[] }) {
+export function ProfileProperties({
+  data,
+  getProperties,
+}: {
+  data: any[];
+  getProperties: () => Promise<void>;
+}) {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -82,11 +89,20 @@ export function ProfileProperties({ data }: { data: any[] }) {
     setDeleteDialogOpen(true);
   };
 
-  const confirmDelete = () => {
-    // In a real app, this would call an API to delete the property
-    console.log(`Deleting property ${propertyToDelete}`);
-    setDeleteDialogOpen(false);
-    setPropertyToDelete(null);
+  const confirmDelete = async () => {
+    try {
+      await fetch(`/api/properties/${propertyToDelete}/delete`, {
+        method: "DELETE",
+      });
+      toast.success("Deleted the Property Successfully");
+      await getProperties();
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to Delete...");
+    } finally {
+      setDeleteDialogOpen(false);
+      setPropertyToDelete(null);
+    }
   };
 
   return (
