@@ -73,7 +73,7 @@ interface Amenities {
   [key: string]: boolean;
 }
 
-interface Property {
+export interface Property {
   id: string;
   title: string;
   description: string;

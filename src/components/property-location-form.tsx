@@ -141,8 +141,7 @@ export function PropertyLocationForm({
                   <SelectItem value="Italy">Italy</SelectItem>
                   <SelectItem value="Spain">Spain</SelectItem>
                   <SelectItem value="Australia">Australia</SelectItem>
-                  <SelectItem value="Japan">Japan</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
+                  <SelectItem value="India">India</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
