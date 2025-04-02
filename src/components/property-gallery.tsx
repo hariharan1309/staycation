@@ -1,25 +1,25 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
+import { useState } from "react";
+import Image from "next/image";
 
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 interface PropertyGalleryProps {
-  images: string[]
+  images: { main: boolean; url: string; publicId?: "string" }[];
 }
 
 export function PropertyGallery({ images }: PropertyGalleryProps) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const handlePrevious = () => {
-    setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
-  }
+    setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
 
   const handleNext = () => {
-    setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
-  }
+    setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  };
 
   return (
     <div className="mt-6">
@@ -28,7 +28,7 @@ export function PropertyGallery({ images }: PropertyGalleryProps) {
           <DialogTrigger asChild>
             <div className="relative col-span-2 row-span-2 cursor-pointer overflow-hidden rounded-lg md:h-[400px]">
               <Image
-                src={images[0] || "/placeholder.svg"}
+                src={images.find((image) => image.main)?.url || images[0].url}
                 alt="Property main image"
                 fill
                 className="object-cover transition-transform hover:scale-105"
@@ -38,7 +38,7 @@ export function PropertyGallery({ images }: PropertyGalleryProps) {
           <DialogContent className="max-w-4xl">
             <div className="relative h-[500px] w-full">
               <Image
-                src={images[currentImageIndex] || "/placeholder.svg"}
+                src={images[currentImageIndex].url || "/placeholder.svg"}
                 alt={`Property image ${currentImageIndex + 1}`}
                 fill
                 className="object-contain"
@@ -57,7 +57,11 @@ export function PropertyGallery({ images }: PropertyGalleryProps) {
                   stroke="currentColor"
                   className="h-5 w-5"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.75 19.5L8.25 12l7.5-7.5"
+                  />
                 </svg>
               </Button>
               <Button
@@ -74,7 +78,11 @@ export function PropertyGallery({ images }: PropertyGalleryProps) {
                   stroke="currentColor"
                   className="h-5 w-5"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                  />
                 </svg>
               </Button>
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-center text-sm">
@@ -89,27 +97,16 @@ export function PropertyGallery({ images }: PropertyGalleryProps) {
             <DialogTrigger asChild>
               <div className="relative cursor-pointer overflow-hidden rounded-lg h-[190px]">
                 <Image
-                  src={image || "/placeholder.svg"}
+                  src={image.url || "/placeholder.svg"}
                   alt={`Property image ${index + 2}`}
                   fill
                   className="object-cover transition-transform hover:scale-105"
                 />
               </div>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl">
-              <div className="relative h-[500px] w-full">
-                <Image
-                  src={image || "/placeholder.svg"}
-                  alt={`Property image ${index + 2}`}
-                  fill
-                  className="object-contain"
-                />
-              </div>
-            </DialogContent>
           </Dialog>
         ))}
       </div>
     </div>
-  )
+  );
 }
-

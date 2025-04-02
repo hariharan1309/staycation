@@ -80,7 +80,7 @@ interface Property {
   location: Location;
   pricing: Pricing;
   amenities: Amenities;
-  images: string[];
+  images: { main: boolean; url: string; publicId?: "string" }[];
   bedrooms: number;
   bathrooms: number;
   maxGuests: number;
