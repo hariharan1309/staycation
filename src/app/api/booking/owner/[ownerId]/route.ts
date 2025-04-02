@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export const GET = async (req: Request, context: { params: any }) => {
   try {
-    const { ownerId } = context.params;
+    const { ownerId } = await context.params;
     const bookingRef = collection(fstore, "bookings");
     const q = query(bookingRef, where("ownerId", "==", ownerId));
     const querySnapshot = await getDocs(q);

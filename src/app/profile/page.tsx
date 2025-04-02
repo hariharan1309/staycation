@@ -42,12 +42,14 @@ const sampleUser = {
 export default function ProfilePage() {
   // In a real app, this would come from authentication
   const authContext = useContext(AuthContext);
-  const userType = authContext?.userType ?? "guest";
+  const userType = authContext?.userType;
   const [userVal, setUserVal] = useState(sampleUser);
+  const [properties, setProperties] = useState([]);
   useEffect(() => {
     const getData = async () => {
       try {
         const user = await getCookieVal();
+        const userType = localStorage.getItem("userType");
         const userDetail = await fetch(
           `/api/profile?id=${user?.value}&type=${userType}`
         );
@@ -60,11 +62,30 @@ export default function ProfilePage() {
     };
     getData();
   }, []);
+
+  const getProperties = async () => {
+    try {
+      const user = await getCookieVal();
+      const resp = await fetch(`/api/properties/owner/${user?.value}`);
+      const props = await resp.json();
+      setProperties(props.property);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    const userType = localStorage.getItem("userType");
+
+    if (userType === "host") {
+      getProperties();
+    }
+  }, [userType]);
   const formatTimestamp = (timestamp: {
     seconds: number;
     nanoseconds: number;
   }) => {
-    return new Date(timestamp.seconds * 1000).toLocaleDateString(undefined, {
+    return new Date(timestamp.seconds * 1000).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -94,7 +115,7 @@ export default function ProfilePage() {
                   <div>
                     <p className="text-sm font-medium">Joined on </p>
                     <p className="text-sm text-muted-foreground">
-                      {formatTimestamp(userVal.createdAt)}
+                      {formatTimestamp(userVal.createdAt) || "N/A"}
                     </p>
                   </div>
                 </div>
@@ -103,6 +124,7 @@ export default function ProfilePage() {
                     <Building className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Properties</p>
+                      <p>{properties.length || "Nil"}</p>
                     </div>
                   </div>
                 )}

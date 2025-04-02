@@ -4,9 +4,9 @@ import { NextResponse } from "next/server";
 
 export const GET = async (req: Request, context: { params: any }) => {
   try {
-    const { ownerId } = context.params;
+    const { ownerId } = await context.params;
     const propertyRef = collection(fstore, "property");
-    const q = query(propertyRef, where("ownerId", "==", ownerId));
+    const q = query(propertyRef, where("owner", "==", ownerId));
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {

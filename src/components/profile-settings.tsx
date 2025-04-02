@@ -43,7 +43,10 @@ const sampleUser = {
   lastName: "",
   avatar: "https://api.dicebear.com/9.x/lorelei/svg?flip=true",
   email: "sample@giaoed.com",
-  createdAt: "9 March 2025 at 08:10:04 UTC+5:30",
+  createdAt: {
+    seconds: 100000000,
+    nanoseconds: 128292021,
+  },
   phoneNumber: "",
   address: "",
   country: "",
@@ -64,8 +67,9 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
     const getData = async () => {
       try {
         const user = await getCookieVal();
+        const userType = localStorage.getItem("userType");
         const userDetail = await fetch(
-          `/api/profile/?id=${user?.value}&type=${userRole}`
+          `/api/profile/?id=${user?.value}&type=${userType}`
         );
         const data = await userDetail.json();
         console.log(data);
@@ -103,8 +107,9 @@ export function ProfileSettings({ userRole }: ProfileSettingsProps) {
     setIsLoading(true);
     try {
       const user = await getCookieVal();
+      const userType = localStorage.getItem("userType");
       const response = await fetch(
-        `/api/profile?type=${userRole}&id=${user?.value}`,
+        `/api/profile/edit?type=${userType}&id=${user?.value}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
