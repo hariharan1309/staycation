@@ -50,7 +50,7 @@ export default function LoginPage() {
           },
         });
         localStorage.setItem("userType", JSON.stringify(user.user.userType));
-        router.push("/");
+        window.location.replace("/");
       } else {
         toast.error(user.message, {
           closeButton: true,

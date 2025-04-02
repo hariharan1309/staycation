@@ -109,7 +109,7 @@ export function PropertyImagesForm({
     try {
       if (publicId) {
         // Delete from Cloudinary (this requires a server endpoint)
-        const response = await fetch("/api/cloudinary/delete", {
+        const response = await fetch("/api/cloudinary/image", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
