@@ -206,7 +206,7 @@ export default function Home() {
                 price={property.pricing.basePrice}
                 rating={4.0 + index / 10}
                 reviewCount={10 + index}
-                imageUrl={`${property.images[0]?.url ?? "/placeholder.svg"}`}
+                imageUrl={`${property.images[0]?.url ?? ""}`}
                 url={`/properties/${property.id}`}
               />
             ))}

@@ -16,8 +16,7 @@ export default function middleware(req: NextRequest) {
   const url = req.nextUrl;
   const path = url.pathname;
   const token = req.cookies.get("userID")?.value;
-  console.log(url.href + " - URL");
-  console.log(token + " - Token");
+
   // Skip for chrome-specific paths
   if (path.indexOf("chrome") > -1) {
     return NextResponse.next();
