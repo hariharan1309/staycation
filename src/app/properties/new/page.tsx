@@ -29,6 +29,7 @@ export interface PropertyImage {
   id: number;
   url: string;
   main: boolean;
+  publicId?: string; // Add this for Cloudinary public_id
 }
 
 export interface PropertyLocation {
@@ -161,7 +162,12 @@ export default function AddPropertyPage() {
     try {
       const finalData = {
         ...formData,
-        images: [],
+        // Simplify the images structure before sending to API
+        images: formData.images.map((img) => ({
+          url: img.url,
+          main: img.main,
+          publicId: img.publicId,
+        })),
       };
 
       toast.loading("Submitting property...", {
