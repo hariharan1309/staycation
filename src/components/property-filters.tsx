@@ -18,10 +18,10 @@ interface PropertyFiltersProps {
 export function PropertyFilters({
   onFilter,
   onClear,
-  maxPrice = 1000,
+  maxPrice = 2000,
   initialGuests,
 }: PropertyFiltersProps) {
-  const [priceRange, setPriceRange] = useState([0, maxPrice / 2]);
+  const [priceRange, setPriceRange] = useState([maxPrice / 2]);
   const [bedrooms, setBedrooms] = useState<number | null>(null);
   const [bathrooms, setBathrooms] = useState<number | null>(null);
   const [guests, setGuests] = useState<number | null>(initialGuests || null);
@@ -61,7 +61,7 @@ export function PropertyFilters({
   };
 
   const handleClearFilters = () => {
-    setPriceRange([0, maxPrice / 2]);
+    setPriceRange([1000]);
     setBedrooms(null);
     setBathrooms(null);
     setGuests(null);
@@ -76,8 +76,9 @@ export function PropertyFilters({
         <h3 className="mb-4 text-sm font-medium">Price Range</h3>
         <div className="mb-6">
           <Slider
-            defaultValue={[0, maxPrice / 2]}
+            defaultValue={[maxPrice / 2]}
             max={maxPrice}
+            min={1}
             step={10}
             value={priceRange}
             onValueChange={setPriceRange}
@@ -85,10 +86,7 @@ export function PropertyFilters({
         </div>
         <div className="flex items-center justify-between">
           <div className="rounded-md border px-2 py-1 text-sm">
-            ${priceRange[0]}
-          </div>
-          <div className="rounded-md border px-2 py-1 text-sm">
-            ${priceRange[1]}
+            Max : ${priceRange[0]}
           </div>
         </div>
       </div>

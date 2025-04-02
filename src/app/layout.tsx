@@ -10,7 +10,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Vacation Rentals | Find Your Perfect Getaway",
+  title: "Staycation - Vacation Rentals | Find Your Perfect Getaway",
   description: "Discover and book unique accommodations around the world.",
 };
 
@@ -23,6 +23,9 @@ export default async function RootLayout({
   const userID = cookieStore.get("userID")?.value || null;
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+      </head>
       <body className={`${inter.className} min-h-screen flex flex-col`}>
         <ThemeProvider
           attribute="class"

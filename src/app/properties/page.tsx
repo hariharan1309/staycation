@@ -286,9 +286,7 @@ export default function PropertiesPage() {
     // Filter by price range
     if (filters.priceRange) {
       results = results.filter(
-        (property) =>
-          property.price >= filters.priceRange[0] &&
-          property.price <= filters.priceRange[1]
+        (property) => property.price <= filters.priceRange[0]
       );
     }
 
@@ -403,12 +401,12 @@ export default function PropertiesPage() {
               {urlCountry}
             </Badge>
           )}
-          {urlCheckIn && urlCheckOut && (
+          {/* {urlCheckIn && urlCheckOut && (
             <Badge variant="outline" className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
               {formatDateDisplay(urlCheckIn)} - {formatDateDisplay(urlCheckOut)}
             </Badge>
-          )}
+          )} */}
           {urlGuests > 0 && (
             <Badge variant="outline" className="flex items-center gap-1">
               <Users className="h-3 w-3" />
@@ -457,7 +455,6 @@ export default function PropertiesPage() {
                 <SelectItem value="recommended">Recommended</SelectItem>
                 <SelectItem value="price-low">Price: Low to High</SelectItem>
                 <SelectItem value="price-high">Price: High to Low</SelectItem>
-                <SelectItem value="rating">Top Rated</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
