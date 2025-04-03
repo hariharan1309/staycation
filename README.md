@@ -2,6 +2,10 @@
 
 StayCation is a fully developed vacation rental platform built with Next.js, TypeScript, and Tailwind CSS, offering seamless booking experiences with role-based access for users and property owners.
 
+## 💻 Deployment
+
+- https://staycation-eight-delta.vercel.app/
+
 ## 🚀 Tech Stack
 
 - **Frontend:** Next.js (App Router), ShadCN, Tailwind CSS, TypeScript
