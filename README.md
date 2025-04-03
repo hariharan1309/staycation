@@ -1,6 +1,6 @@
 # StayCation - Vacation Rental Platform
 
-StayCation is a fully developed vacation rental platform built with Next.js, TypeScript, and Tailwind CSS, offering seamless booking experiences with role-based access for users and property owners.
+StayCation is a vacation rental platform built with Next.js, TypeScript, and Tailwind CSS, offering seamless booking experiences with role-based access for users and property owners.
 
 ## 💻 Deployment
 
@@ -19,9 +19,11 @@ StayCation is a fully developed vacation rental platform built with Next.js, Typ
   - Search, view, and book properties
   - Secure payments via Stripe
   - Receive booking confirmations via email
+    
 - **Owner Role:**
   - Add, edit, and manage properties
   - Receive notifications on successful reservations
+    
 - **Authentication & Access Control:**
   - Restricted actions for non-logged-in users
   - Secure role-based access
