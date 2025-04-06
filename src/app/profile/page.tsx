@@ -19,13 +19,38 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ProfileBookings } from "@/components/profile-bookings";
-import { ProfileProperties } from "@/components/profile-properties";
+// import { ProfileBookings } from "@/components/profile-bookings";
+// import { ProfileProperties } from "@/components/profile-properties";
 import { AuthContext } from "@/components/authProvider/AuthProvider";
 import { ProfileSettings } from "@/components/profile-settings";
 import { getCookieVal } from "@/lib/cookie";
 import dynamic from "next/dynamic";
-// Sample User Data (Replace with Dynamic Data Later)
+const ProfileBookings = dynamic(
+  () =>
+    import("@/components/profile-bookings").then((mod) => mod.ProfileBookings),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex flex-col items-center justify-center py-12">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      </div>
+    ),
+  }
+);
+const ProfileProperties = dynamic(
+  () =>
+    import("@/components/profile-properties").then(
+      (mod) => mod.ProfileProperties
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex flex-col items-center justify-center py-12">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      </div>
+    ),
+  }
+);
 const sampleUser = {
   firstName: "Hari",
   lastName: "",

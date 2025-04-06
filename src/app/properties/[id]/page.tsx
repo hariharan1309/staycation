@@ -8,9 +8,6 @@ import {
   Edit,
   ImageMinus,
   MapPin,
-  SeparatorVertical,
-  Share,
-  Star,
 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
