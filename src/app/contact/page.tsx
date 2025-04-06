@@ -11,8 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import ContactLocation from "./contact-location";
-import ContactFaq from "./contact-faq";
+import ContactLocation from "../../components/contact-page/contact-location";
+import ContactFaq from "../../components/contact-page/contact-faq";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({

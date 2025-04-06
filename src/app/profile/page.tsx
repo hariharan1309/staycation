@@ -16,15 +16,15 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { ProfileBookings } from "@/components/profile-bookings";
 import { ProfileProperties } from "@/components/profile-properties";
 import { AuthContext } from "@/components/authProvider/AuthProvider";
 import { ProfileSettings } from "@/components/profile-settings";
 import { getCookieVal } from "@/lib/cookie";
+import dynamic from "next/dynamic";
 // Sample User Data (Replace with Dynamic Data Later)
 const sampleUser = {
   firstName: "Hari",

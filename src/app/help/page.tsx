@@ -15,31 +15,12 @@ import { Card, CardContent } from "@/components/ui/card"
 export default function HelpPage() {
   const [searchQuery, setSearchQuery] = useState("")
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Handle search logic here
-    console.log("Searching for:", searchQuery)
-  }
-
   return (
     <main className="container px-4 py-8 md:px-6 md:py-12">
       <div className="mx-auto max-w-4xl">
         <div className="mb-8 text-center">
           <h1 className="mb-2 text-3xl font-bold tracking-tight md:text-4xl">Help Center</h1>
           <p className="text-muted-foreground">Find answers to common questions and learn how to use StayCation.</p>
-        </div>
-
-        <div className="mb-8">
-          <form onSubmit={handleSearch} className="relative">
-            <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search for help..."
-              className="pl-10"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </form>
         </div>
 
         <Tabs defaultValue="guests" className="mb-8">
