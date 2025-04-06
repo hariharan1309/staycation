@@ -25,13 +25,33 @@ const FeaturedDestinations = dynamic(
   () =>
     import("@/components/featured-destinations").then(
       (mod) => mod.FeaturedDestinations
-    )
+    ),
+  {
+    loading: () => (
+      <div className="flex flex-col items-center justify-center py-12">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      </div>
+    ),
+  }
 );
 
 const ListPropertyWithUs = dynamic(
-  () => import("@/components/home-page/list-property-with-us")
+  () => import("@/components/home-page/list-property-with-us"),
+  {
+    loading: () => (
+      <div className="flex flex-col items-center justify-center py-12">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      </div>
+    ),
+  }
 );
-const WhyUs = dynamic(() => import("@/components/home-page/why-us"));
+const WhyUs = dynamic(() => import("@/components/home-page/why-us"), {
+  loading: () => (
+    <div className="flex flex-col items-center justify-center py-12">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+    </div>
+  ),
+});
 
 const TestimonialCarousel = dynamic(
   () =>
@@ -40,6 +60,11 @@ const TestimonialCarousel = dynamic(
     ),
   {
     ssr: false,
+    loading: () => (
+      <div className="flex flex-col items-center justify-center py-12">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      </div>
+    ),
   }
 );
 
