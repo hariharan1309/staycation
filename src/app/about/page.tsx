@@ -16,6 +16,13 @@ import JoinImg from "../../../public/join.png";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About Us | StayCation",
+  description:
+    "Learn more about StayCation, our mission, values, and the team behind the platform.",
+};
 
 export default function AboutPage() {
   return (
