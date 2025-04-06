@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Users } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 
 import Team1 from "../../../public/team/team1.png";
 import Team2 from "../../../public/team/team2.png";
