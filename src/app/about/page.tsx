@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Users } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 
 import Team1 from "../../../public/team/team1.png";
 import Team2 from "../../../public/team/team2.png";
@@ -16,6 +16,13 @@ import JoinImg from "../../../public/join.png";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About Us | StayCation",
+  description:
+    "Learn more about StayCation, our mission, values, and the team behind the platform.",
+};
 
 export default function AboutPage() {
   return (
